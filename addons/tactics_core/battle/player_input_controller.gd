@@ -505,10 +505,11 @@ func _show_target() -> void:
 			var rules: CombatRules = battle.ruleset.combat_rules
 			var forecast: CombatForecast = CombatForecast.calculate(rules, a, d, BattleGrid.distance(_selected.cell, target.cell))
 			var awaken_gain: int = battle.ruleset.awakening_rule.forecast_gain(forecast) if battle.ruleset.awakening_rule != null and _selected.awakening != null else 0
+			var chain: Vector2i = ChainAttacks.preview(battle, _selected, target)
 			var details: Array[Dictionary] = [rules.forecast_details(a, d), rules.forecast_details(d, a)]
 			var defender_weapon: WeaponData = target.equipped_weapon()
 			forecast_panel.show_forecast(forecast, {
-				"attacker": {"name": _selected.get_display_name(), "color": _faction_color(_selected), "weapon": weapon.get_display_name(), "terrain": battle.grid.terrain_at(_selected.cell), "awaken_gain": awaken_gain},
+				"attacker": {"name": _selected.get_display_name(), "color": _faction_color(_selected), "weapon": weapon.get_display_name(), "terrain": battle.grid.terrain_at(_selected.cell), "awaken_gain": awaken_gain, "chain": chain.x, "chain_count": chain.y},
 				"defender": {"name": target.get_display_name(), "color": _faction_color(target), "weapon": defender_weapon.get_display_name() if defender_weapon != null else tr("UI_UNARMED"), "terrain": battle.grid.terrain_at(target.cell)},
 			}, details, _show_details)
 		TargetMode.HEAL:

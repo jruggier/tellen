@@ -36,7 +36,8 @@ static func score_attack(state: BattleState, unit: UnitState, cell: Vector2i, ta
 	option.forecast = forecast
 	option.kill_chance = kill_probability(forecast, rules)
 	var stagger_value: float = rules.true_hit_chance(forecast.attacker.hit) / 100.0 if forecast.stagger_on_hit else 0.0
-	option.score = profile.w_damage * forecast.defender.expected_damage_taken \
+	var chain: int = ChainAttacks.preview(state, unit, target).x if forecast.defender.hp_after_all_hits > 0 else 0
+	option.score = profile.w_damage * (forecast.defender.expected_damage_taken + chain) \
 		+ profile.w_kill * option.kill_chance \
 		+ profile.w_stagger * stagger_value \
 		+ profile.w_priority * target_priority(state, unit, target, weapon) \

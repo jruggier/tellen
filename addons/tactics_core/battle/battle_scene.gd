@@ -224,6 +224,7 @@ func _build_input() -> void:
 	presenter.popup_parent = world
 	presenter.zoom = camera.zoom.x
 	presenter.cell_size = cursor.cell_size
+	presenter.unit_views = unit_views
 	add_child(presenter)
 	input = PlayerInputController.new()
 	input.name = "PlayerInputController"

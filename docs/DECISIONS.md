@@ -61,6 +61,7 @@ From spec §18. Each is a ruleset flag or value, so changing one is a data edit,
 | 40 | Awaken is a free action (the unit can still attack the same turn; its move is locked in), as in FE Engage | `AwakenCommand` | ☐ |
 | 41 | Action-charge rule: no phase-start charge on turn 1, so the meter really starts at 3 | `ActionChargeAwakeningRule` | ☐ |
 | 42 | Sample awakenings: Tellen "Crossroads Pact" (+3 Str/Spd/Skl, +2 Def, Vigil; Gambit Strike +8 might +30 hit, no counter), Sable "Moonlit Veil" (+4 Mag, +3 Res, +2 Dex; Night Hex +6 might +20 hit +20 crit), Gid "Iron Resolve" (+4 Str, +3 Def, +2 Bld; Cleaver +10 might +15 hit, no counter) | `game/data/awakenings` | ☐ |
+| 43 | Chain strikes always land (no hit roll), happen only if the defender survives the main combat, work for every faction (enemies chain too), and allies join whether or not they've acted this turn | `ChainAttacks` | ☐ |
 | 19 | 2RN: hit if the average of two 0–99 rolls is below the displayed hit. HYBRID: below 50 uses 1RN | `CrossroadsCombatRules.roll_hit` | ☐ |
 
 **Input bindings (M0)**

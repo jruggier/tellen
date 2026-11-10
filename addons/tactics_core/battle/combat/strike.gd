@@ -6,7 +6,7 @@ extends RefCounted
 enum Role { ATTACKER, DEFENDER }
 
 ## Why the strike happened.
-enum Kind { INITIAL, COUNTER, FOLLOW_UP }
+enum Kind { INITIAL, COUNTER, FOLLOW_UP, CHAIN }
 
 var actor: Role = Role.ATTACKER
 var kind: Kind = Kind.INITIAL
@@ -22,6 +22,8 @@ var staggered: bool = false
 var effective: bool = false
 ## This strike defeated the target.
 var lethal: bool = false
+## For CHAIN strikes: the ally who struck.
+var chain_unit_id: StringName = &""
 
 
 ## The side receiving the strike.
@@ -34,4 +36,5 @@ func to_dict() -> Dictionary:
 	return {
 		"actor": Role.keys()[actor], "kind": Kind.keys()[kind], "hit": hit, "crit": crit, "damage": damage,
 		"target_hp_after": target_hp_after, "staggered": staggered, "effective": effective, "lethal": lethal,
+		"chain_unit": String(chain_unit_id),
 	}

@@ -20,6 +20,8 @@ var reports: Dictionary[StringName, ProgressionService.Report] = {}
 var defeats: Array[DefeatRules.Outcome] = []
 ## Visible skill effects after combat ({"unit", "heal", "text"}).
 var skill_effects: Array[Dictionary] = []
+## Allies who joined with chain attacks.
+var chain_units: Array[StringName] = []
 
 
 func _init(attacking_unit: StringName = &"", target_unit: StringName = &"", weapon_slot: int = 0) -> void:
@@ -56,6 +58,8 @@ func execute(state: BattleState) -> void:
 	_customize_attacker(state, a)
 	var d: CombatParticipant = CombatContext.participant(state, defender, defender.cell, defender.equipped_weapon(), attacker, false)
 	result = CombatResolver.resolve(rules, a, d, BattleGrid.distance(attacker.cell, defender.cell), state.rng)
+	for ally: UnitState in ChainAttacks.apply(state, attacker, defender, result):
+		chain_units.append(ally.id)
 
 	# Carried Stagger is used up by this combat (NEXT_COMBAT rule).
 	if rules.stagger_duration() == CombatRules.StaggerDuration.NEXT_COMBAT:
@@ -75,6 +79,8 @@ func execute(state: BattleState) -> void:
 
 	var awakening: AwakeningRule = state.ruleset.awakening_rule
 	if awakening != null:
+		for ally_id: StringName in chain_units:
+			awakening.on_event(state, state.get_unit(ally_id), AwakeningRule.EVENT_CHAIN)
 		if result.defender_staggered:
 			awakening.on_event(state, attacker, AwakeningRule.EVENT_STAGGER)
 		if not defender.is_alive() and attacker.is_alive():

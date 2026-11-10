@@ -58,6 +58,14 @@ extends Resource
 ## Unit tag that exerts zone of control.
 @export var zoc_tag: StringName = &"zoc"
 
+@export_group("Chain attacks")
+## Allies in reach add a fixed-damage strike after each attack (§9.4).
+@export var chain_attacks_enabled: bool = true
+## Chain strike damage as a percent of the defender's max HP (minimum 1).
+@export_range(0, 100) var chain_damage_pct: int = 10
+## Chain strikes may defeat the defender.
+@export var chain_can_kill: bool = true
+
 @export_group("Units")
 ## Inventory slots per unit.
 @export_range(1, 20) var inventory_size: int = 5

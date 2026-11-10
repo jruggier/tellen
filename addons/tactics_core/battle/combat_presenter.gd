@@ -13,6 +13,8 @@ extends Node
 @export var fast_forward: float = 3.0
 
 var popup_parent: Node
+## Unit id → view, so chain attackers can be animated.
+var unit_views: Dictionary[StringName, UnitView] = {}
 var zoom: float = 4.0
 var cell_size: int = 16
 
@@ -27,6 +29,9 @@ func play_combat(result: CombatResult, attacker_view: UnitView, defender_view: U
 		var target: UnitView = defender_view if by_attacker else attacker_view
 		var target_cell: Vector2i = defender_cell if by_attacker else attacker_cell
 		var actor_cell: Vector2i = attacker_cell if by_attacker else defender_cell
+		if strike.kind == Strike.Kind.CHAIN and unit_views.has(strike.chain_unit_id):
+			actor = unit_views[strike.chain_unit_id]
+			actor_cell = Vector2i((actor.position / cell_size).round())
 		var target_max: int = defender_max_hp if by_attacker else attacker_max_hp
 		var step: float = _step()
 		actor.bump(target_cell, step * 0.5)
@@ -47,6 +52,8 @@ func play_combat(result: CombatResult, attacker_view: UnitView, defender_view: U
 				_popup(above + Vector2(0, -7), tr("POPUP_STAGGER"), Color(1.0, 0.6, 0.2), 5.5)
 		else:
 			_popup(above, tr("POPUP_MISS"), UiStyle.TEXT_DIM, 6.0)
+		if strike.kind == Strike.Kind.CHAIN and step > 0.0:
+			_popup(Vector2(actor_cell * cell_size) + Vector2(cell_size * 0.5, -1.0), tr("POPUP_CHAIN"), Color(0.6, 0.9, 1.0), 4.0)
 		if strike.kind == Strike.Kind.FOLLOW_UP and step > 0.0:
 			_popup(Vector2(actor_cell * cell_size) + Vector2(cell_size * 0.5, -1.0), tr("POPUP_FOLLOW_UP"), UiStyle.GOOD, 4.0)
 		await _wait(step * 0.78)
