@@ -16,6 +16,8 @@ extends Resource
 @export var cell: Vector2i = Vector2i.ZERO
 ## Inventory for generic units (named units use their own).
 @export var items: Array[ItemData] = []
+## Extra items carried and dropped to the unit that defeats this one.
+@export var drops: Array[ItemData] = []
 @export var is_boss: bool = false
 ## Battle id; generated from the unit or class id when empty.
 @export var unit_id: StringName = &""

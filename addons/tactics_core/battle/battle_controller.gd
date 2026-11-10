@@ -47,8 +47,11 @@ func setup(map: BattleMap, ruleset: Ruleset, master_seed: int) -> void:
 		if placement.unit_data != null:
 			unit = UnitState.from_unit_data(unit_id, placement.unit_data, ruleset, placement.faction_id, placement.cell)
 		else:
-			unit = UnitState.generic(unit_id, placement.class_data, placement.level, ruleset, placement.faction_id, placement.cell, placement.items)
+			unit = UnitState.generic(unit_id, placement.class_data, placement.level, ruleset, placement.faction_id, placement.cell, placement.items, &"normal", placement.drops)
 		unit.is_boss = placement.is_boss
+		if placement.unit_data != null and not placement.drops.is_empty():
+			for item: ItemData in placement.drops:
+				unit.inventory.append(InventorySlot.of(item, true))
 		if state.grid.move_cost(placement.cell, unit.movement_type_id()) < 1:
 			TacticsLog.warn("BattleController", "'%s' is placed on impassable terrain at %s" % [unit_id, placement.cell])
 		state.add_unit(unit)

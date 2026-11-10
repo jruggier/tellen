@@ -6,8 +6,8 @@ extends RefCounted
 ## so the forecast always matches what actually happens. Building a
 ## forecast never changes any participant.
 ##
-## [method build] (from battle state and a destination tile) is added with
-## battle state in M3; it creates participants and calls [method calculate].
+## [method build] creates participants from battle state (spec §5.9);
+## [method calculate] works on participants directly (tests, Combat Lab).
 
 
 ## Forecast numbers for one side.
@@ -54,6 +54,12 @@ var defender: SideForecast = SideForecast.new()
 var stagger_on_hit: bool = false
 ## Distance between the two units.
 var distance: int = 1
+
+
+## Forecast for [param attacker] attacking [param defender] from
+## [param attacker_tile] with its equipped weapon (spec §5.9).
+static func build(state: BattleState, attacker: UnitState, defender: UnitState, attacker_tile: Vector2i) -> CombatForecast:
+	return CombatContext.forecast(state, attacker, defender, attacker_tile, attacker.equipped_weapon())
 
 
 ## Computes a forecast for [param attacker_p] attacking [param defender_p]

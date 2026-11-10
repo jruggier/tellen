@@ -116,6 +116,21 @@ func are_allied(faction_a: StringName, faction_b: StringName) -> bool:
 	return (a != null and a.is_allied_with(faction_b)) or (b != null and b.is_allied_with(faction_a))
 
 
+## Ends every unit's Stagger (called at the end of each phase, §5.5).
+func clear_staggers() -> void:
+	for unit: UnitState in _units.values():
+		unit.stagger_combats = 0
+	mark_changed()
+
+
+## The first faction controlled by a human, or null.
+func human_faction() -> FactionData:
+	for faction: FactionData in factions:
+		if faction.controller == FactionData.Controller.HUMAN:
+			return faction
+	return null
+
+
 ## Records that something changed.
 func mark_changed() -> void:
 	version += 1

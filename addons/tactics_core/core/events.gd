@@ -29,6 +29,15 @@ signal unit_moved(unit_id: StringName, from: Vector2i, to: Vector2i, path: Array
 ## A unit was defeated. [param by_unit_id] is empty if no unit caused it.
 signal unit_defeated(unit_id: StringName, by_unit_id: StringName)
 
+## A combat finished; [param result] holds every strike in order.
+signal combat_resolved(attacker_id: StringName, defender_id: StringName, result: CombatResult)
+
+## A unit gained a level; [param gains] holds the stat increases.
+signal level_up(unit_id: StringName, new_level: int, gains: StatBlock)
+
+## A unit recovered [param amount] HP.
+signal unit_healed(unit_id: StringName, amount: int)
+
 ## A dialogue script should play. [param context] carries trigger details.
 signal dialogue_requested(script_id: StringName, context: Dictionary)
 

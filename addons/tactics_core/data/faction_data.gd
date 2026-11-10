@@ -14,6 +14,9 @@ enum Controller { HUMAN, AI }
 ## Ids of factions this one never attacks (and that never attack it).
 @export var allied_with: Array[StringName] = []
 
+## Units of this faction earn EXP, level up and train proficiencies.
+@export var gains_experience: bool = false
+
 
 ## True if this faction is allied with (or is) [param faction_id].
 func is_allied_with(faction_id: StringName) -> bool:

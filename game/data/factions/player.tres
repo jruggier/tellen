@@ -5,6 +5,7 @@
 [resource]
 script = ExtResource("1_at4e7")
 controller = 0
+gains_experience = true
 color = Color(0.3, 0.55, 0.95, 1)
 allied_with = Array[StringName]([&"ally"])
 id = &"player"
