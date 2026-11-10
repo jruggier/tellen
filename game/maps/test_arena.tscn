@@ -48,6 +48,9 @@ script = ExtResource("5_8ao1c")
 unit_data = ExtResource("7_p3n53")
 faction_id = &"player"
 cell = Vector2i(3, 9)
+proficiency_overrides = Dictionary[StringName, int]({
+&"sword": 2
+})
 
 [sub_resource type="Resource" id="Resource_hs6dm"]
 script = ExtResource("5_8ao1c")

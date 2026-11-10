@@ -27,3 +27,6 @@ Where out-of-scope features plug in later without rewriting core systems. Each s
 | New objectives / defeat rules | Subclass `Objective`; add a `DefeatCondition.Kind` | M4 |
 | Map events (dialogue, items) | `TriggerRegion.event_id`, `TacticsEvents` | M4 |
 | Fog of war | `ThreatMap` / `RangeCalculator` visibility filter; AI target lists | M4 |
+| New skills | Script extending `SkillHooks` + `SkillData.params`; no engine changes | M5 |
+| Gods' sigils | Fill `UnitData.awakening` from a future `SigilData`; awakening rules unchanged | M5 |
+| Supports / support bonuses | `SkillHooks.modify_ally_participant` (same path as auras) | M5 |

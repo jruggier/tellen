@@ -24,7 +24,7 @@ signal end_turn_requested
 ## The player picked a pause-menu entry other than End Turn.
 signal pause_option_chosen(option_id: StringName)
 
-enum State { IDLE, SELECTED, MOVING, ACTION_MENU, WEAPON_MENU, TARGETING, ITEM_MENU, ITEM_ACTIONS, TRADING, ANIMATING, LEVEL_UP, INSPECT, PAUSE_MENU, DISABLED, CANTO }
+enum State { IDLE, SELECTED, MOVING, ACTION_MENU, WEAPON_MENU, TARGETING, ITEM_MENU, ITEM_ACTIONS, TRADING, ANIMATING, LEVEL_UP, INSPECT, PAUSE_MENU, DISABLED, CANTO, CLASS_MENU }
 enum TargetMode { ATTACK, HEAL, TRADE, SIGNATURE }
 
 var state: State = State.DISABLED
@@ -127,7 +127,7 @@ func _unhandled_input(event: InputEvent) -> void:
 ## (the map cursor moves itself in the other states).
 func move_selection(direction: Vector2i) -> void:
 	match state:
-		State.ACTION_MENU, State.WEAPON_MENU, State.ITEM_MENU, State.PAUSE_MENU:
+		State.ACTION_MENU, State.WEAPON_MENU, State.ITEM_MENU, State.PAUSE_MENU, State.CLASS_MENU:
 			menu.move(direction.y if direction.y != 0 else direction.x)
 		State.ITEM_ACTIONS:
 			sub_menu.move(direction.y if direction.y != 0 else direction.x)
@@ -158,7 +158,7 @@ func confirm() -> void:
 				_move_to(cursor.cell)
 			elif other != null and other != _selected and other.faction_id == player_faction and other.is_ready() and not other.has_moved:
 				_select(other)
-		State.ACTION_MENU, State.WEAPON_MENU, State.ITEM_MENU, State.PAUSE_MENU:
+		State.ACTION_MENU, State.WEAPON_MENU, State.ITEM_MENU, State.PAUSE_MENU, State.CLASS_MENU:
 			menu.accept()
 		State.ITEM_ACTIONS:
 			sub_menu.accept()
@@ -198,7 +198,7 @@ func cancel() -> void:
 			menu.close()
 			cursor.set_cell(_selected.cell)
 			_select(_selected)
-		State.WEAPON_MENU, State.ITEM_MENU:
+		State.WEAPON_MENU, State.ITEM_MENU, State.CLASS_MENU:
 			_open_action_menu()
 		State.ITEM_ACTIONS:
 			sub_menu.close()
@@ -360,6 +360,8 @@ func _open_action_menu() -> void:
 		options.insert(0, {"id": &"seize", "text": tr("ACTION_SEIZE")})
 	if EscapeCommand.new(_selected.id, objectives).can_execute(battle):
 		options.insert(0, {"id": &"escape", "text": tr("ACTION_ESCAPE")})
+	if not ClassChangeRules.eligible_classes(battle, _selected).is_empty():
+		options.append({"id": &"class_change", "text": tr("ACTION_CLASS_CHANGE")})
 	options.append({"id": &"wait", "text": tr("ACTION_WAIT")})
 	menu.open(options, _menu_position())
 	_set_state(State.ACTION_MENU)
@@ -382,6 +384,8 @@ func _on_menu_chosen(option_id: StringName) -> void:
 		State.ITEM_MENU:
 			_item_slot = int(String(option_id))
 			_open_item_actions()
+		State.CLASS_MENU:
+			_do_class_change(option_id)
 
 
 func _on_action(action: StringName) -> void:
@@ -403,6 +407,8 @@ func _on_action(action: StringName) -> void:
 				_open_slot_menu()
 		&"items":
 			_open_item_menu()
+		&"class_change":
+			_open_class_menu()
 		&"trade":
 			_target_mode = TargetMode.TRADE
 			_start_targeting(TargetMode.TRADE)
@@ -713,6 +719,32 @@ func _do_use_item() -> void:
 		toast.show_message("%s  %s +%d" % [_selected.get_display_name(), definition.get_abbreviation() if definition != null else String(stat_id), command.boosts.get_value(stat_id)])
 	await presenter.pause(0.6)
 	_finish_action(true)
+
+
+# Class change ----------------------------------------------------------------------
+
+func _open_class_menu() -> void:
+	var battle: BattleState = controller.state
+	var options: Array[Dictionary] = []
+	for class_data: ClassData in ClassChangeRules.eligible_classes(battle, _selected):
+		options.append({"id": class_data.id, "text": class_data.get_display_name(), "detail": battle.ruleset.get_tier_name(class_data.tier)})
+	menu.open(options, _menu_position(), tr("ACTION_CLASS_CHANGE"))
+	_set_state(State.CLASS_MENU)
+
+
+func _do_class_change(class_id: StringName) -> void:
+	var command := ClassChangeCommand.new(_selected.id, class_id)
+	if not controller.execute(command):
+		return
+	menu.close()
+	var unit: UnitState = _selected
+	_set_state(State.ANIMATING)
+	var faction: FactionData = controller.state.get_faction(unit.faction_id)
+	unit_views[unit.id].setup(unit, faction.color if faction != null else Color.WHITE, controller.state.ruleset)
+	unit_views[unit.id].flash()
+	presenter.popup_at_cell(unit.cell, unit.class_data.get_display_name(), UiStyle.PANEL_BORDER, 6.0)
+	await presenter.pause(0.8)
+	_finish_action()
 
 
 # Trading ----------------------------------------------------------------------------

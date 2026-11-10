@@ -80,6 +80,7 @@ func _run_ai_phase(faction: FactionData) -> void:
 
 
 func _on_player_action_finished() -> void:
+	scene.update_turn_label()
 	if finished or check_end():
 		return
 	var state: BattleState = scene.controller.state

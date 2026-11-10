@@ -183,10 +183,31 @@ _Post-M1 change: the game is native 1920×1080 with 64 px cells (16 px art at 4�
 - [x] **M5.1** Skill hook system + 5 slots + class abilities + sample skills. — `SkillHooks`/`SkillContext`/`SkillRunner`; skills apply where combatants are built (forecast = resolver = AI); Vantage (`strikes_first`); Canto (`CantoMoveCommand`, CANTO input state). Samples: Canto (mounted), Shield Wall (Bulwark aura), Fleetfoot (Sable), Vigil (Spearhand recruit), Second Wind (Tellen). 249 tests.
 - [x] **M5.2** Both awakening rules, signature attack action, UI meter/cooldown. — `AwakeningRule` + `CooldownAwakeningRule` (default) + `ActionChargeAwakeningRule`; `AwakeningData` on units (stat mods, skills, signature); `AwakenCommand` (free action), `SignatureAttackCommand` (once per awakening, params-driven); glowing map outline, status in the unit panel, forecast charge row; AI awakens before attacking. Awakenings for Tellen, Sable, Gid. 258 tests.
 - [x] **M5.3** Chain attacks (§9.4). — `ChainAttacks` (contributors, damage, preview, apply); ruleset toggle/percent/can-kill; CHAIN strikes in the replay; forecast chain row; AI counts chain damage; +1 awakening charge per contributor. 265 tests.
-- [ ] **M5.4** Class change via proficiency requirements; per-character class trees.
-- [ ] **Checkpoint**
+- [x] **M5.4** Class change via proficiency requirements; per-character class trees. — `ClassChangeRules` (tree or full catalog, proficiency gates, enemy-only excluded, stat swap with level kept), `ClassChangeCommand`, "Change Class" action menu; ruleset class catalog; placement proficiency overrides (arena Tellen has sword 2 to try Duelist). 271 tests.
+- [x] **Checkpoint**
 
-## M6 — Dialogue
+### M5 Checkpoint summary
+
+**Built**
+- **Skills**: a hook system (`SkillHooks` scripts + `SkillData.params`) applied wherever combatants are built, so the forecast, the resolver and the AI always agree. Five sample skills: **Canto** (mounted classes move again with leftover movement after acting), **Shield Wall** (Bulwark class ability: +2 Def to adjacent allies), **Fleetfoot** (Sable: +20 Avoid at ≤50% HP), **Vigil** (recruit Spearhand: strikes first when attacked on the enemy phase), **Second Wind** (Tellen: heal 20% after a kill). Skills show in the unit panel.
+- **Awakening**: cooldown rule (default: 3 turns, 3-turn cooldown, 3 uses per map for the army) and action-charge rule (meter 6, starts 3; Stagger +2, kill/chain/heal/phase +1), selectable in the ruleset. **Awaken** is a free action; awakened units glow and get stat boosts, extra skills and a once-per-awakening **signature attack** (forecast includes it). Tellen, Sable and Gid each have one. The AI awakens before attacking when it can.
+- **Chain attacks**: allies in reach add a fixed 10%-of-max-HP strike after each attack (no counter, crit or Stagger; can kill), for both sides; previewed in the forecast and counted by the AI.
+- **Class change**: "Change Class" when proficiency requirements are met, within the unit's class tree; level carries over, stats swap class bonuses.
+
+**How to try it** (`game/maps/test_arena.tscn`, F6)
+1. Select Tellen: the unit panel shows "Crossroads Pact: ready (3/3 left)". Move next to an enemy, choose **Awaken** (free), then **Gambit Strike**: the forecast shows no counter. Note the awakened glow and the turns left in the unit panel.
+2. Attack an enemy that another ally can also reach (e.g. the Hunter 2 tiles away): the forecast shows **Chain +N**, and the ally hits too.
+3. **Change Class** with Tellen → Duelist (sword proficiency 2 is set for testing): Mov becomes 5, offense +2, defense +3.
+4. Let the enemy attack the recruit Spearhand during its phase: **Vigil** strikes first.
+5. Bring Sable below half HP and check enemy hit chances (+20 avoid). Kill with Tellen at low HP: **Second Wind** heals.
+6. To try the action-charge awakening rule: open `game/rules/crossroads_ruleset.tres` → *Awakening Rule* → New `ActionChargeAwakeningRule`.
+
+**Known issues / not yet built**
+- No player unit in the arena has Canto (only enemy Outrider); tested headlessly. Add a player Outrider to the arena if you want to try it by hand.
+- AI doesn't use signature attacks or Canto.
+- The awakened glow is subtle on greyed-out (acted) units.
+
+**Decisions to confirm:** `DECISIONS.md` → #38–46.## M6 — Dialogue
 
 - [ ] **M6.1** Parser + tests, `DialogueScript`, `DialoguePlayer` UI (portraits, bg, music, sfx, item overlay, choices, flags, backlog, skip).
 - [ ] **M6.2** Map event triggers (§8.6), Talk command, battle quotes.

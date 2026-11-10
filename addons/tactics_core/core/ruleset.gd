@@ -27,6 +27,10 @@ extends Resource
 @export var weapon_types: Array[WeaponType] = []
 ## Every terrain type (map tiles reference them by id).
 @export var terrains: Array[TerrainData] = []
+## Every class (offered for class changes when a unit's class tree is empty).
+@export var classes: Array[ClassData] = []
+## Classes with this tag are never offered as class changes.
+@export var class_change_excluded_tag: StringName = &"enemy_only"
 ## Translation keys for class tier names, index = tier.
 @export var tier_names: Array[String] = []
 
@@ -154,6 +158,7 @@ func validate() -> PackedStringArray:
 	_check_catalog(problems, "movement_types", movement_types)
 	_check_catalog(problems, "weapon_types", weapon_types)
 	_check_catalog(problems, "terrains", terrains)
+	_check_catalog(problems, "classes", classes)
 	for stat_id: StringName in [hp_stat, mov_stat, build_stat]:
 		if not stats.is_empty() and get_stat(stat_id) == null:
 			problems.append("Ruleset '%s': stat '%s' is not in the stats catalog" % [ruleset_id, stat_id])

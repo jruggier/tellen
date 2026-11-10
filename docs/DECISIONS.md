@@ -62,6 +62,9 @@ From spec §18. Each is a ruleset flag or value, so changing one is a data edit,
 | 41 | Action-charge rule: no phase-start charge on turn 1, so the meter really starts at 3 | `ActionChargeAwakeningRule` | ☐ |
 | 42 | Sample awakenings: Tellen "Crossroads Pact" (+3 Str/Spd/Skl, +2 Def, Vigil; Gambit Strike +8 might +30 hit, no counter), Sable "Moonlit Veil" (+4 Mag, +3 Res, +2 Dex; Night Hex +6 might +20 hit +20 crit), Gid "Iron Resolve" (+4 Str, +3 Def, +2 Bld; Cleaver +10 might +15 hit, no counter) | `game/data/awakenings` | ☐ |
 | 43 | Chain strikes always land (no hit roll), happen only if the defender survives the main combat, work for every faction (enemies chain too), and allies join whether or not they've acted this turn | `ChainAttacks` | ☐ |
+| 44 | Changing class ends the unit's action and is available from the action menu whenever requirements are met (no seal items) | `ClassChangeCommand` | ☐ |
+| 45 | A unit with an empty class tree may change to any catalog class whose requirements it meets; `enemy_only` classes are never offered | `ClassChangeRules` | ☐ |
+| 46 | Class change keeps damage taken (current HP shifts with max HP) and swaps class base bonuses, Build bonus and Mov | `ClassChangeRules.apply` | ☐ |
 | 19 | 2RN: hit if the average of two 0–99 rolls is below the displayed hit. HYBRID: below 50 uses 1RN | `CrossroadsCombatRules.roll_hit` | ☐ |
 
 **Input bindings (M0)**

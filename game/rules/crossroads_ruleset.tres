@@ -3,20 +3,36 @@
 [ext_resource type="Script" path="res://addons/tactics_core/awakening/cooldown_awakening_rule.gd" id="1_am3qx"]
 [ext_resource type="Script" path="res://addons/tactics_core/core/ruleset.gd" id="1_ruleset"]
 [ext_resource type="Script" path="res://game/rules/crossroads_combat_rules.gd" id="2_combat"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/class_data.gd" id="2_q7c36"]
+[ext_resource type="Resource" path="res://game/data/classes/acolyte.tres" id="3_8rlgn"]
 [ext_resource type="Script" path="res://game/rules/crossroads_growth_rules.gd" id="3_growth"]
 [ext_resource type="Script" path="res://game/rules/crossroads_exp_rules.gd" id="4_exp"]
+[ext_resource type="Resource" path="res://game/data/classes/brawler.tres" id="4_sd84k"]
 [ext_resource type="Script" path="res://game/rules/crossroads_enemy_stat_rules.gd" id="5_enemy"]
+[ext_resource type="Resource" path="res://game/data/classes/brigand.tres" id="5_jx6kx"]
 [ext_resource type="Script" path="res://addons/tactics_core/data/movement_type.gd" id="5_qgk10"]
+[ext_resource type="Resource" path="res://game/data/classes/bulwark.tres" id="6_ery58"]
 [ext_resource type="Resource" path="res://game/data/movement_types/foot.tres" id="6_nrpmm"]
 [ext_resource type="Script" path="res://addons/tactics_core/progression/proficiency_rules.gd" id="6_prof"]
+[ext_resource type="Resource" path="res://game/data/classes/cutpurse.tres" id="7_1u0bn"]
 [ext_resource type="Resource" path="res://game/data/movement_types/ground.tres" id="7_tvdn4"]
 [ext_resource type="Resource" path="res://game/data/movement_types/sky.tres" id="8_0i0sy"]
+[ext_resource type="Resource" path="res://game/data/classes/duelist.tres" id="8_s5f7i"]
+[ext_resource type="Resource" path="res://game/data/classes/hatchetman.tres" id="9_h8mer"]
 [ext_resource type="Resource" path="res://game/data/movement_types/heavy.tres" id="9_oobps"]
+[ext_resource type="Resource" path="res://game/data/classes/hexcaller.tres" id="10_gg862"]
+[ext_resource type="Resource" path="res://game/data/classes/hunter.tres" id="11_kvfw8"]
 [ext_resource type="Script" path="res://addons/tactics_core/data/stat_definition.gd" id="12_esmhr"]
+[ext_resource type="Resource" path="res://game/data/classes/outrider.tres" id="12_rygcq"]
 [ext_resource type="Resource" path="res://game/data/stats/hp.tres" id="13_a6tr5"]
+[ext_resource type="Resource" path="res://game/data/classes/sellsword.tres" id="13_m7ktb"]
+[ext_resource type="Resource" path="res://game/data/classes/spearhand.tres" id="14_6u6jr"]
 [ext_resource type="Resource" path="res://game/data/stats/str.tres" id="14_h235j"]
 [ext_resource type="Resource" path="res://game/data/stats/mag.tres" id="15_g3wxf"]
+[ext_resource type="Resource" path="res://game/data/classes/vanguard.tres" id="15_q6sdq"]
+[ext_resource type="Resource" path="res://game/data/classes/warlock.tres" id="16_3wlqx"]
 [ext_resource type="Resource" path="res://game/data/stats/def.tres" id="16_8gtp7"]
+[ext_resource type="Resource" path="res://game/data/classes/wingrider.tres" id="17_2xw06"]
 [ext_resource type="Resource" path="res://game/data/stats/res.tres" id="17_oxjnm"]
 [ext_resource type="Resource" path="res://game/data/stats/spd.tres" id="18_am3qx"]
 [ext_resource type="Resource" path="res://game/data/stats/skl.tres" id="19_0pkgn"]
@@ -69,6 +85,7 @@ stats = Array[ExtResource("12_esmhr")]([ExtResource("13_a6tr5"), ExtResource("14
 movement_types = Array[ExtResource("5_qgk10")]([ExtResource("6_nrpmm"), ExtResource("7_tvdn4"), ExtResource("8_0i0sy"), ExtResource("9_oobps")])
 weapon_types = Array[ExtResource("23_d3lrv")]([ExtResource("24_vuniu"), ExtResource("25_e0gqp"), ExtResource("26_abuhv"), ExtResource("27_f66s0"), ExtResource("28_uk85j"), ExtResource("29_ifd0h"), ExtResource("30_m3ou8"), ExtResource("31_nmv7p")])
 terrains = Array[ExtResource("23_oxjnm")]([ExtResource("24_am3qx"), ExtResource("25_0pkgn"), ExtResource("26_x3q1j"), ExtResource("27_uem6r"), ExtResource("28_ybsoq"), ExtResource("29_d3lrv"), ExtResource("30_vuniu"), ExtResource("31_e0gqp"), ExtResource("32_abuhv")])
+classes = Array[ExtResource("2_q7c36")]([ExtResource("3_8rlgn"), ExtResource("4_sd84k"), ExtResource("5_jx6kx"), ExtResource("6_ery58"), ExtResource("7_1u0bn"), ExtResource("8_s5f7i"), ExtResource("9_h8mer"), ExtResource("10_gg862"), ExtResource("11_kvfw8"), ExtResource("12_rygcq"), ExtResource("13_m7ktb"), ExtResource("14_6u6jr"), ExtResource("15_q6sdq"), ExtResource("16_3wlqx"), ExtResource("17_2xw06")])
 tier_names = Array[String](["TIER_BEGINNER_NAME", "TIER_INTERMEDIATE_NAME", "TIER_ADVANCED_NAME", "TIER_MASTER_NAME"])
 combat_rules = SubResource("Resource_combat")
 growth_rules = SubResource("Resource_growth")

@@ -23,6 +23,7 @@ func run_phase(faction_id: StringName) -> void:
 		if order.is_empty():
 			return
 		await _run_unit(order[0])
+		scene.update_turn_label()
 		if flow != null and flow.check_end():
 			return
 		await scene.presenter.pause(seconds_between_units)
