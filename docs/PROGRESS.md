@@ -238,7 +238,7 @@ _Post-M1 change: the game is native 1920×1080 with 64 px cells (16 px art at 4�
 
 - [x] **M7.1** All `@tool` markers with gizmos and Inspector exports; `MapDefinition`. — `MapMarker` base (grid snap, editor gizmo, hidden in game); EnemyUnit/AllyUnit (selected = range preview, stat/proficiency overrides), PlayerSpawn (slots, forced unit), ReinforcementGroup (child unit markers), RegionMarker (MapEvent), SeizeTile/DefendTile/EscapeTile, VillageMarker/ChestMarker; `MapDefinition`; `BattleMap` accessors merge definition + markers + legacy lists; deployment; `UnitRoster` + test roster; `!flag` event conditions. 306 tests.
 - [x] **M7.2** Map template scene; "run current scene" test roster. — `game/maps/_template/map_template.tscn` (definition, 30×17 Terrain, Decoration, Markers groups with 4 spawn slots and an example enemy); F6 plays it with `game/data/units/test_roster.tres`. 308 tests.
-- [ ] **M7.3** Map validator (editor + test).
+- [x] **M7.3** Map validator (editor + test). — `MapValidator`: terrain ids, markers off-grid/off-map/void/impassable/shared cells, factions, unarmed enemies, spawns and deploy count, blocked reinforcement tiles, unreachable objective and visit tiles, boss objective without a boss, dialogue parse errors, unknown dialogue ids, events naming missing units. Editor: `addons/tactics_core/debug/validate_map.gd` (File → Run with the map open). 317 tests.
 - [ ] **M7.4** `docs/LEVEL_DESIGN.md` and `docs/DATA_GUIDE.md`.
 - [ ] **M7.5** `ch00_ruined_crossroads.tscn` and `ch01_the_bridge_deal.tscn` built only from template + markers.
 - [ ] **Checkpoint**
