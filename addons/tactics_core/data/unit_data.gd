@@ -36,6 +36,9 @@ extends TacticsData
 ## The protagonist: defeat means game over.
 @export var is_lord: bool = false
 
+## What awakening grants this unit (null = cannot awaken).
+@export var awakening: AwakeningData
+
 ## Extra unit tags (movement type and class tags are added automatically).
 @export var tags: Array[StringName] = []
 

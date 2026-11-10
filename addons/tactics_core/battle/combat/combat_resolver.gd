@@ -4,6 +4,8 @@ extends RefCounted
 ## deterministic: the same participants and RNG state give the same result.
 ##
 ## Sequence:
+## [br]0. A defender with [member CombatParticipant.strikes_first] (Vantage)
+##    counters first; the attacker then strikes and step 3 is skipped.
 ## [br]1. Attacker strikes (twice with a brave weapon).
 ## [br]2. Stagger check: a hit that the defender survives Staggers it if the
 ##    rules say the attacker's weapon staggers the defender's.
@@ -27,9 +29,14 @@ static func resolve(rules: CombatRules, attacker: CombatParticipant, defender: C
 	var attacker_can_strike: bool = rules.can_strike_at(attacker, distance)
 	var defender_can_counter: bool = rules.can_counter(defender, attacker, distance)
 	var defender_staggered_now: bool = false
+	var defender_first: bool = defender_can_counter and defender.strikes_first and not attacker.strikes_first
+
+	# 0. Vantage: the defender strikes first.
+	if defender_first:
+		_strike_turn(result, rules, units, hp, Strike.Role.DEFENDER, Strike.Kind.COUNTER, 100, rng)
 
 	# 1-2. Attacker strikes, then Stagger check.
-	if attacker_can_strike:
+	if attacker_can_strike and _both_alive(hp):
 		var landed: bool = _strike_turn(result, rules, units, hp, Strike.Role.ATTACKER, Strike.Kind.INITIAL, 100, rng)
 		if landed and hp[Strike.Role.DEFENDER] > 0 and rules.inflicts_stagger(attacker, defender):
 			defender_staggered_now = true
@@ -37,7 +44,7 @@ static func resolve(rules: CombatRules, attacker: CombatParticipant, defender: C
 			_last_strike_by(result, Strike.Role.ATTACKER).staggered = true
 
 	# 3. Counter.
-	if defender_can_counter and _both_alive(hp):
+	if defender_can_counter and not defender_first and _both_alive(hp):
 		_strike_turn(result, rules, units, hp, Strike.Role.DEFENDER, Strike.Kind.COUNTER, 100, rng)
 
 	# 4. Follow-up (the rules guarantee at most one side has the lead).

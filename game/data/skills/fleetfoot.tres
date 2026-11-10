@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="SkillData" format=3]
+
+[ext_resource type="Script" path="res://game/skills/low_hp_bonus_hooks.gd" id="1_l84mi"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/skill_data.gd" id="2_e0767"]
+
+[resource]
+script = ExtResource("2_e0767")
+hooks_script = ExtResource("1_l84mi")
+params = {
+"amount": 20,
+"hp_pct": 50,
+"modifier": "avoid"
+}
+id = &"fleetfoot"
+display_name = "SKILL_FLEETFOOT_NAME"
+description = "SKILL_FLEETFOOT_DESC"

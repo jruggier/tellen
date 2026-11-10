@@ -5,11 +5,14 @@ extends RefCounted
 ## stand on, tags, carried Stagger) and finds valid targets.
 
 
-## A participant for [param unit] standing on [param cell] with [param weapon].
-static func participant(state: BattleState, unit: UnitState, cell: Vector2i, weapon: WeaponData) -> CombatParticipant:
+## A participant for [param unit] standing on [param cell] with [param weapon],
+## with its skills and nearby allies' auras applied. [param opponent] and
+## [param is_initiator] let skills react to the matchup.
+static func participant(state: BattleState, unit: UnitState, cell: Vector2i, weapon: WeaponData,
+		opponent: UnitState = null, is_initiator: bool = true) -> CombatParticipant:
 	var p := CombatParticipant.new()
 	p.unit_id = unit.id
-	p.stats = unit.stats.copy()
+	p.stats = unit.effective_stats().copy()
 	p.weapon = weapon
 	p.terrain = state.grid.terrain_at(cell)
 	p.movement_type = unit.class_data.movement_type if unit.class_data != null else null
@@ -19,14 +22,16 @@ static func participant(state: BattleState, unit: UnitState, cell: Vector2i, wea
 	p.tier = unit.class_data.tier if unit.class_data != null else 0
 	p.staggered = unit.is_staggered()
 	p.is_boss = unit.is_boss
+	if opponent != null:
+		SkillRunner.apply_to_participant(state, unit, cell, p, opponent, is_initiator)
 	return p
 
 
 ## Forecast for [param attacker] attacking [param defender] from
 ## [param from_cell] with [param weapon] (the defender uses its equipped weapon).
 static func forecast(state: BattleState, attacker: UnitState, defender: UnitState, from_cell: Vector2i, weapon: WeaponData) -> CombatForecast:
-	var a: CombatParticipant = participant(state, attacker, from_cell, weapon)
-	var d: CombatParticipant = participant(state, defender, defender.cell, defender.equipped_weapon())
+	var a: CombatParticipant = participant(state, attacker, from_cell, weapon, defender, true)
+	var d: CombatParticipant = participant(state, defender, defender.cell, defender.equipped_weapon(), attacker, false)
 	return CombatForecast.calculate(state.ruleset.combat_rules, a, d, BattleGrid.distance(from_cell, defender.cell))
 
 

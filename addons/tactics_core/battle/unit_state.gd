@@ -51,6 +51,25 @@ var ai_profile: AIProfile = null
 var ai_group: StringName = &""
 ## AGGRO_REGION units start asleep; true once triggered.
 var ai_awake: bool = false
+## Equipped (slotted) skills; class abilities are added by SkillRunner.
+var skills: Array[SkillData] = []
+## Movement points spent this phase (for Canto).
+var moved_cost: int = 0
+## Canto already used this phase.
+var canto_used: bool = false
+## Awakening (spec §9.5): what it grants, and its live state.
+var awakening: AwakeningData = null
+var awakened: bool = false
+## Turns of awakening left (counts down at the unit's phase start).
+var awaken_turns_left: int = 0
+## Turns until the unit may awaken again (cooldown rule).
+var awaken_cooldown: int = 0
+## Charge meter (action-charge rule).
+var awaken_charge: int = 0
+## Awakenings used this map by this unit.
+var awaken_uses: int = 0
+## Signature attack already used during the current awakening.
+var signature_used: bool = false
 
 
 ## Creates a named unit from [param data] at its authored level.
@@ -71,6 +90,8 @@ static func from_unit_data(unit_id: StringName, data: UnitData, ruleset: Ruleset
 		unit.proficiency_points[proficiency_id] = ruleset.proficiency_rules.points_for_level(data.proficiencies[proficiency_id]) if ruleset.proficiency_rules != null else 0
 	unit.tags = data.tags.duplicate()
 	unit.is_lord = data.is_lord
+	unit.skills = data.skills.duplicate()
+	unit.awakening = data.awakening
 	return unit
 
 
@@ -104,12 +125,20 @@ func get_display_name() -> String:
 	return class_data.get_display_name() if class_data != null else String(id)
 
 
+## Stats used in combat and movement: base stats plus awakening modifiers.
+## Maximum HP always comes from the base stats.
+func effective_stats() -> StatBlock:
+	if awakened and awakening != null and awakening.stat_modifiers != null:
+		return stats.plus(awakening.stat_modifiers)
+	return stats
+
+
 func max_hp(ruleset: Ruleset) -> int:
 	return stats.get_value(ruleset.hp_stat)
 
 
 func mov(ruleset: Ruleset) -> int:
-	return stats.get_value(ruleset.mov_stat)
+	return effective_stats().get_value(ruleset.mov_stat)
 
 
 func movement_type_id() -> StringName:
@@ -234,4 +263,14 @@ func copy() -> UnitState:
 	other.ai_profile = ai_profile
 	other.ai_group = ai_group
 	other.ai_awake = ai_awake
+	other.skills = skills.duplicate()
+	other.moved_cost = moved_cost
+	other.canto_used = canto_used
+	other.awakening = awakening
+	other.awakened = awakened
+	other.awaken_turns_left = awaken_turns_left
+	other.awaken_cooldown = awaken_cooldown
+	other.awaken_charge = awaken_charge
+	other.awaken_uses = awaken_uses
+	other.signature_used = signature_used
 	return other

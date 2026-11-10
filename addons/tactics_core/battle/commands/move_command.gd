@@ -43,6 +43,7 @@ func execute(state: BattleState) -> void:
 	_awake_before.clear()
 	for other: UnitState in state.all_units():
 		_awake_before[other.id] = other.ai_awake
+	unit.moved_cost = RangeCalculator.movement(state, unit).cost_to(destination)
 	state.move_unit(unit_id, destination)
 	unit.has_moved = true
 	fired_regions = TriggerRules.on_unit_moved(state, state.trigger_regions, unit)
@@ -56,6 +57,7 @@ func undo(state: BattleState) -> void:
 	var unit: UnitState = state.get_unit(unit_id)
 	state.move_unit(unit_id, _from)
 	unit.has_moved = false
+	unit.moved_cost = 0
 	state.flags = _flags_before.duplicate(true)
 	for other: UnitState in state.all_units():
 		other.ai_awake = _awake_before.get(other.id, other.ai_awake)

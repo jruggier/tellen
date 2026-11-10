@@ -54,6 +54,8 @@ var defender: SideForecast = SideForecast.new()
 var stagger_on_hit: bool = false
 ## Distance between the two units.
 var distance: int = 1
+## The defender strikes before the attacker (Vantage-style skill).
+var defender_strikes_first: bool = false
 
 
 ## Forecast for [param attacker] attacking [param defender] from
@@ -70,6 +72,7 @@ static func calculate(rules: CombatRules, attacker_p: CombatParticipant, defende
 	forecast.stagger_on_hit = rules.can_strike_at(attacker_p, attack_distance) and rules.inflicts_stagger(attacker_p, defender_p)
 	_fill_side(forecast.attacker, rules, attacker_p, defender_p, rules.can_strike_at(attacker_p, attack_distance))
 	_fill_side(forecast.defender, rules, defender_p, attacker_p, rules.can_counter(defender_p, attacker_p, attack_distance))
+	forecast.defender_strikes_first = forecast.defender.can_strike and defender_p.strikes_first and not attacker_p.strikes_first
 	if not rules.defender_can_follow_up():
 		forecast.defender.follow_up_percent = 0
 		forecast.defender.follow_up_damage = 0
@@ -103,11 +106,17 @@ static func _predict(forecast: CombatForecast, rules: CombatRules) -> void:
 	var d: SideForecast = forecast.defender
 	var a_hp: int = a.hp
 	var d_hp: int = d.hp
-	# Order: attacker turn, defender counter, follow-up (only one side can lead).
-	if a.can_strike:
-		d_hp -= a.damage * a.strikes_per_turn
-	if d.can_strike and d_hp > 0:
+	# Order: attacker turn, defender counter (or the reverse for Vantage),
+	# then the follow-up (only one side can lead).
+	if forecast.defender_strikes_first:
 		a_hp -= d.damage * d.strikes_per_turn
+		if a.can_strike and a_hp > 0:
+			d_hp -= a.damage * a.strikes_per_turn
+	else:
+		if a.can_strike:
+			d_hp -= a.damage * a.strikes_per_turn
+		if d.can_strike and d_hp > 0:
+			a_hp -= d.damage * d.strikes_per_turn
 	if a_hp > 0 and d_hp > 0:
 		if a.follow_up_percent > 0:
 			d_hp -= a.follow_up_damage * a.strikes_per_turn

@@ -75,8 +75,8 @@ func can_strike_at(participant: CombatParticipant, distance: int) -> bool:
 
 
 ## True if [param defender] can counter [param attacker] at [param distance].
-func can_counter(defender: CombatParticipant, _attacker: CombatParticipant, distance: int) -> bool:
-	return can_strike_at(defender, distance) and not defender.weapon.cannot_counter
+func can_counter(defender: CombatParticipant, attacker: CombatParticipant, distance: int) -> bool:
+	return can_strike_at(defender, distance) and not defender.weapon.cannot_counter and not attacker.prevents_counter
 
 
 ## True if a hit from [param attacker] (the initiator) Staggers [param defender]

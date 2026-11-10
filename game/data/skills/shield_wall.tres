@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="SkillData" format=3]
+
+[ext_resource type="Script" path="res://game/skills/aura_hooks.gd" id="1_tv27j"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/skill_data.gd" id="2_0niuk"]
+
+[resource]
+script = ExtResource("2_0niuk")
+hooks_script = ExtResource("1_tv27j")
+params = {
+"amount": 2,
+"modifier": "defense",
+"radius": 1
+}
+id = &"shield_wall"
+display_name = "SKILL_SHIELD_WALL_NAME"
+description = "SKILL_SHIELD_WALL_DESC"

@@ -71,5 +71,9 @@ func _attack(unit: UnitState, plan: AIPlanner.Plan) -> void:
 		return
 	await scene.presenter.play_combat(attack.result, scene.unit_views[unit.id], scene.unit_views[target.id],
 		unit_cell, target_cell, unit.max_hp(ruleset), target.max_hp(ruleset))
+	for effect: Dictionary in attack.skill_effects:
+		var owner: UnitState = state.get_unit(StringName(effect["unit"]))
+		if owner != null and int(effect.get("heal", 0)) > 0:
+			scene.presenter.popup_at_cell(owner.cell, "%s +%d" % [tr(str(effect.get("text", ""))), int(effect["heal"])], UiStyle.GOOD, 5.0)
 	scene.refresh_views()
 	await scene.input.show_progress(attack.reports.values())

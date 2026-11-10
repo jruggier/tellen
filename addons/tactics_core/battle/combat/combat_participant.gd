@@ -49,6 +49,12 @@ var staggered: bool = false
 ## True for bosses (EXP bonus, AI priority).
 var is_boss: bool = false
 
+## Strikes before the attacker when defending (Vantage-style skills).
+var strikes_first: bool = false
+
+## Cannot be countered (signature attacks).
+var prevents_counter: bool = false
+
 ## Flat combat modifiers, keyed by the MOD_* constants.
 var modifiers: Dictionary[StringName, int] = {}
 

@@ -18,6 +18,8 @@ var result: CombatResult
 ## Unit id → what it gained.
 var reports: Dictionary[StringName, ProgressionService.Report] = {}
 var defeats: Array[DefeatRules.Outcome] = []
+## Visible skill effects after combat ({"unit", "heal", "text"}).
+var skill_effects: Array[Dictionary] = []
 
 
 func _init(attacking_unit: StringName = &"", target_unit: StringName = &"", weapon_slot: int = 0) -> void:
@@ -50,8 +52,8 @@ func execute(state: BattleState) -> void:
 	var rules: CombatRules = state.ruleset.combat_rules
 	attacker.equip_slot(slot_index)
 	var weapon: WeaponData = attacker.equipped_weapon()
-	var a: CombatParticipant = CombatContext.participant(state, attacker, attacker.cell, weapon)
-	var d: CombatParticipant = CombatContext.participant(state, defender, defender.cell, defender.equipped_weapon())
+	var a: CombatParticipant = CombatContext.participant(state, attacker, attacker.cell, weapon, defender, true)
+	var d: CombatParticipant = CombatContext.participant(state, defender, defender.cell, defender.equipped_weapon(), attacker, false)
 	result = CombatResolver.resolve(rules, a, d, BattleGrid.distance(attacker.cell, defender.cell), state.rng)
 
 	# Carried Stagger is used up by this combat (NEXT_COMBAT rule).
@@ -70,6 +72,8 @@ func execute(state: BattleState) -> void:
 	if result.attacker_defeated():
 		defeats.append(DefeatRules.apply(state, attacker, defender))
 
+	skill_effects.append_array(SkillRunner.combat_end(state, attacker, defender, result, Strike.Role.ATTACKER))
+	skill_effects.append_array(SkillRunner.combat_end(state, defender, attacker, result, Strike.Role.DEFENDER))
 	_progress(state, attacker, defender, Strike.Role.ATTACKER, weapon)
 	_progress(state, defender, attacker, Strike.Role.DEFENDER, d.weapon)
 	attacker.has_moved = true

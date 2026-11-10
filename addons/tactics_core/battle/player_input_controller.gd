@@ -24,7 +24,7 @@ signal end_turn_requested
 ## The player picked a pause-menu entry other than End Turn.
 signal pause_option_chosen(option_id: StringName)
 
-enum State { IDLE, SELECTED, MOVING, ACTION_MENU, WEAPON_MENU, TARGETING, ITEM_MENU, ITEM_ACTIONS, TRADING, ANIMATING, LEVEL_UP, INSPECT, PAUSE_MENU, DISABLED }
+enum State { IDLE, SELECTED, MOVING, ACTION_MENU, WEAPON_MENU, TARGETING, ITEM_MENU, ITEM_ACTIONS, TRADING, ANIMATING, LEVEL_UP, INSPECT, PAUSE_MENU, DISABLED, CANTO }
 enum TargetMode { ATTACK, HEAL, TRADE }
 
 var state: State = State.DISABLED
@@ -170,6 +170,12 @@ func confirm() -> void:
 			_level_up_closed.emit()
 		State.INSPECT:
 			_deselect()
+		State.CANTO:
+			if cursor.cell == _selected.cell or not _move_range.can_stop_at(cursor.cell):
+				if cursor.cell == _selected.cell:
+					_end_turn_for_unit()
+				return
+			_do_canto_move(cursor.cell)
 
 
 ## Cancel / back.
@@ -209,6 +215,8 @@ func cancel() -> void:
 				_open_action_menu()
 		State.INSPECT, State.PAUSE_MENU:
 			_deselect()
+		State.CANTO:
+			_end_turn_for_unit()
 
 
 ## Starts the player's phase: input on, cursor on the first ready unit.
@@ -480,8 +488,8 @@ func _show_target() -> void:
 		TargetMode.ATTACK:
 			var weapon: WeaponData = _selected.inventory[_weapon_slot].weapon()
 			var forecast: CombatForecast = CombatContext.forecast(battle, _selected, target, _selected.cell, weapon)
-			var a: CombatParticipant = CombatContext.participant(battle, _selected, _selected.cell, weapon)
-			var d: CombatParticipant = CombatContext.participant(battle, target, target.cell, target.equipped_weapon())
+			var a: CombatParticipant = CombatContext.participant(battle, _selected, _selected.cell, weapon, target, true)
+			var d: CombatParticipant = CombatContext.participant(battle, target, target.cell, target.equipped_weapon(), _selected, false)
 			var rules: CombatRules = battle.ruleset.combat_rules
 			var details: Array[Dictionary] = [rules.forecast_details(a, d), rules.forecast_details(d, a)]
 			var defender_weapon: WeaponData = target.equipped_weapon()
@@ -537,8 +545,13 @@ func _do_attack(target: UnitState) -> void:
 			toast.show_message(tr("UI_ITEM_RECEIVED") % [controller.state.get_unit(outcome.by_unit_id).get_display_name(), item.get_display_name()])
 		for item: ItemData in outcome.items_lost:
 			toast.show_message(tr("UI_ITEM_LOST") % item.get_display_name())
+	for effect: Dictionary in command.skill_effects:
+		var owner: UnitState = controller.state.get_unit(StringName(effect["unit"]))
+		if owner != null and int(effect.get("heal", 0)) > 0:
+			presenter.popup_at_cell(owner.cell, "%s +%d" % [tr(str(effect.get("text", ""))), int(effect["heal"])], UiStyle.GOOD, 5.0)
+	_refresh_views()
 	await show_progress(command.reports.values())
-	_finish_action()
+	_finish_action(true)
 
 
 func _do_heal(target: UnitState) -> void:
@@ -552,7 +565,7 @@ func _do_heal(target: UnitState) -> void:
 	await presenter.pause(0.6)
 	_refresh_views()
 	await show_progress([command.report])
-	_finish_action()
+	_finish_action(true)
 
 
 ## EXP popups, proficiency toasts and level-up panels, in order. Level-up
@@ -578,7 +591,44 @@ func show_progress(reports: Array) -> void:
 			_set_state(previous)
 
 
-func _finish_action() -> void:
+## Ends the unit's turn. With [param allow_canto], a unit that still has
+## Canto movement may move again first.
+func _finish_action(allow_canto: bool = false) -> void:
+	_refresh_views()
+	if allow_canto and _selected != null and CantoMoveCommand.remaining(controller.state, _selected) > 0:
+		_start_canto()
+		return
+	_deselect()
+	action_finished.emit()
+
+
+func _start_canto() -> void:
+	_move_range = CantoMoveCommand.range_for(controller.state, _selected)
+	var cells: Dictionary[Vector2i, bool] = {}
+	for cell: Vector2i in _move_range.stop_cells():
+		cells[cell] = true
+	overlay.show_unit_ranges(cells, {})
+	cursor.set_cell(_selected.cell)
+	_set_state(State.CANTO)
+
+
+func _do_canto_move(cell: Vector2i) -> void:
+	var command := CantoMoveCommand.new(_selected.id, cell)
+	if not controller.execute(command):
+		return
+	overlay.clear_unit_ranges()
+	path_arrow.clear()
+	_set_state(State.MOVING)
+	var view: UnitView = unit_views.get(_selected.id)
+	if view != null and view.seconds_per_cell > 0.0:
+		view.walk(command.path)
+		await view.walk_finished
+	elif view != null:
+		view.place_at(cell)
+	_end_turn_for_unit()
+
+
+func _end_turn_for_unit() -> void:
 	_refresh_views()
 	_deselect()
 	action_finished.emit()
@@ -646,7 +696,7 @@ func _do_use_item() -> void:
 		var definition: StatDefinition = controller.state.ruleset.get_stat(stat_id)
 		toast.show_message("%s  %s +%d" % [_selected.get_display_name(), definition.get_abbreviation() if definition != null else String(stat_id), command.boosts.get_value(stat_id)])
 	await presenter.pause(0.6)
-	_finish_action()
+	_finish_action(true)
 
 
 # Trading ----------------------------------------------------------------------------
@@ -669,7 +719,7 @@ func _on_trade_requested(left_slot: int, right_slot: int) -> void:
 func _on_cursor_moved(cell: Vector2i) -> void:
 	if camera != null:
 		camera.follow(cursor.cell_center(cell))
-	if state == State.SELECTED and _move_range != null:
+	if (state == State.SELECTED or state == State.CANTO) and _move_range != null:
 		if _move_range.can_stop_at(cell):
 			path_arrow.set_path(_move_range.path_to(cell))
 		else:
@@ -730,5 +780,5 @@ func _proficiency_name(proficiency_id: StringName) -> String:
 
 func _set_state(new_state: State) -> void:
 	state = new_state
-	cursor.input_enabled = new_state in [State.IDLE, State.SELECTED, State.INSPECT]
+	cursor.input_enabled = new_state in [State.IDLE, State.SELECTED, State.INSPECT, State.CANTO]
 	state_changed.emit(new_state)

@@ -187,3 +187,13 @@ DEFEAT_LORD,The protagonist is defeated
 DEFEAT_ALL_UNITS,All units are defeated
 DEFEAT_UNIT,%s is defeated
 DEFEAT_TURN_LIMIT,Turn %d ends
+SKILL_SHIELD_WALL_NAME,Shield Wall
+SKILL_SHIELD_WALL_DESC,Adjacent allies gain +2 Def.
+SKILL_FLEETFOOT_NAME,Fleetfoot
+SKILL_FLEETFOOT_DESC,+20 Avoid while HP is 50% or less.
+SKILL_VIGIL_NAME,Vigil
+SKILL_VIGIL_DESC,Strikes first when attacked during the enemy phase.
+SKILL_SECOND_WIND_NAME,Second Wind
+SKILL_SECOND_WIND_DESC,Restores 20% of max HP after defeating an enemy.
+UI_SKILLS,Skills
+UI_HINT_CANTO,Canto: confirm a tile to move again    Cancel: stay

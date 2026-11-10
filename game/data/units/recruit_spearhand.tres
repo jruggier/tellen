@@ -8,6 +8,7 @@
 [ext_resource type="Script" path="res://addons/tactics_core/data/stat_block.gd" id="6_op740"]
 [ext_resource type="Script" path="res://addons/tactics_core/data/unit_data.gd" id="7_d5k1q"]
 [ext_resource type="Script" path="res://addons/tactics_core/data/skill_data.gd" id="8_vr77t"]
+[ext_resource type="Resource" path="res://game/data/skills/vigil.tres" id="9_gnune"]
 
 [sub_resource type="Resource" id="Resource_yvkvi"]
 script = ExtResource("6_op740")
@@ -42,6 +43,7 @@ class_data = ExtResource("1_vqiys")
 personal_base = SubResource("Resource_yvkvi")
 personal_growths = SubResource("Resource_siyg4")
 inventory = Array[ExtResource("3_wx68a")]([ExtResource("4_dfbc3"), ExtResource("5_l1hh1")])
+skills = Array[ExtResource("8_vr77t")]([ExtResource("9_gnune")])
 proficiencies = Dictionary[StringName, int]({
 &"lance": 1
 })

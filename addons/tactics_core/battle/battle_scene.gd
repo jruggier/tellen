@@ -334,6 +334,7 @@ func _update_hint() -> void:
 		PlayerInputController.State.INSPECT: "UI_HINT_INSPECT",
 		PlayerInputController.State.PAUSE_MENU: "UI_HINT_MENU",
 		PlayerInputController.State.DISABLED: "",
+		PlayerInputController.State.CANTO: "UI_HINT_CANTO",
 	}
 	var key: String = keys[input.state]
 	hint_label.text = tr(key) if not key.is_empty() else ""

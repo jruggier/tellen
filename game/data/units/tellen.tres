@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://addons/tactics_core/data/stat_block.gd" id="8_q1qm8"]
 [ext_resource type="Script" path="res://addons/tactics_core/data/unit_data.gd" id="9_dx2o8"]
 [ext_resource type="Script" path="res://addons/tactics_core/data/skill_data.gd" id="10_3sj40"]
+[ext_resource type="Resource" path="res://game/data/skills/second_wind.tres" id="11_1eaay"]
 
 [sub_resource type="Resource" id="Resource_estbl"]
 script = ExtResource("8_q1qm8")
@@ -45,6 +46,7 @@ class_data = ExtResource("2_1eaay")
 personal_base = SubResource("Resource_estbl")
 personal_growths = SubResource("Resource_12vsv")
 inventory = Array[ExtResource("5_tbiyf")]([ExtResource("6_dompx"), ExtResource("7_1ms1o")])
+skills = Array[ExtResource("10_3sj40")]([ExtResource("11_1eaay")])
 proficiencies = Dictionary[StringName, int]({
 &"sword": 1
 })

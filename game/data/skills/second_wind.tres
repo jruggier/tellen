@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="SkillData" format=3]
+
+[ext_resource type="Script" path="res://game/skills/heal_on_kill_hooks.gd" id="1_jsget"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/skill_data.gd" id="2_jmcyv"]
+
+[resource]
+script = ExtResource("2_jmcyv")
+hooks_script = ExtResource("1_jsget")
+params = {
+"pct": 20
+}
+id = &"second_wind"
+display_name = "SKILL_SECOND_WIND_NAME"
+description = "SKILL_SECOND_WIND_DESC"

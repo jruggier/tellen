@@ -24,6 +24,8 @@ class PhaseReport:
 	var healed: Dictionary[StringName, int] = {}
 	## Units that arrived as reinforcements.
 	var spawned: Array[StringName] = []
+	## Visible skill effects from phase-start hooks.
+	var skill_effects: Array[Dictionary] = []
 
 
 ## Starts turn 1 with the first faction's phase.
@@ -41,6 +43,8 @@ static func begin_phase(state: BattleState) -> PhaseReport:
 	report.turn = state.turn
 	report.spawned = ReinforcementRules.spawn_due(state)
 	for unit: UnitState in state.units_of(report.faction_id):
+		unit.moved_cost = 0
+		unit.canto_used = false
 		if report.spawned.has(unit.id):
 			continue
 		unit.has_moved = false
@@ -51,6 +55,7 @@ static func begin_phase(state: BattleState) -> PhaseReport:
 			var amount: int = mini(max_hp - unit.current_hp, maxi(1, floori(max_hp * terrain.heal_percent / 100.0)))
 			unit.current_hp += amount
 			report.healed[unit.id] = amount
+	report.skill_effects = SkillRunner.phase_start(state, report.faction_id)
 	state.mark_changed()
 	return report
 

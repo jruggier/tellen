@@ -15,3 +15,23 @@ extends TacticsData
 
 ## Free-form tags (e.g. "personality", "awakened_only").
 @export var tags: Array[StringName] = []
+
+## Numbers the hooks script reads (e.g. {"radius": 1, "amount": 2}), so one
+## script can serve several tuned variants.
+@export var params: Dictionary = {}
+
+
+func validate() -> PackedStringArray:
+	var problems: PackedStringArray = super()
+	if hooks_script != null and not _extends_skill_hooks(hooks_script):
+		problems.append("%s: hooks_script must extend SkillHooks" % _label())
+	return problems
+
+
+static func _extends_skill_hooks(script: Script) -> bool:
+	var current: Script = script
+	while current != null:
+		if current.get_global_name() == &"SkillHooks":
+			return true
+		current = current.get_base_script()
+	return false

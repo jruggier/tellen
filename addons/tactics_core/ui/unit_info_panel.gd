@@ -34,6 +34,12 @@ func show_unit(unit: UnitState, state: BattleState) -> void:
 	_box.add_child(UiStyle.label("%s %d / %d" % [tr("FORECAST_HP"), unit.current_hp, unit.max_hp(ruleset)], 26, hp_color))
 	var weapon: WeaponData = unit.equipped_weapon()
 	_box.add_child(UiStyle.label(weapon.get_display_name() if weapon != null else tr("UI_UNARMED"), 24))
+	var skills: Array[SkillData] = SkillRunner.active_skills(unit)
+	if not skills.is_empty():
+		var names: PackedStringArray = []
+		for skill: SkillData in skills:
+			names.append(skill.get_display_name())
+		_box.add_child(UiStyle.label("%s: %s" % [tr("UI_SKILLS"), ", ".join(names)], 22, UiStyle.TEXT_DIM))
 	if unit.is_staggered():
 		_box.add_child(UiStyle.label(tr("UI_STATUS_STAGGERED"), 24, UiStyle.WARN))
 	if unit.is_boss:

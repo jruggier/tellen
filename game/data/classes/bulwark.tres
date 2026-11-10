@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="ClassData" format=3]
 
 [ext_resource type="Script" path="res://addons/tactics_core/data/skill_data.gd" id="1_hmvrp"]
+[ext_resource type="Resource" path="res://game/data/skills/shield_wall.tres" id="2_6m8n5"]
 [ext_resource type="Script" path="res://addons/tactics_core/data/stat_block.gd" id="2_eksxo"]
 [ext_resource type="Resource" path="res://game/data/movement_types/heavy.tres" id="3_6m8n5"]
 [ext_resource type="Script" path="res://addons/tactics_core/data/class_data.gd" id="4_nl5vh"]
@@ -80,6 +81,7 @@ generic_growths = SubResource("Resource_33ifw")
 usable_weapon_types = Array[ExtResource("5_tgr6n")]([ExtResource("6_cr7o4")])
 primary_proficiency = &"lance"
 secondary_proficiencies = Array[StringName]([&"heavy"])
+abilities = Array[ExtResource("1_hmvrp")]([ExtResource("2_6m8n5")])
 tags = Array[StringName]([&"heavy"])
 id = &"bulwark"
 display_name = "CLASS_BULWARK_NAME"
