@@ -1,0 +1,94 @@
+# Decisions
+
+Newest entries at the bottom of each section. Never rewrite a past entry; add a correction below it.
+
+---
+
+## Defaults chosen — confirm with Jake
+
+From spec §18. Each is a ruleset flag or value, so changing one is a data edit, not a code change.
+
+| # | Default | Ruleset field (added in M1/M5) | Confirmed? |
+| --- | --- | --- | --- |
+| 1 | Weight penalty applies to Speed (avoid, crit) **and** Skill (follow-up comparison) | `weight_affects_speed`, `weight_affects_skill_for_followups` | ☐ |
+| 2 | Effective weapons multiply might ×3 | `effective_might_multiplier` | ☐ |
+| 3 | Hit rolls use 1RN (shown = real) | `true_hit_mode = ONE_RN` | ☐ |
+| 4 | Growth mode RANDOM; FIXED and HYBRID available | `growth_mode` | ☐ |
+| 5 | Stagger blocks follow-ups for the current combat and the Staggered unit's next combat only; never blocks counters | `stagger_duration = NEXT_COMBAT` | ☐ |
+| 6 | Chain attacks ON, 10% max HP, can kill | `chain_attacks_enabled`, `chain_damage_pct`, `chain_can_kill` | ☐ |
+| 7 | Awakening = cooldown rule (3-turn duration, 3-turn cooldown, 3 uses per map, army-wide) | `awakening_rule` | ☐ |
+| 8 | Canto on Ground classes only; zone of control off | class abilities; `zone_of_control` | ☐ |
+| 9 | Single continuous level track (cap 40); class change gated by proficiency | `level_cap` | ☐ |
+| 10 | Defeated player units retreat; protagonist defeat = game over | `defeat_mode` | ☐ |
+
+### Added during M0
+
+| # | Default | Where | Confirmed? |
+| --- | --- | --- | --- |
+| 11 | Input bindings (table below) | Project Settings → Input Map | ☐ |
+| 12 | Added a `debug_console` input action (F4) for the §14 debug console; §1's action list didn't include one | Input Map | ☐ |
+| 13 | Mouse left = `confirm`, mouse right = `cancel` | Input Map | ☐ |
+
+**Input bindings (M0)**
+
+| Action | Keyboard | Gamepad | Mouse |
+| --- | --- | --- | --- |
+| `confirm` | Z, Enter, Space | A (bottom) | Left click |
+| `cancel` | X, Esc, Backspace | B (right) | Right click |
+| `menu` | C, Tab | Start | |
+| `info` | R | Y (top) | |
+| `cursor_up/down/left/right` | Arrows, WASD | D-pad, left stick | (cursor follows mouse, M2) |
+| `next_unit` / `prev_unit` | E / Q | RB / LB | |
+| `toggle_threat` | T | X (left) | |
+| `end_turn` | F | Back/Select | |
+| `speed_up` | Shift (hold) | Right trigger | |
+| `debug_overlay` | F3 | | |
+| `debug_console` | F4 | | |
+
+---
+
+## Decisions made
+
+### M0 (2026-11-10)
+
+- **Engine version: Godot 4.7.2** (`~/Downloads/Godot 3.app`). The project was created with 4.7, so 4.6 (`/Applications/Godot 2.app`) is too old to open it safely. *(Jake)*
+- **Renderer: Forward+** instead of the Mobile renderer the project was created with. Desktop is the target (§16 rules out mobile). *(Jake)*
+- **Git: commit after every task, push only at Checkpoints.** *(Jake)*
+- **`CLAUDE.md` imports `Tellen-Claude.md`** so the spec loads automatically each session; the spec keeps its filename. *(Jake)*
+- **Test framework: GUT 9.7.1**, the release for Godot 4.7 (`godot_4_7` branch). A `.gutconfig.json` adds subfolder scanning so the spec's test command finds `tests/unit/...`.
+- **Typed-GDScript enforcement:** `untyped_declaration` is an error. Godot's `directory_rules` excludes `res://addons` (third-party code we don't control) but re-includes `res://addons/tactics_core`. `game/` and `tests/` are covered by default.
+- **Pixel settings:** nearest-neighbour texture filter, 2D transforms snapped to pixels, font antialiasing off. 1920×1080 is exactly 8× the 240×135 base.
+- **Autoload registration:** written into `project.godot` and also done by the plugin's `_enable_plugin`, so copying `tactics_core` into another project and enabling it is enough.
+- **Event payloads use ids, not Node references** (`unit_id: StringName`, cells as `Vector2i`). This keeps the model/view split (§2.4) and makes events loggable. Signals for combat results, level-ups and awakening are added in the milestone that creates their types (M1/M3/M5) rather than declared early with loose types.
+- **RNG streams are derived as `hash("<master_seed>:<stream>")`** and their 64-bit states are saved as strings, because JSON numbers are doubles and would corrupt them. A test round-trips through JSON.
+- **`SaveMigrator` exists from M0** (§2a.2). It rejects data newer than the current version or with a missing step instead of loading it half-migrated.
+- **Log level** is a project setting (`tactics_core/log/level`). DEBUG/INFO are always off in release builds. WARN and above are forwarded to `TacticsEvents.log_emitted` for the future debug console.
+- **M0.1 and M0.2 share one commit.** The project settings register the autoloads, so committing the settings without the autoload scripts would leave a broken project.
+
+---
+
+## Prior prototype audit (M0.4)
+
+**Source:** `GAME DESIGN/2026/Fire Emblem Prototype/Fire Emblem Prototype/`, a separate Godot 4.6 project (30 sessions, May 2026, ~12.8k lines). It is **not inside this repo**, so nothing will be deleted. The question is what to bring in. Nothing is copied yet except `tools/` (the spec says to keep the generators).
+
+**Why most code doesn't carry over:** its design predates this spec (Luck, Break, Speed doubling, Engage/Sigils, letter weapon ranks, 4-slot inventory). Its architecture also conflicts with §2: game data lives in GDScript dictionaries rather than Resources, combat math is one autoload mixing rules with formulas, `battle.gd` is a 1,945-line scene script that holds state and presentation together, there are no tests or commands, and RNG isn't seeded. Porting code would cost more than rebuilding it to spec. Its value is **assets, tools, and proven UX ideas**.
+
+| Item | Old location | Recommendation |
+| --- | --- | --- |
+| Sprite/SFX generators | `tools/*.py`, `palette.py` | **Kept** (copied in M0). Repoint output paths to `game/` asset folders when first used (M2), and drop the legacy `gen_unit_sprites.py` once v2 covers everything. |
+| Pixelify Sans font (OFL) | `Pixelify_Sans/` | **Keep.** Copy to `game/ui/fonts/` in M2/M3 when the theme is built, if it reads well at 240×135. |
+| Terrain tiles PNG + tileset | `assets/tilesets/` | **Migrate** in M2.1: reuse the art, but rebuild the TileSet with a `terrain_id` custom data layer for the §7.2 terrain list (Ruins, Hill, Fort, Road and Doorway are new). |
+| Unit sprites (player/enemy pairs) | `assets/sprites/*.png` | **Keep as placeholders** in M2.3. The class names are FE-flavoured (Swordmaster, Halberdier, Wyvern); map them to the new class ids through data. |
+| SFX (20 wav) + battle BGM | `assets/audio/` | **Keep as placeholders** (regenerable with `gen_sfx.py`). Rename `engage.wav` → awaken. |
+| Combat math | `autoloads/combat_calc.gd` | **Rebuild.** Formulas differ (Luck, triangle ±15, Speed doubling). Replaced by `CombatRules` + the §13.2 fixtures in M1. |
+| Grid/pathfinding | `scripts/battle/grid.gd` (BFS + A*) | **Rebuild.** The spec requires Dijkstra with per-movement-type costs and a cached threat map (M2.2). |
+| Cursor with hold-to-repeat, path arrow, phase banner, damage popups, EXP bar | `scripts/battle/cursor.gd`, `path_arrow.gd`, `scripts/ui/*.gd` | **Reference for UX feel only.** Rewrite as framework widgets in M2–M4 driven by events. Their feel was already playtested, so match it. |
+| Dialogue box with branching choices and cutscenes | `scripts/ui/dialog_box.gd`, `data/dialog_data.gd` | **Rebuild** on the `.dlg` format in M6. Old scene text could be converted to `.dlg` if you want to keep any of it. |
+| Battle prep, shop, convoy, map select overworld | `scripts/ui/battle_prep.gd`, `shop.gd`, `convoy.gd`, `map_select.gd` | **Leave out** (§16: shops, convoy, overworld are out of scope). Battle prep may come back later. |
+| Sigils / Engage attacks (Astra Storm, Galeforce, ...) | `data/sigil_data.gd` | **Leave out the code.** The designs can seed `UnitData.awakening` signature attacks and the future `SigilData` stub (M5). |
+| Maps 01–06 layouts | `maps/`, `scripts/maps/` | **Leave out.** ch00/ch01 are new maps built with the M7 template. |
+
+**Questions for Jake**
+1. OK with the "rebuild, keep assets and tools" approach above?
+2. Should any of the old dialogue or characters (Ren, Garet, ...) carry over, or is the Ruined Crossroads cast (Tellen, Sable, Gid) a clean slate?
+3. Pixelify Sans as the UI font, or try others when the theme is built?
