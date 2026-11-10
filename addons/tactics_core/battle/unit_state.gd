@@ -235,6 +235,81 @@ func has_inventory_space(ruleset: Ruleset) -> bool:
 	return inventory.size() < ruleset.inventory_size
 
 
+## Progress that carries to the next map (JSON-safe): class, level, EXP,
+## stats, inventory, proficiencies, growth counters and skills. HP is not
+## kept: units start each map healthy.
+func to_record() -> Dictionary:
+	var items: Array[Array] = []
+	for slot: InventorySlot in inventory:
+		items.append([String(slot.item.id), slot.uses])
+	var skill_ids: Array[String] = []
+	for skill: SkillData in skills:
+		skill_ids.append(String(skill.id))
+	return {
+		"class": String(class_data.id) if class_data != null else "",
+		"level": level,
+		"experience": experience,
+		"stats": stats.to_dict(),
+		"inventory": items,
+		"proficiencies": _string_keys(proficiencies),
+		"proficiency_points": _string_keys(proficiency_points),
+		"growth_counters": _string_keys(growth_counters),
+		"skills": skill_ids,
+	}
+
+
+## Restores progress written by [method to_record]. Unknown ids (renamed or
+## removed content) are skipped with a warning.
+func apply_record(record: Dictionary, ruleset: Ruleset) -> void:
+	var class_id: StringName = StringName(str(record.get("class", "")))
+	var found_class: ClassData = DataCatalog.all_of("ClassData").get(class_id, null) as ClassData
+	if found_class != null:
+		class_data = found_class
+	elif class_id != &"":
+		TacticsLog.warn("Campaign", "'%s': class '%s' not found; keeping %s" % [id, class_id, class_data.id if class_data != null else &"none"])
+	level = int(record.get("level", level))
+	experience = int(record.get("experience", 0))
+	stats = StatBlock.from_values(record.get("stats", {}))
+	current_hp = max_hp(ruleset)
+	inventory.clear()
+	for entry: Variant in record.get("inventory", []):
+		var pair: Array = entry as Array
+		var item: ItemData = DataCatalog.item(str(pair[0]))
+		if item == null:
+			TacticsLog.warn("Campaign", "'%s': item '%s' not found; dropped" % [id, pair[0]])
+			continue
+		var slot: InventorySlot = InventorySlot.of(item)
+		slot.uses = int(pair[1])
+		inventory.append(slot)
+	proficiencies = _int_dict(record.get("proficiencies", {}))
+	proficiency_points = _int_dict(record.get("proficiency_points", {}))
+	growth_counters = {}
+	var counters: Dictionary = record.get("growth_counters", {})
+	for key: Variant in counters:
+		growth_counters[StringName(str(key))] = int(counters[key])
+	var restored_skills: Array[SkillData] = []
+	var catalog: Dictionary = DataCatalog.all_of("SkillData")
+	for skill_id: Variant in record.get("skills", []):
+		var skill: SkillData = catalog.get(StringName(str(skill_id)), null) as SkillData
+		if skill != null:
+			restored_skills.append(skill)
+	skills = restored_skills
+
+
+static func _string_keys(source: Dictionary) -> Dictionary:
+	var result: Dictionary = {}
+	for key: Variant in source:
+		result[str(key)] = source[key]
+	return result
+
+
+static func _int_dict(source: Dictionary) -> Dictionary[StringName, int]:
+	var result: Dictionary[StringName, int] = {}
+	for key: Variant in source:
+		result[StringName(str(key))] = int(source[key])
+	return result
+
+
 ## An independent copy (for snapshots and AI simulation).
 func copy() -> UnitState:
 	var other := UnitState.new()

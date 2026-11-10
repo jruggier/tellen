@@ -232,3 +232,6 @@ UI_REWIND,Rewind (%d)
 UI_REWIND_TITLE,Rewind to... (%d left)
 UI_REWIND_END_TURN,End turn
 UI_REWIND_DONE,Rewound to turn %d. %d rewinds left.
+UI_RESULT_CONTINUE,Confirm: continue to the next chapter
+UI_RESULT_RETRY,Confirm: try the chapter again
+CAMPAIGN_CROSSROADS_NAME,Ruined Crossroads

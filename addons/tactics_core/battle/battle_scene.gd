@@ -74,8 +74,10 @@ var rewind: RewindService
 var dialogue_player: DialoguePlayer
 ## Every dialogue scene available to this battle.
 var dialogues: DialogueLibrary
-## Campaign state carried between maps (M8); a fresh one when unset.
+## Campaign state carried between maps; a fresh one when unset.
 var campaign: CampaignState
+## The campaign being played (null when a map is played on its own).
+var campaign_data: CampaignData
 ## Units the player may deploy (empty = the test roster, see
 ## [constant SETTING_TEST_ROSTER]).
 var roster: Array[UnitData] = []
@@ -89,6 +91,12 @@ var debug_overlay: DebugOverlay
 
 func _ready() -> void:
 	var ruleset: Ruleset = RulesetProvider.get_ruleset()
+	var params: Dictionary = SceneRouter.take_params()
+	if params.has("campaign"):
+		campaign = params["campaign"]
+		campaign_data = params.get("campaign_data", null)
+		if params.has("map_path") and map_instance == null:
+			map_scene = load(str(params["map_path"])) as PackedScene
 	if map_instance == null:
 		if map_scene == null:
 			TacticsLog.error("BattleScene", "No map_scene set")
@@ -101,6 +109,8 @@ func _ready() -> void:
 	controller = BattleController.new()
 	controller.name = "BattleController"
 	add_child(controller)
+	if roster.is_empty() and campaign != null and not campaign.roster.is_empty():
+		roster = campaign.roster_units()
 	if roster.is_empty():
 		roster = _test_roster()
 	controller.setup(map_instance, ruleset, seed, difficulty, roster)
@@ -109,6 +119,7 @@ func _ready() -> void:
 	if campaign == null:
 		campaign = CampaignState.new()
 	controller.state.campaign = campaign
+	campaign.apply_records(controller.state)
 	dialogues = DialogueLibrary.load_project()
 	for problem: String in dialogues.errors:
 		TacticsLog.warn("Dialogue", problem)
@@ -394,7 +405,8 @@ func _on_battle_finished(victory: bool) -> void:
 	if victory:
 		await flow.run_events(MapEvent.Trigger.MAP_END)
 	var lines: PackedStringArray = [tr("UI_RESULT_TURNS") % state.turn]
-	result_panel.show_result(victory, lines)
+	_last_victory = victory
+	result_panel.show_result(victory, lines, _result_prompt(victory))
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -403,7 +415,26 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	elif result_panel.visible and event.is_action_pressed(&"confirm") and not event.is_echo():
 		get_viewport().set_input_as_handled()
+		_on_result_confirmed()
+
+
+var _last_victory: bool = false
+
+
+func _result_prompt(victory: bool) -> String:
+	if campaign_data == null:
+		return tr("UI_RESULT_PROMPT")
+	return tr("UI_RESULT_CONTINUE") if victory else tr("UI_RESULT_RETRY")
+
+
+func _on_result_confirmed() -> void:
+	result_panel.visible = false
+	if campaign_data == null:
 		restart()
+	elif _last_victory:
+		CampaignFlow.complete_chapter(campaign, campaign_data, controller.state)
+	else:
+		CampaignFlow.retry_chapter(campaign_data)
 
 
 ## Restarts this battle from the beginning.

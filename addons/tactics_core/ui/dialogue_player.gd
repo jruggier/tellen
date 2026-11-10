@@ -243,6 +243,8 @@ func _show_line(step: DialogueRunner.Step) -> void:
 		_type_tween.finished.connect(func() -> void: _typing = false)
 		while _typing:
 			await get_tree().process_frame
+			if not is_inside_tree():
+				return  # The scene changed mid-line.
 			if _skip_requested:
 				_finish_typing()
 				return

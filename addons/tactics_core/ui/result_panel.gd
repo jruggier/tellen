@@ -15,7 +15,7 @@ func _init() -> void:
 
 
 ## Shows the result: [param victory], plus lines of [param details].
-func show_result(victory: bool, details: PackedStringArray) -> void:
+func show_result(victory: bool, details: PackedStringArray, prompt_text: String = "") -> void:
 	for child: Node in _box.get_children():
 		_box.remove_child(child)
 		child.queue_free()
@@ -26,7 +26,7 @@ func show_result(victory: bool, details: PackedStringArray) -> void:
 		var label := UiStyle.label(line, 28)
 		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		_box.add_child(label)
-	var prompt := UiStyle.label(tr("UI_RESULT_PROMPT"), 24, UiStyle.TEXT_DIM)
+	var prompt := UiStyle.label(prompt_text if not prompt_text.is_empty() else tr("UI_RESULT_PROMPT"), 24, UiStyle.TEXT_DIM)
 	prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_box.add_child(prompt)
 	visible = true

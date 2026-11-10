@@ -69,6 +69,9 @@ From spec §18. Each is a ruleset flag or value, so changing one is a data edit,
 | 48 | Dialogue text speed 45 characters/second (settings in M8) | `BattleScene.dialogue_text_speed` | ☐ |
 | 49 | Nintendo controllers use A (right) = confirm, B (bottom) = cancel, detected automatically; Xbox/PlayStation keep bottom = confirm. Override with project setting `tactics_core/input/nintendo_layout` (0 auto, 1 always, 2 never) | `ControllerLayout` | ✅ 2026-11-10 (Jake) |
 | 50 | Ending the turn counts as a rewind point (so a bad enemy phase can be rewound) | `RewindService` | ☐ |
+| 51 | One save slot; the game saves automatically at the start of every chapter, and a defeat retries the chapter from that save | `CampaignFlow`, `SaveSystem` | ☐ |
+| 52 | Units carry class, level, EXP, stats, inventory, proficiencies and skills between maps; HP refills; retreated units return | `UnitState.to_record` | ☐ |
+| 53 | Recruits join the roster when their chapter starts (ch01 brings the Spearhand, Acolyte and Hunter recruits) | `crossroads_campaign.tres` | ☐ |
 | 19 | 2RN: hit if the average of two 0–99 rolls is below the displayed hit. HYBRID: below 50 uses 1RN | `CrossroadsCombatRules.roll_hit` | ☐ |
 
 **Input bindings (M0)**

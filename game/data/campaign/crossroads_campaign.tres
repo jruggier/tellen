@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="CampaignData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/chapter_data.gd" id="1_seblr"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/unit_data.gd" id="2_kvsob"]
+[ext_resource type="Resource" path="res://game/data/units/recruit_spearhand.tres" id="3_3t72s"]
+[ext_resource type="Resource" path="res://game/data/units/recruit_acolyte.tres" id="4_qt586"]
+[ext_resource type="Resource" path="res://game/data/units/recruit_hunter.tres" id="5_uxfjb"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/campaign_data.gd" id="6_ns1f3"]
+[ext_resource type="Resource" path="res://game/data/units/tellen.tres" id="7_ln0u8"]
+[ext_resource type="Resource" path="res://game/data/units/sable.tres" id="8_6totn"]
+[ext_resource type="Resource" path="res://game/data/units/gid.tres" id="9_4p087"]
+
+[sub_resource type="Resource" id="Resource_hba1w"]
+script = ExtResource("1_seblr")
+map_path = "res://game/maps/ch00_ruined_crossroads.tscn"
+display_name = "MAP_CH00_NAME"
+
+[sub_resource type="Resource" id="Resource_4y6jd"]
+script = ExtResource("1_seblr")
+map_path = "res://game/maps/ch01_the_bridge_deal.tscn"
+display_name = "MAP_CH01_NAME"
+joins = Array[ExtResource("2_kvsob")]([ExtResource("3_3t72s"), ExtResource("4_qt586"), ExtResource("5_uxfjb")])
+
+[resource]
+script = ExtResource("6_ns1f3")
+starting_units = Array[ExtResource("2_kvsob")]([ExtResource("7_ln0u8"), ExtResource("8_6totn"), ExtResource("9_4p087")])
+chapters = Array[ExtResource("1_seblr")]([SubResource("Resource_hba1w"), SubResource("Resource_4y6jd")])
+id = &"crossroads"
+display_name = "CAMPAIGN_CROSSROADS_NAME"
