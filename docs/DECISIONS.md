@@ -138,7 +138,25 @@ From spec §18. Each is a ruleset flag or value, so changing one is a data edit,
 - **Attack ranges ignore terrain** (you can attack across water and walls), measured from every cell the unit can stop on, over all of its equippable attack weapons.
 - **Threat map caching** is keyed on `BattleState.version`, which every state change increments.
 - **Generic units are fully proficient** with their class's weapon types, so their equipped weapon is simply the first usable weapon in their inventory.
+- **Until the M3 action menu exists, after moving: confirm = Wait, cancel = undo the move.** Confirming on the unit's own cell is "stay here". The M3 action menu replaces the MOVED state's confirm behavior.
+- **Undo is limited to moves.** `MoveCommand` supports undo (cancel before acting); every other command clears the undo stack. Rewind (M8) uses state snapshots, not undo.
+- **`MoveCommand` recomputes the path when it executes** from the current state, rather than trusting the UI's preview path, so a stale command can't teleport a unit.
+- **Battle node tree is built in code** by `BattleScene` (documented in its header); `game/scenes/battle_scene.tscn` is just the root with the script. Running a `BattleMap` scene directly (F6) hosts it in the battle scene (project setting `tactics_core/battle/scene`).
+- **Generic unit ids** are `<class id>_<n>` in placement order; named units use their unit id.
+- **Placeholder unit art** is drawn in code (faction-colored block, class initial, HP strip). If a class has `map_sprite` set, that texture is used instead, so art drops in through data.
+- **World text is drawn at screen size under an inverse scale** (`WorldText`) so letters stay crisp under the 4× camera without changing the font import.
+- **The HUD hint line names keys directly** (e.g. "T: enemy threat"). These become remap-aware labels when settings and remapping arrive (M8).
 - **`tools/run_tests.sh` runs `--import` first**, so newly added `class_name` scripts and assets are registered before tests load.
+
+---
+
+## GDScript gotchas (read before writing code)
+
+- **Ternaries drop typed-array types.** `x if cond else [] as Array[Vector2i]` produces an untyped `Array` at runtime and fails when passed to a typed parameter. Use if/else and a typed local.
+- **Global enums can shadow your names.** Godot's global scope has an enum `Side` (and others); a class enum with the same name silently resolves to the global one. Hence `Strike.Role`.
+- **Lambdas typed with class-local enums** sometimes fail to resolve; prefer plain loops in tests.
+- **New `class_name` scripts need an import pass** before headless runs; `tools/run_tests.sh` does this.
+- **`--check-only` cannot see autoloads**, so "Identifier not found: TacticsEvents/RulesetProvider/TacticsRng" from it is a false alarm; trust the test run.
 
 ---
 

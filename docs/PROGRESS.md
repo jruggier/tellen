@@ -82,7 +82,7 @@ _Post-M1 change: the game is native 1920×1080 with 64 px cells (16 px art at 4�
 
 - [x] **M2.1** Prototype tileset with `terrain_id` custom data; `BattleGrid` reading `TileMapLayer`. — `tools/gen_prototype_terrain.py` → 9 placeholder tiles (pattern + color); `game/tilesets/prototype_terrain.tres`; terrain added to the ruleset catalog; `BattleGrid` (pure data). 143 tests.
 - [x] **M2.2** Range calculator, path preview, threat map; tests. — `Pathfinder` (bucket-queue Dijkstra), `MoveRange` (cheapest paths), `RangeCalculator` (ally pass-through, enemy blocking, ZOC flag, attack cells), cached `ThreatMap`; minimal `UnitState`/`BattleState`. 40×40 / 20-enemy threat map in ~8 ms. 159 tests.
-- [ ] **M2.3** Cursor, camera, placeholder unit sprites, select/move/cancel, `MoveCommand`.
+- [x] **M2.3** Cursor, camera, placeholder unit sprites, select/move/cancel, `MoveCommand`. — `Command`/`ActionLog`, `MoveCommand` (undoable), `WaitCommand`; `BattleController`; `BattleMap` + `UnitPlacement`; `BattleScene` (world, camera, HUD with terrain panel and hints); `PlayerInputController` state machine; cursor (hold-repeat, mouse), range overlays with patterns, path arrow, placeholder `UnitView`. 172 tests.
 - [ ] **M2.4** Debug overlay showing terrain costs.
 - [ ] **M2.5** `test_arena.tscn` with every terrain type.
 - [ ] **Checkpoint**

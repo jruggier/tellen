@@ -104,3 +104,11 @@ TIER_BEGINNER_NAME,Beginner
 TIER_INTERMEDIATE_NAME,Intermediate
 TIER_ADVANCED_NAME,Advanced
 TIER_MASTER_NAME,Master
+UI_TERRAIN_AVOID,Avoid
+UI_TERRAIN_DEF,Def
+UI_TERRAIN_RES,Res
+UI_TERRAIN_HEAL,Heal
+UI_HINT_IDLE,Confirm: select unit    Q / E: cycle units    T: enemy threat
+UI_HINT_SELECTED,Confirm: move here    Cancel: back
+UI_HINT_MOVED,Confirm: wait    Cancel: undo move
+UI_HINT_INSPECT,Cancel: close
