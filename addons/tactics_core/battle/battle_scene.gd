@@ -70,6 +70,7 @@ func _ready() -> void:
 	cursor.set_cell(start, true)
 	camera.snap_to(cursor.cell_center(start))
 	_on_cursor_moved(start)
+	TacticsLog.info("BattleScene", "Battle '%s' started: %d units, seed %d" % [controller.state.map_id, controller.state.all_units().size(), seed])
 	TacticsEvents.battle_started.emit(controller.state.map_id)
 
 

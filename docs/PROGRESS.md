@@ -84,8 +84,32 @@ _Post-M1 change: the game is native 1920×1080 with 64 px cells (16 px art at 4�
 - [x] **M2.2** Range calculator, path preview, threat map; tests. — `Pathfinder` (bucket-queue Dijkstra), `MoveRange` (cheapest paths), `RangeCalculator` (ally pass-through, enemy blocking, ZOC flag, attack cells), cached `ThreatMap`; minimal `UnitState`/`BattleState`. 40×40 / 20-enemy threat map in ~8 ms. 159 tests.
 - [x] **M2.3** Cursor, camera, placeholder unit sprites, select/move/cancel, `MoveCommand`. — `Command`/`ActionLog`, `MoveCommand` (undoable), `WaitCommand`; `BattleController`; `BattleMap` + `UnitPlacement`; `BattleScene` (world, camera, HUD with terrain panel and hints); `PlayerInputController` state machine; cursor (hold-repeat, mouse), range overlays with patterns, path arrow, placeholder `UnitView`. 172 tests.
 - [x] **M2.4** Debug overlay showing terrain costs. — `DebugOverlay` (F3, debug builds only): per-cell coordinates and movement cost (× = impassable) for the inspected unit's movement type; seed/cursor/terrain/turn info; `set_cell_notes()` hook for M4 AI scores. 173 tests.
-- [ ] **M2.5** `test_arena.tscn` with every terrain type.
-- [ ] **Checkpoint**
+- [x] **M2.5** `test_arena.tscn` with every terrain type. — 36×22 map (scrolls): river + bridge, walled fortress with doorway and fort, forests, hills, ruins, pond; 6 player units vs 8 enemies covering all four movement types. Runs directly with F6. 177 tests.
+- [x] **Checkpoint**
+
+### M2 Checkpoint summary
+
+**Built**
+- **Grid**: `BattleGrid` reads any `TileMapLayer` whose TileSet has a `terrain_id` custom data layer; placeholder tileset with all 9 terrain types (`tools/gen_prototype_terrain.py`).
+- **Movement**: Dijkstra ranges with per-movement-type terrain costs; allies passable but not stoppable, enemies block; optional zone of control; cheapest-path preview; attack ranges from every reachable tile; cached threat map (20 enemies on 40×40 in ~8 ms).
+- **Battle model**: `BattleState` / `UnitState` (pure data), `Command` + `ActionLog`, `MoveCommand` (undoable), `WaitCommand`, `BattleController`.
+- **On screen**: native 1080p with 64 px cells (camera zoom 4×), placeholder unit blocks (faction color + class initial + HP strip), cursor with hold-to-repeat and mouse hover, scrolling camera, movement/attack/threat overlays with distinct patterns, path arrow, terrain info panel, hint line.
+- **Debug overlay (F3)**: per-cell coordinates and movement costs, seed and state info.
+- **Maps**: `BattleMap` root + `UnitPlacement`s; any map scene runs directly with F6.
+
+**How to try it**
+1. Open `game/maps/test_arena.tscn` and press **F6**.
+2. Move the cursor with arrows/WASD/D-pad or the mouse. **Z/Enter/Space/left-click** selects your unit (blue), showing movement (blue, dotted) and attack range (red, striped); the arrow previews the path.
+3. Confirm on a blue tile to move. Then **confirm = Wait** (unit greys out) or **cancel (X/Esc/right-click) = undo the move**.
+4. Confirm on an enemy to see its ranges. **T** toggles the combined enemy threat (orange). **Q/E** jump between your ready units. **F3** shows the debug overlay.
+5. Things to check: Wingrider (W) flies over the river but not the walls; Outrider (O) is slowed by forest; the Bulwark (B in the fortress) pays 3 on hills/ruins; only foot/armored units fit through the doorway.
+
+**Known issues / not yet built**
+- No action menu, combat or end turn yet (M3/M4). After every unit has waited, restart the scene (F6) to play again.
+- Class initials can collide (Sellsword/Spearhand both "S", Hexcaller/Hunter both "H"); placeholders until art or a unit info panel (M3).
+- The debug overlay's coordinate text is small and crowded; fine for a debug tool.
+- The path preview always takes the cheapest path; tracing your own path with the cursor isn't supported yet.
+- Hint line key names are fixed text; they'll follow remapping when settings arrive (M8).
 
 ## M3 — Combat on the map
 
