@@ -10,6 +10,8 @@ class Report:
 	extends RefCounted
 	var unit_id: StringName
 	var exp_gained: int = 0
+	## EXP within the level before the gain (for the EXP bar).
+	var old_experience: int = 0
 	var old_level: int = 0
 	var new_level: int = 0
 	## Stat gains, one block per level gained.
@@ -37,6 +39,7 @@ static func award_exp(state: BattleState, unit: UnitState, amount: int, report: 
 	if unit.level >= ruleset.level_cap or amount <= 0:
 		return
 	report.exp_gained = amount
+	report.old_experience = unit.experience
 	unit.experience += amount
 	while unit.experience >= ruleset.exp_per_level and unit.level < ruleset.level_cap:
 		unit.experience -= ruleset.exp_per_level

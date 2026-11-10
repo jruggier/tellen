@@ -35,8 +35,9 @@ func show_forecast(forecast: CombatForecast, sides: Dictionary, details: Array[D
 	var d_info: Dictionary = sides["defender"]
 	_row("", str(a_info["name"]), str(d_info["name"]), 30, a_info["color"], d_info["color"])
 	_row("", str(a_info["weapon"]), str(d_info["weapon"]), 22, UiStyle.TEXT_DIM, UiStyle.TEXT_DIM)
-	_row(tr("FORECAST_HP"), "%d → %d" % [a.hp, a.hp_after_all_hits], "%d → %d" % [d.hp, d.hp_after_all_hits], 28,
-		UiStyle.BAD if a.hp_after_all_hits == 0 else Color.WHITE, UiStyle.BAD if d.hp_after_all_hits == 0 else Color.WHITE)
+	_grid.add_child(UiStyle.label(tr("FORECAST_HP"), 22, UiStyle.TEXT_DIM))
+	_grid.add_child(_hp_cell(a.hp, a.hp_after_all_hits, int(a_info.get("max_hp", a.hp))))
+	_grid.add_child(_hp_cell(d.hp, d.hp_after_all_hits, int(d_info.get("max_hp", d.hp))))
 	_row(tr("FORECAST_DAMAGE"), _damage(a), _damage(d), 28, UiStyle.WARN if a.effective else Color.WHITE, UiStyle.WARN if d.effective else Color.WHITE)
 	_row(tr("FORECAST_HIT"), _pct(a, a.hit), _pct(d, d.hit))
 	_row(tr("FORECAST_CRIT"), _pct(a, a.crit), _pct(d, d.crit))
@@ -69,7 +70,9 @@ func show_forecast(forecast: CombatForecast, sides: Dictionary, details: Array[D
 func show_heal(target_name: String, color: Color, hp_before: int, hp_after: int, max_hp: int) -> void:
 	_clear()
 	_row("", target_name, "", 30, color, color)
-	_row(tr("FORECAST_HP"), "%d → %d / %d" % [hp_before, hp_after, max_hp], "", 28, UiStyle.GOOD, Color.WHITE)
+	_grid.add_child(UiStyle.label(tr("FORECAST_HP"), 22, UiStyle.TEXT_DIM))
+	_grid.add_child(_hp_cell(hp_before, hp_after, max_hp))
+	_grid.add_child(Control.new())
 	_footer.text = ""
 	visible = true
 	reset_size()
@@ -79,6 +82,21 @@ func _clear() -> void:
 	for child: Node in _grid.get_children():
 		_grid.remove_child(child)
 		child.queue_free()
+
+
+## "HP → after" over an HP bar whose predicted change pulses.
+func _hp_cell(hp: int, after: int, max_hp: int) -> Control:
+	var cell := VBoxContainer.new()
+	cell.add_theme_constant_override("separation", 2)
+	var color: Color = UiStyle.BAD if after == 0 else (UiStyle.GOOD if after > hp else Color.WHITE)
+	cell.add_child(UiStyle.label("%d → %d" % [hp, after], 28, color))
+	var bar := StatBar.new()
+	bar.custom_minimum_size = Vector2(200, 14)
+	bar.color_by_ratio = true
+	bar.set_values(hp, maxi(1, max_hp))
+	bar.set_preview(after)
+	cell.add_child(bar)
+	return cell
 
 
 func _row(label_text: String, a: String, b: String, size: int = 26, a_color: Color = Color.WHITE, b_color: Color = Color.WHITE) -> void:

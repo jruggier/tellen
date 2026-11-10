@@ -59,17 +59,23 @@ func close() -> void:
 func move(delta: int) -> void:
 	if _options.is_empty():
 		return
+	var before: int = selected
 	for step: int in _options.size():
 		selected = posmod(selected + delta, _options.size())
 		if _is_enabled(selected):
 			break
+	if selected != before:
+		Sfx.play(&"menu_move")
 	_refresh()
 
 
 ## Accepts the highlighted option (emits [signal chosen] if enabled).
 func accept() -> void:
 	if selected >= 0 and selected < _options.size() and _is_enabled(selected):
+		Sfx.play(&"confirm")
 		chosen.emit(StringName(_options[selected]["id"]))
+	elif selected >= 0 and selected < _options.size():
+		Sfx.play(&"error")
 
 
 func selected_id() -> StringName:
@@ -102,8 +108,9 @@ func _make_row(index: int) -> PanelContainer:
 	if option.has("detail"):
 		line.add_child(UiStyle.label(str(option["detail"]), 24, UiStyle.TEXT_DIM if _is_enabled(index) else color))
 	row.mouse_entered.connect(func() -> void:
-		if _is_enabled(index):
+		if _is_enabled(index) and selected != index:
 			selected = index
+			Sfx.play(&"menu_move")
 			_refresh())
 	row.gui_input.connect(func(event: InputEvent) -> void:
 		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:

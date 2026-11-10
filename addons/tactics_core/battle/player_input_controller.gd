@@ -48,6 +48,8 @@ var forecast_panel: ForecastPanel
 var info_panel: UnitInfoPanel
 var level_panel: LevelUpPanel
 var toast: Toast
+## Animated EXP bar after gains (optional; falls back to a popup).
+var exp_panel: ExpPanel
 var trade_panel: TradePanel
 ## Unit id → view, for animations.
 var unit_views: Dictionary[StringName, UnitView] = {}
@@ -151,6 +153,7 @@ func confirm() -> void:
 			var unit: UnitState = battle.unit_at(cursor.cell)
 			if unit == null:
 				return
+			Sfx.play(&"confirm")
 			if unit.faction_id == player_faction and unit.is_ready() and not unit.has_moved:
 				_select(unit)
 			else:
@@ -161,16 +164,22 @@ func confirm() -> void:
 				_moved_this_selection = false
 				_open_action_menu()
 			elif _move_range.can_stop_at(cursor.cell):
+				Sfx.play(&"confirm")
 				_move_to(cursor.cell)
 			elif other != null and other != _selected and other.faction_id == player_faction and other.is_ready() and not other.has_moved:
+				Sfx.play(&"confirm")
 				_select(other)
+			else:
+				Sfx.play(&"error")
 		State.ACTION_MENU, State.WEAPON_MENU, State.ITEM_MENU, State.PAUSE_MENU, State.CLASS_MENU, State.CHOICE_MENU:
 			menu.accept()
 		State.ITEM_ACTIONS:
 			sub_menu.accept()
 		State.TARGETING:
+			Sfx.play(&"confirm")
 			_confirm_target()
 		State.TRADING:
+			Sfx.play(&"confirm")
 			trade_panel.accept()
 		State.LEVEL_UP:
 			_level_up_closed.emit()
@@ -186,6 +195,9 @@ func confirm() -> void:
 
 ## Cancel / back.
 func cancel() -> void:
+	if state in [State.SELECTED, State.ACTION_MENU, State.WEAPON_MENU, State.ITEM_MENU, State.CLASS_MENU, State.ITEM_ACTIONS,
+			State.TARGETING, State.TRADING, State.INSPECT, State.PAUSE_MENU, State.CHOICE_MENU, State.CANTO]:
+		Sfx.play(&"cancel")
 	match state:
 		State.SELECTED:
 			var unit_cell: Vector2i = _selected.cell
@@ -259,6 +271,7 @@ func open_pause_menu() -> void:
 	if pause_options_provider.is_valid():
 		options.append_array(pause_options_provider.call())
 	menu.open(options, Vector2(80, 300), tr("UI_PAUSE_TITLE"))
+	Sfx.play(&"menu_open")
 	_set_state(State.PAUSE_MENU)
 
 
@@ -429,6 +442,7 @@ func _on_action(action: StringName) -> void:
 	match action:
 		&"awaken":
 			if controller.execute(AwakenCommand.new(_selected.id)):
+				Sfx.play(&"awaken")
 				_locked = true
 				presenter.popup_at_cell(_selected.cell, tr("POPUP_AWAKENED"), _selected.awakening.color, 6.0)
 				unit_views[_selected.id].flash()
@@ -562,8 +576,8 @@ func _show_target() -> void:
 			var details: Array[Dictionary] = [rules.forecast_details(a, d), rules.forecast_details(d, a)]
 			var defender_weapon: WeaponData = target.equipped_weapon()
 			forecast_panel.show_forecast(forecast, {
-				"attacker": {"name": _selected.get_display_name(), "color": _faction_color(_selected), "weapon": weapon.get_display_name(), "terrain": battle.grid.terrain_at(_selected.cell), "awaken_gain": awaken_gain, "chain": chain.x, "chain_count": chain.y},
-				"defender": {"name": target.get_display_name(), "color": _faction_color(target), "weapon": defender_weapon.get_display_name() if defender_weapon != null else tr("UI_UNARMED"), "terrain": battle.grid.terrain_at(target.cell)},
+				"attacker": {"name": _selected.get_display_name(), "color": _faction_color(_selected), "max_hp": _selected.max_hp(battle.ruleset), "weapon": weapon.get_display_name(), "terrain": battle.grid.terrain_at(_selected.cell), "awaken_gain": awaken_gain, "chain": chain.x, "chain_count": chain.y},
+				"defender": {"name": target.get_display_name(), "color": _faction_color(target), "max_hp": target.max_hp(battle.ruleset), "weapon": defender_weapon.get_display_name() if defender_weapon != null else tr("UI_UNARMED"), "terrain": battle.grid.terrain_at(target.cell)},
 			}, details, show_details)
 		TargetMode.HEAL:
 			var staff: WeaponData = _selected.inventory[_weapon_slot].weapon()
@@ -600,7 +614,6 @@ func _end_targeting() -> void:
 
 func _do_attack(target: UnitState) -> void:
 	var attacker: UnitState = _selected
-	var ruleset: Ruleset = controller.state.ruleset
 	var attacker_cell: Vector2i = attacker.cell
 	var target_cell: Vector2i = target.cell
 	_end_targeting()
@@ -612,11 +625,12 @@ func _do_attack(target: UnitState) -> void:
 	if not controller.execute(command):
 		_deselect()
 		return
-	await presenter.play_combat(command.result, unit_views[attacker.id], unit_views[target.id], attacker_cell, target_cell,
-		attacker.max_hp(ruleset), target.max_hp(ruleset))
+	await presenter.play_combat(command.result, controller.state, attacker, target, unit_views[attacker.id], unit_views[target.id],
+		attacker_cell, target_cell)
 	_refresh_views()
 	for outcome: DefeatRules.Outcome in command.defeats:
 		for item: ItemData in outcome.items_given:
+			Sfx.play(&"item_get")
 			toast.show_message(tr("UI_ITEM_RECEIVED") % [controller.state.get_unit(outcome.by_unit_id).get_display_name(), item.get_display_name()])
 		for item: ItemData in outcome.items_lost:
 			toast.show_message(tr("UI_ITEM_LOST") % item.get_display_name())
@@ -635,6 +649,7 @@ func _do_heal(target: UnitState) -> void:
 		return
 	_end_targeting()
 	_set_state(State.ANIMATING)
+	Sfx.play(&"heal")
 	presenter.popup_at_cell(target.cell, "+%d" % command.amount, UiStyle.GOOD, 7.0)
 	unit_views[target.id].animate_hp(float(target.current_hp) / maxf(1.0, target.max_hp(controller.state.ruleset)), 0.4)
 	await presenter.pause(0.6)
@@ -654,13 +669,18 @@ func show_progress(reports: Array) -> void:
 		var unit: UnitState = battle.get_unit(report.unit_id)
 		if unit == null or report.exp_gained <= 0:
 			continue
-		presenter.popup_at_cell(unit.cell, tr("UI_EXP_GAINED") % report.exp_gained, Color(0.6, 0.85, 1.0), 5.0)
-		await presenter.pause(0.5)
+		var time_scale: float = 1.0 if presenter.seconds_per_strike > 0.0 else 0.0
+		if exp_panel != null:
+			await exp_panel.play(unit.get_display_name(), report.old_experience, report.exp_gained, battle.ruleset.exp_per_level, time_scale)
+		else:
+			presenter.popup_at_cell(unit.cell, tr("UI_EXP_GAINED") % report.exp_gained, Color(0.6, 0.85, 1.0), 5.0)
+			await presenter.pause(0.5)
 		for proficiency_id: StringName in report.proficiency_ups:
 			toast.show_message(tr("UI_PROFICIENCY_UP") % [unit.get_display_name(), _proficiency_name(proficiency_id), report.proficiency_ups[proficiency_id]])
 		for i: int in report.level_gains.size():
 			level_panel.show_level_up(unit, report.old_level + i + 1, report.level_gains[i], battle.ruleset)
 			_set_state(State.LEVEL_UP)
+			level_panel.reveal(time_scale)
 			await _level_up_closed
 			level_panel.close()
 			_set_state(previous)

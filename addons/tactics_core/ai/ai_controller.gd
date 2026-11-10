@@ -70,7 +70,6 @@ func _run_unit(unit: UnitState) -> void:
 func _attack(unit: UnitState, plan: AIPlanner.Plan) -> void:
 	var state: BattleState = scene.controller.state
 	var target: UnitState = state.get_unit(plan.target_id)
-	var ruleset: Ruleset = state.ruleset
 	var unit_cell: Vector2i = unit.cell
 	var target_cell: Vector2i = target.cell
 	if flow != null:
@@ -78,8 +77,8 @@ func _attack(unit: UnitState, plan: AIPlanner.Plan) -> void:
 	var attack := AttackCommand.new(unit.id, target.id, plan.slot)
 	if not scene.controller.execute(attack):
 		return
-	await scene.presenter.play_combat(attack.result, scene.unit_views[unit.id], scene.unit_views[target.id],
-		unit_cell, target_cell, unit.max_hp(ruleset), target.max_hp(ruleset))
+	await scene.presenter.play_combat(attack.result, state, unit, target, scene.unit_views[unit.id], scene.unit_views[target.id],
+		unit_cell, target_cell)
 	for effect: Dictionary in attack.skill_effects:
 		var owner: UnitState = state.get_unit(StringName(effect["unit"]))
 		if owner != null and int(effect.get("heal", 0)) > 0:

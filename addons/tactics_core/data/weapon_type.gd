@@ -19,6 +19,9 @@ extends TacticsData
 ## Icon shown in menus and the forecast.
 @export var icon: Texture2D
 
+## Sound id played when a strike with this type hits (see [SoundBank]).
+@export var hit_sound: StringName = &"hit"
+
 
 ## True if an attacker wielding this type Staggers a defender wielding [param target].
 func staggers_type(target: WeaponType) -> bool:

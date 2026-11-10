@@ -14,6 +14,11 @@ extends TacticsData
 ## Color of the speaker name in dialogue boxes.
 @export var name_color: Color = Color.WHITE
 
+## Sound id of the "voice" blip played while this character's lines type out.
+@export var voice: StringName = &"text_blip"
+## Pitch of the voice blip (1 = as recorded; higher sounds younger/lighter).
+@export_range(0.3, 3.0, 0.05) var voice_pitch: float = 1.0
+
 
 ## The portrait for [param expression], falling back to neutral, or null.
 func get_portrait(expression: StringName) -> Texture2D:

@@ -58,6 +58,8 @@ var forecast_panel: ForecastPanel
 var menu: MenuList
 var sub_menu: MenuList
 var level_panel: LevelUpPanel
+var exp_panel: ExpPanel
+var combat_hud: CombatHud
 var trade_panel: TradePanel
 var toast: Toast
 var presenter: CombatPresenter
@@ -249,6 +251,12 @@ func _build_hud() -> void:
 	hud.add_child(sub_menu)
 	trade_panel = TradePanel.new()
 	hud.add_child(trade_panel)
+	combat_hud = CombatHud.new()
+	combat_hud.name = "CombatHud"
+	hud.add_child(combat_hud)
+	exp_panel = ExpPanel.new()
+	exp_panel.name = "ExpPanel"
+	hud.add_child(exp_panel)
 	level_panel = LevelUpPanel.new()
 	hud.add_child(level_panel)
 	toast = Toast.new()
@@ -277,6 +285,7 @@ func _build_input() -> void:
 	presenter.zoom = camera.zoom.x
 	presenter.cell_size = cursor.cell_size
 	presenter.unit_views = unit_views
+	presenter.hud = combat_hud
 	add_child(presenter)
 	input = PlayerInputController.new()
 	input.name = "PlayerInputController"
@@ -292,6 +301,7 @@ func _build_input() -> void:
 	input.forecast_panel = forecast_panel
 	input.info_panel = info_panel
 	input.level_panel = level_panel
+	input.exp_panel = exp_panel
 	input.toast = toast
 	input.trade_panel = trade_panel
 	input.objectives = objectives
@@ -430,6 +440,7 @@ func rebuild_unit_views() -> void:
 
 
 func _flash_rewind() -> void:
+	Sfx.play(&"rewind")
 	var flash := ColorRect.new()
 	flash.color = Color(0.45, 0.7, 1.0, 0.55)
 	flash.set_anchors_preset(Control.PRESET_FULL_RECT)

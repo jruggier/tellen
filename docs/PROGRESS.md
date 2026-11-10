@@ -300,3 +300,11 @@ _Post-M1 change: the game is native 1920×1080 with 64 px cells (16 px art at 4�
 - Carried over from earlier: AI doesn't use items, enemy-phase level-ups wait for confirm, placeholder class letters collide.
 
 **Decisions to confirm:** `DECISIONS.md` #51–58.
+
+
+## After M8 — Feedback pass (sound and bars), 2026-11-10
+
+- [x] Sound effects by id through `Sfx` + `SoundBank` (`game/audio/sound_bank.tres`, placeholders from `tools/gen_sfx.py`, 34 sounds on the SFX bus): cursor, menus, confirm/cancel/error, per-weapon-type hits, miss, crit, Stagger, chain, defeat, heal, awaken, rewind, item get, phase banners, victory, game over.
+- [x] Dialogue voice blips while text types, pitched per character (`CharacterData.voice`, `voice_pitch`).
+- [x] EXP bar after gains (`ExpPanel`): fills with rising ticks, chimes and wraps on level-up; level-up panel reveals each stat gain with a chime.
+- [x] HP bars (`StatBar`): unit panel (HP + EXP), forecast (predicted loss/heal pulses), combat HUD with both sides' bars draining in step with strikes. 357 tests.

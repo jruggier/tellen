@@ -5,5 +5,6 @@
 [resource]
 script = ExtResource("1_vew4a")
 staggers = Array[StringName]([&"knife"])
+hit_sound = &"hit_dark"
 id = &"dark"
 display_name = "WTYPE_DARK_NAME"

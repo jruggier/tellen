@@ -1,0 +1,87 @@
+[gd_resource type="Resource" script_class="SoundBank" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/sound_bank.gd" id="1_nsxhw"]
+[ext_resource type="AudioStream" path="res://game/audio/sfx/awaken.wav" id="2_pgn15"]
+[ext_resource type="AudioStream" path="res://game/audio/sfx/cancel.wav" id="3_exvms"]
+[ext_resource type="AudioStream" path="res://game/audio/sfx/chain.wav" id="4_xeeq2"]
+[ext_resource type="AudioStream" path="res://game/audio/sfx/confirm.wav" id="5_5035a"]
+[ext_resource type="AudioStream" path="res://game/audio/sfx/crit.wav" id="6_jip6n"]
+[ext_resource type="AudioStream" path="res://game/audio/sfx/cursor_move.wav" id="7_co1a8"]
+[ext_resource type="AudioStream" path="res://game/audio/sfx/defeat.wav" id="8_ub0qp"]
+[ext_resource type="AudioStream" path="res://game/audio/sfx/error.wav" id="9_lkudd"]
+[ext_resource type="AudioStream" path="res://game/audio/sfx/exp_full.wav" id="10_ca634"]
+[ext_resource type="AudioStream" path="res://game/audio/sfx/exp_tick.wav" id="11_jjhpc"]
+[ext_resource type="AudioStream" path="res://game/audio/sfx/game_over.wav" id="12_kg8n3"]
+[ext_resource type="AudioStream" path="res://game/audio/sfx/heal.wav" id="13_76qd3"]
+[ext_resource type="AudioStream" path="res://game/audio/sfx/hit.wav" id="14_mgk4m"]
+[ext_resource type="AudioStream" path="res://game/audio/sfx/hit_arrow.wav" id="15_0xidf"]
+[ext_resource type="AudioStream" path="res://game/audio/sfx/hit_brawl.wav" id="16_jxsjs"]
+[ext_resource type="AudioStream" path="res://game/audio/sfx/hit_dark.wav" id="17_tlw1q"]
+[ext_resource type="AudioStream" path="res://game/audio/sfx/hit_light.wav" id="18_2rf4s"]
+[ext_resource type="AudioStream" path="res://game/audio/sfx/hit_poke.wav" id="19_rsgik"]
+[ext_resource type="AudioStream" path="res://game/audio/sfx/hit_slash.wav" id="20_imbbd"]
+[ext_resource type="AudioStream" path="res://game/audio/sfx/hit_stab.wav" id="21_el2gq"]
+[ext_resource type="AudioStream" path="res://game/audio/sfx/hit_swing.wav" id="22_h2a38"]
+[ext_resource type="AudioStream" path="res://game/audio/sfx/item_get.wav" id="23_yrsp6"]
+[ext_resource type="AudioStream" path="res://game/audio/sfx/level_up.wav" id="24_1lqny"]
+[ext_resource type="AudioStream" path="res://game/audio/sfx/menu_move.wav" id="25_3jxhg"]
+[ext_resource type="AudioStream" path="res://game/audio/sfx/menu_open.wav" id="26_4ig5f"]
+[ext_resource type="AudioStream" path="res://game/audio/sfx/miss.wav" id="27_xvas6"]
+[ext_resource type="AudioStream" path="res://game/audio/sfx/phase_ally.wav" id="28_xlbh4"]
+[ext_resource type="AudioStream" path="res://game/audio/sfx/phase_enemy.wav" id="29_cef6u"]
+[ext_resource type="AudioStream" path="res://game/audio/sfx/phase_player.wav" id="30_urupj"]
+[ext_resource type="AudioStream" path="res://game/audio/sfx/rewind.wav" id="31_own7v"]
+[ext_resource type="AudioStream" path="res://game/audio/sfx/stagger.wav" id="32_vql7b"]
+[ext_resource type="AudioStream" path="res://game/audio/sfx/stat_up.wav" id="33_qdc3x"]
+[ext_resource type="AudioStream" path="res://game/audio/sfx/text_blip.wav" id="34_4qcn7"]
+[ext_resource type="AudioStream" path="res://game/audio/sfx/victory.wav" id="35_qpm5v"]
+
+[resource]
+script = ExtResource("1_nsxhw")
+sounds = Dictionary[StringName, AudioStream]({
+&"awaken": ExtResource("2_pgn15"),
+&"cancel": ExtResource("3_exvms"),
+&"chain": ExtResource("4_xeeq2"),
+&"confirm": ExtResource("5_5035a"),
+&"crit": ExtResource("6_jip6n"),
+&"cursor_move": ExtResource("7_co1a8"),
+&"defeat": ExtResource("8_ub0qp"),
+&"error": ExtResource("9_lkudd"),
+&"exp_full": ExtResource("10_ca634"),
+&"exp_tick": ExtResource("11_jjhpc"),
+&"game_over": ExtResource("12_kg8n3"),
+&"heal": ExtResource("13_76qd3"),
+&"hit": ExtResource("14_mgk4m"),
+&"hit_arrow": ExtResource("15_0xidf"),
+&"hit_brawl": ExtResource("16_jxsjs"),
+&"hit_dark": ExtResource("17_tlw1q"),
+&"hit_light": ExtResource("18_2rf4s"),
+&"hit_poke": ExtResource("19_rsgik"),
+&"hit_slash": ExtResource("20_imbbd"),
+&"hit_stab": ExtResource("21_el2gq"),
+&"hit_swing": ExtResource("22_h2a38"),
+&"item_get": ExtResource("23_yrsp6"),
+&"level_up": ExtResource("24_1lqny"),
+&"menu_move": ExtResource("25_3jxhg"),
+&"menu_open": ExtResource("26_4ig5f"),
+&"miss": ExtResource("27_xvas6"),
+&"phase_ally": ExtResource("28_xlbh4"),
+&"phase_enemy": ExtResource("29_cef6u"),
+&"phase_player": ExtResource("30_urupj"),
+&"rewind": ExtResource("31_own7v"),
+&"stagger": ExtResource("32_vql7b"),
+&"stat_up": ExtResource("33_qdc3x"),
+&"text_blip": ExtResource("34_4qcn7"),
+&"victory": ExtResource("35_qpm5v")
+})
+volumes_db = Dictionary[StringName, float]({
+&"cancel": -6.0,
+&"confirm": -6.0,
+&"cursor_move": -12.0,
+&"error": -6.0,
+&"exp_tick": -10.0,
+&"menu_move": -10.0,
+&"menu_open": -8.0,
+&"stat_up": -4.0,
+&"text_blip": -9.0
+})

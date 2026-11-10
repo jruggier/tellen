@@ -16,6 +16,7 @@ func _init() -> void:
 
 ## Shows the result: [param victory], plus lines of [param details].
 func show_result(victory: bool, details: PackedStringArray, prompt_text: String = "") -> void:
+	Sfx.play(&"victory" if victory else &"game_over")
 	for child: Node in _box.get_children():
 		_box.remove_child(child)
 		child.queue_free()

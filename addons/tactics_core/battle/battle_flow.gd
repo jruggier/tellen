@@ -62,6 +62,7 @@ func present_outcome(outcome: MapEventRules.Outcome) -> void:
 	scene.refresh_views()
 	await play_dialogue(outcome.dialogue_id)
 	for item: ItemData in outcome.items_given:
+		Sfx.play(&"item_get")
 		scene.toast.show_message(tr("UI_ITEM_OBTAINED") % item.get_display_name())
 	for item: ItemData in outcome.items_lost:
 		scene.toast.show_message(tr("UI_ITEM_LOST") % item.get_display_name())
@@ -118,6 +119,8 @@ func _begin_phase(report: TurnManager.PhaseReport) -> void:
 	scene.update_turn_label()
 	scene.overlay.show_warnings(ReinforcementRules.telegraphed_cells(state))
 	var faction: FactionData = state.current_faction()
+	if scene.banner.seconds > 0.0:
+		Sfx.play(StringName("phase_" + String(faction.id)))
 	await scene.banner.play(tr("UI_PHASE_BANNER") % faction.get_display_name(), faction.color)
 	await run_events(MapEvent.Trigger.TURN)
 	if not report.spawned.is_empty():

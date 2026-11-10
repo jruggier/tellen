@@ -86,3 +86,20 @@ New kinds of behavior need a new hooks script (code); see `addons/tactics_core/s
 ## The campaign: chapters, order and recruits
 
 `game/data/campaign/crossroads_campaign.tres` lists the chapters in play order. **Starting Units** are the army for a new game. Each entry in **Chapters** has a **Map Path** (the map scene), a **Display Name**, and **Joins**: units added to the army when that chapter starts. To add a chapter, build the map (see `LEVEL_DESIGN.md`), then add an entry here. Units keep their progress between chapters automatically; generic units (no unit data) don't carry over.
+
+## Sounds
+
+Every sound is played by an id (`confirm`, `hit_slash`, `exp_tick`...). `game/audio/sound_bank.tres` maps each id to a file in **Sounds** and can lower or raise one in **Volumes Db**. To replace a sound, drop a new `.wav`/`.ogg` into `game/audio/sfx/` and point its id at it in the bank (or overwrite the file with the same name). An id with no file is simply silent.
+
+- **Weapon hit sounds:** each weapon type has a **Hit Sound** id (`game/data/weapon_types/`).
+- **Dialogue voices:** each character has a **Voice** (sound id, default `text_blip`) and **Voice Pitch** (Tellen 1.0, Sable 1.3, Gid 0.75). Lines "speak" with a blip every two letters while they type out.
+- **Phase banners** play `phase_<faction id>` (e.g. `phase_player`, `phase_enemy`).
+- The current sounds are generated placeholders: `python3 tools/gen_sfx.py` rewrites them.
+
+| Id | When |
+| --- | --- |
+| `cursor_move`, `menu_move`, `confirm`, `cancel`, `error`, `menu_open` | cursor and menus |
+| `text_blip` | dialogue typing |
+| `exp_tick`, `exp_full`, `level_up`, `stat_up` | EXP bar, level-up panel |
+| `hit` + weapon hit sounds, `miss`, `crit`, `stagger`, `chain`, `defeat`, `heal`, `awaken` | combat |
+| `rewind`, `item_get`, `phase_*`, `victory`, `game_over` | events |

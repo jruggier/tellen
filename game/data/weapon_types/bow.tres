@@ -5,5 +5,6 @@
 [resource]
 script = ExtResource("1_78akj")
 stagger_exempt = true
+hit_sound = &"hit_arrow"
 id = &"bow"
 display_name = "WTYPE_BOW_NAME"

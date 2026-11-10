@@ -28,10 +28,11 @@ func show_unit(unit: UnitState, state: BattleState) -> void:
 	var faction: FactionData = state.get_faction(unit.faction_id)
 	_box.add_child(UiStyle.label(unit.get_display_name(), 32, faction.color.lightened(0.35) if faction != null else Color.WHITE))
 	var class_text: String = unit.class_data.get_display_name() if unit.class_data != null else ""
-	var exp_text: String = ("   %s %d" % [tr("UI_EXP"), unit.experience]) if faction != null and faction.gains_experience else ""
-	_box.add_child(UiStyle.label("%s   %s %d%s" % [class_text, tr("UI_LEVEL"), unit.level, exp_text], 24, UiStyle.TEXT_DIM))
-	var hp_color: Color = UiStyle.GOOD if unit.current_hp * 2 > unit.max_hp(ruleset) else UiStyle.WARN if unit.current_hp * 4 > unit.max_hp(ruleset) else UiStyle.BAD
-	_box.add_child(UiStyle.label("%s %d / %d" % [tr("FORECAST_HP"), unit.current_hp, unit.max_hp(ruleset)], 26, hp_color))
+	_box.add_child(UiStyle.label("%s   %s %d" % [class_text, tr("UI_LEVEL"), unit.level], 24, UiStyle.TEXT_DIM))
+	var max_hp: int = unit.max_hp(ruleset)
+	_box.add_child(_bar_row(tr("FORECAST_HP"), unit.current_hp, max_hp, "%d / %d" % [unit.current_hp, max_hp], Color(), true, 26))
+	if faction != null and faction.gains_experience:
+		_box.add_child(_bar_row(tr("UI_EXP"), unit.experience, ruleset.exp_per_level, str(unit.experience), Color(0.4, 0.75, 1.0), false, 22))
 	var weapon: WeaponData = unit.equipped_weapon()
 	_box.add_child(UiStyle.label(weapon.get_display_name() if weapon != null else tr("UI_UNARMED"), 24))
 	var skills: Array[SkillData] = SkillRunner.active_skills(unit)
@@ -51,6 +52,26 @@ func show_unit(unit: UnitState, state: BattleState) -> void:
 	if expanded:
 		_add_details(unit, ruleset)
 	reset_size()
+
+
+## A label, a bar and its numbers on one line.
+func _bar_row(caption: String, value: int, max_value: int, numbers: String, color: Color, by_ratio: bool, font_size: int) -> HBoxContainer:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 10)
+	var caption_label := UiStyle.label(caption, font_size - 2, UiStyle.TEXT_DIM)
+	caption_label.custom_minimum_size = Vector2(46, 0)
+	row.add_child(caption_label)
+	var bar := StatBar.new()
+	bar.custom_minimum_size = Vector2(190, 16 if by_ratio else 10)
+	bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	bar.color_by_ratio = by_ratio
+	if not by_ratio:
+		bar.fill_color = color
+	bar.set_values(value, maxi(1, max_value))
+	row.add_child(bar)
+	var ratio: float = float(value) / maxf(1.0, max_value)
+	row.add_child(UiStyle.label(numbers, font_size, StatBar.hp_color(ratio) if by_ratio else color))
+	return row
 
 
 func _add_details(unit: UnitState, ruleset: Ruleset) -> void:

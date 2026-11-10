@@ -17,12 +17,24 @@ var popup_parent: Node
 var unit_views: Dictionary[StringName, UnitView] = {}
 var zoom: float = 4.0
 var cell_size: int = 16
+## Name/HP panel shown during combats (optional).
+var hud: CombatHud
 
 
-## Plays [param result] between the attacker and defender views.
-## [param hp_max] maps "attacker"/"defender" to max HP for the HP strips.
-func play_combat(result: CombatResult, attacker_view: UnitView, defender_view: UnitView, attacker_cell: Vector2i,
-		defender_cell: Vector2i, attacker_max_hp: int, defender_max_hp: int, effective_marks: bool = true) -> void:
+## Plays [param result] between [param attacker] and [param defender]
+## (their states after the combat) on their map views.
+func play_combat(result: CombatResult, state: BattleState, attacker: UnitState, defender: UnitState, attacker_view: UnitView,
+		defender_view: UnitView, attacker_cell: Vector2i, defender_cell: Vector2i, effective_marks: bool = true) -> void:
+	var attacker_max_hp: int = attacker.max_hp(state.ruleset)
+	var defender_max_hp: int = defender.max_hp(state.ruleset)
+	var sounds: Array[StringName] = [hit_sound(attacker), hit_sound(defender)]
+	var animated: bool = _step() > 0.0
+	if hud != null and animated:
+		var names: Array[String] = [attacker.get_display_name(), defender.get_display_name()]
+		var colors: Array[Color] = [_faction_color(state, attacker), _faction_color(state, defender)]
+		var hp: Array[int] = [result.attacker_hp_start, result.defender_hp_start]
+		var max_hp: Array[int] = [attacker_max_hp, defender_max_hp]
+		hud.open(names, colors, hp, max_hp)
 	for strike: Strike in result.strikes:
 		var by_attacker: bool = strike.actor == Strike.Role.ATTACKER
 		var actor: UnitView = attacker_view if by_attacker else defender_view
@@ -37,6 +49,16 @@ func play_combat(result: CombatResult, attacker_view: UnitView, defender_view: U
 		actor.bump(target_cell, step * 0.5)
 		await _wait(step * 0.22)
 		var above: Vector2 = Vector2(target_cell * cell_size) + Vector2(cell_size * 0.5, -1.0)
+		if hud != null and hud.visible:
+			hud.set_hp(1 if by_attacker else 0, strike.target_hp_after, step * 0.5 if strike.hit else 0.0)
+		if strike.kind == Strike.Kind.CHAIN:
+			Sfx.play(&"chain")
+		elif strike.hit:
+			Sfx.play(sounds[0] if by_attacker else sounds[1])
+		if strike.hit and strike.crit:
+			Sfx.play(&"crit")
+		elif not strike.hit:
+			Sfx.play(&"miss")
 		if strike.hit:
 			target.flash()
 			target.animate_hp(float(strike.target_hp_after) / maxf(1.0, target_max), step * 0.5)
@@ -49,6 +71,7 @@ func play_combat(result: CombatResult, attacker_view: UnitView, defender_view: U
 				text += "!"
 			_popup(above, text, color, 8.0 if strike.crit else 7.0)
 			if strike.staggered:
+				Sfx.play(&"stagger")
 				_popup(above + Vector2(0, -7), tr("POPUP_STAGGER"), Color(1.0, 0.6, 0.2), 5.5)
 		else:
 			_popup(above, tr("POPUP_MISS"), UiStyle.TEXT_DIM, 6.0)
@@ -57,11 +80,28 @@ func play_combat(result: CombatResult, attacker_view: UnitView, defender_view: U
 		if strike.kind == Strike.Kind.FOLLOW_UP and step > 0.0:
 			_popup(Vector2(actor_cell * cell_size) + Vector2(cell_size * 0.5, -1.0), tr("POPUP_FOLLOW_UP"), UiStyle.GOOD, 4.0)
 		await _wait(step * 0.78)
+	if result.defender_defeated() or result.attacker_defeated():
+		Sfx.play(&"defeat")
 	if result.defender_defeated():
 		defender_view.fade_out(_step() * 0.9)
 	if result.attacker_defeated():
 		attacker_view.fade_out(_step() * 0.9)
-	await _wait(_step() * 0.9 if result.defender_defeated() or result.attacker_defeated() else 0.0)
+	await _wait(_step() * 0.9 if result.defender_defeated() or result.attacker_defeated() else _step() * 0.4)
+	if hud != null:
+		hud.close()
+
+
+## The sound for [param unit]'s hits: its weapon type's, or the generic one.
+static func hit_sound(unit: UnitState) -> StringName:
+	var weapon: WeaponData = unit.equipped_weapon()
+	if weapon != null and weapon.weapon_type != null and weapon.weapon_type.hit_sound != &"":
+		return weapon.weapon_type.hit_sound
+	return &"hit"
+
+
+static func _faction_color(state: BattleState, unit: UnitState) -> Color:
+	var faction: FactionData = state.get_faction(unit.faction_id)
+	return faction.color.lightened(0.35) if faction != null else Color.WHITE
 
 
 ## A floating number over [param cell] (heals, EXP).

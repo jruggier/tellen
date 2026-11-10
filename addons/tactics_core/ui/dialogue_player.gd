@@ -21,6 +21,10 @@ const SETTING_PORTRAIT_PATH: String = "tactics_core/dialogue/portrait_path"
 
 ## Characters per second; 0 = show lines instantly.
 @export var text_speed: float = 45.0
+## Play the speaker's voice blip every this many letters while typing.
+@export var blip_every: int = 2
+## Minimum seconds between voice blips.
+@export var blip_min_gap: float = 0.05
 ## Seconds a finished line stays up in auto mode.
 @export var auto_delay: float = 1.4
 
@@ -47,6 +51,8 @@ var _sfx := AudioStreamPlayer.new()
 var _typing: bool = false
 var _type_tween: Tween
 var _skip_requested: bool = false
+## Presentation-only randomness (voice pitch wobble); never the battle RNG.
+var _blip_rng := RandomNumberGenerator.new()
 var _chosen: int = -1
 var _warned_assets: Dictionary[String, bool] = {}
 
@@ -243,10 +249,26 @@ func _show_line(step: DialogueRunner.Step) -> void:
 		_type_tween = create_tween()
 		_type_tween.tween_property(_text, "visible_ratio", 1.0, characters / (text_speed * _speed()))
 		_type_tween.finished.connect(func() -> void: _typing = false)
+		var voice: StringName = character.voice if character != null else &"text_blip"
+		var pitch: float = character.voice_pitch if character != null else 0.9
+		var typed: int = 0
+		var letters: int = 0
+		var last_blip: int = -100000
 		while _typing:
 			await get_tree().process_frame
 			if not is_inside_tree():
 				return  # The scene changed mid-line.
+			var shown: int = floori(_text.visible_ratio * step.text.length())
+			while typed < mini(shown, step.text.length()):
+				var letter: String = step.text[typed]
+				typed += 1
+				if letter.strip_edges().is_empty() or ".,!?;:-'\"…()".contains(letter):
+					continue
+				letters += 1
+				var now: int = Time.get_ticks_msec()
+				if (letters - 1) % maxi(1, blip_every) == 0 and now - last_blip >= int(blip_min_gap * 1000.0) and not _fast_forward():
+					last_blip = now
+					Sfx.play(voice, pitch * _blip_rng.randf_range(0.94, 1.06))
 			if _skip_requested:
 				_finish_typing()
 				return

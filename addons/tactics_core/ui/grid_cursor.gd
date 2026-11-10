@@ -64,7 +64,7 @@ func _poll_directions(delta: float) -> void:
 		if Input.is_action_pressed(action):
 			if not _held.has(action):
 				_held[action] = 0.0
-				set_cell(cell + _ACTIONS[action])
+				_step_to(cell + _ACTIONS[action])
 			else:
 				var before: float = _held[action]
 				_held[action] = before + delta
@@ -72,7 +72,7 @@ func _poll_directions(delta: float) -> void:
 					var steps_before: int = floori(maxf(0.0, before - repeat_delay) / repeat_interval)
 					var steps_now: int = floori((_held[action] - repeat_delay) / repeat_interval)
 					if steps_now > steps_before or before < repeat_delay:
-						set_cell(cell + _ACTIONS[action])
+						_step_to(cell + _ACTIONS[action])
 		else:
 			_held.erase(action)
 
@@ -82,7 +82,15 @@ func _unhandled_input(event: InputEvent) -> void:
 		var world: Vector2 = get_global_mouse_position()
 		var target := Vector2i(floori(world.x / cell_size), floori(world.y / cell_size))
 		if bounds.has_point(target):
-			set_cell(target)
+			_step_to(target)
+
+
+## A player-driven move: like [method set_cell], with the cursor sound.
+func _step_to(target: Vector2i) -> void:
+	var before: Vector2i = cell
+	set_cell(target)
+	if cell != before:
+		Sfx.play(&"cursor_move")
 
 
 func _draw() -> void:

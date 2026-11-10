@@ -94,6 +94,7 @@ func activate(direction: int) -> void:
 			settings.forecast_details = not settings.forecast_details
 		&"controls":
 			if direction == 0:
+				Sfx.play(&"confirm")
 				_show_page(PAGE_CONTROLS)
 			return
 		&"reset_keys":
@@ -105,10 +106,12 @@ func activate(direction: int) -> void:
 			return
 		_:
 			if direction == 0 and GameSettings.REMAPPABLE_ACTIONS.has(row_id):
+				Sfx.play(&"confirm")
 				listening_action = row_id
 				_refresh()
 			return
 	settings.apply()
+	Sfx.play(&"menu_move")
 	_refresh()
 
 
@@ -117,6 +120,7 @@ func bind_key(physical_keycode: int) -> void:
 	if listening_action == &"":
 		return
 	settings.remap_key(listening_action, physical_keycode)
+	Sfx.play(&"confirm")
 	listening_action = &""
 	settings.apply()
 	_refresh()
@@ -156,6 +160,7 @@ func _input(event: InputEvent) -> void:
 
 
 func _back() -> void:
+	Sfx.play(&"cancel")
 	if _page == PAGE_CONTROLS:
 		_show_page(PAGE_GENERAL)
 		selected = _index_of(&"controls")
@@ -172,6 +177,7 @@ func _show_page(page: int) -> void:
 
 func _move(delta: int) -> void:
 	selected = posmod(selected + delta, _rows.size())
+	Sfx.play(&"menu_move")
 	_refresh()
 
 
