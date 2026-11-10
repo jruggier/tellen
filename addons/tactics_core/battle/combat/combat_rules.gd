@@ -112,6 +112,12 @@ func roll_crit(rng: SeededRng, crit: int) -> bool:
 	return rng.roll_100(TacticsIds.STREAM_COMBAT) < crit
 
 
+## Intermediate values behind the numbers, as label → value pairs, for the
+## forecast "details" view and the Combat Lab (e.g. weight penalty).
+func debug_details(_attacker: CombatParticipant, _defender: CombatParticipant) -> Dictionary[String, String]:
+	return {}
+
+
 ## Problems with this rules configuration (empty when valid).
 func validate() -> PackedStringArray:
 	return PackedStringArray()

@@ -48,8 +48,33 @@ It wraps the spec's command (`godot --headless --path . -s addons/gut/gut_cmdln.
 - [x] **M1.2** `Ruleset` + abstract rules; Crossroads concrete rules implementing §5–§6. — Abstract CombatRules/GrowthRules/ExpRules/EnemyStatRules + ProficiencyRules; Crossroads implementations wired into the ruleset. All §13.2 formula values, follow-up edges, Stagger rules, true-hit modes, growth modes, EXP and enemy stats tested. 98 tests.
 - [x] **M1.3** Sample data: 8 stats, 4 movement types, 8 weapon types with stagger links, ~11 Beginner + 3 Intermediate classes, weapon table, terrain table, consumables, 6 sample units (Tellen, Sable, Gid + 3 generic), enemy classes. — 88 `.tres` files under `game/data/` + 103 strings; `DataValidator` (tests, debug startup, editor script). 109 tests.
 - [x] **M1.4** `CombatForecast` + `CombatResolver` (headless), all §13.2 fixtures passing. — Fixtures pass against the shipped weapon data; scripted-roll tests cover the §5.7 sequence, Stagger timing, kills, brave; 2,000 seeded combats confirm forecast = resolver. 130 tests.
-- [ ] **M1.5** Combat Lab scene.
-- [ ] **Checkpoint** (Jake tunes numbers in Combat Lab)
+- [x] **M1.5** Combat Lab scene. — `game/scenes/combat_lab.tscn` (framework script `addons/tactics_core/debug/combat_lab.gd`): units or generic classes at any level, editable stats, weapon, terrain, carried Stagger, distance, live forecast + details, seeded N-combat simulation. `UnitStats` (average stats at level, generics) and `CombatSimulation`. 138 tests.
+- [x] **Checkpoint** (Jake tunes numbers in Combat Lab)
+
+### M1 Checkpoint summary
+
+**Built**
+- **Data model** (`addons/tactics_core/data/`): every content type is a Resource with an id, translation-key name, and `validate()`: stats, stat blocks, movement types, weapon types (Stagger links), terrain, weapons, consumables, skills, classes, characters, units, factions.
+- **Rules** (framework abstract, game concrete): `CombatRules`, `GrowthRules`, `ExpRules`, `EnemyStatRules`, plus `ProficiencyRules`. The Crossroads versions implement §5–§6 with every constant exported, wired into `game/rules/crossroads_ruleset.tres`.
+- **Sample data** (`game/data/`, 88 files): the full weapon and terrain tables, 8 weapon types, 4 movement types, 15 classes (11 Beginner, 3 Intermediate, Brigand), consumables and stat boosters, Tellen/Sable/Gid + 3 recruits, 4 factions. All names are in `game/localization/strings.csv`.
+- **Combat**: `CombatForecast` and `CombatResolver`, headless and deterministic. All §13.2 fixtures pass against the shipped data.
+- **DataValidator**: catches broken content in tests, at debug startup, and from the editor.
+- **Combat Lab** for tuning.
+
+**How to try it**
+1. Open `game/scenes/combat_lab.tscn` and press **F6** (Run Current Scene).
+2. Pick a source for each side: a named unit, or "Generic: <class>". Set level, weapon and terrain; stats fill in and stay editable.
+3. The forecast updates live. Press **Simulate** for 1,000 seeded combats (change the count/seed as needed).
+4. To tune: edit `game/rules/crossroads_ruleset.tres` in the Inspector (expand *Combat Rules*, *Growth Rules*, ...) or any weapon/class `.tres`, then press F6 again.
+5. Validate content anytime: open `addons/tactics_core/debug/validate_data.gd` → File → Run.
+
+**Known issues**
+- At 240×135, Inter at small sizes (8 px) is legible but soft. Decide before M2/M3 UI work (see `DECISIONS.md` → M0 Checkpoint).
+- In the Combat Lab, the "Staggered from previous combat" checkboxes draw without a visible box (clicking the text works). Cosmetic; debug tool only.
+- The Lab simulates the active ruleset as saved. Switching hit mode (1RN/2RN/hybrid) or growth mode means editing the ruleset `.tres`.
+- `CombatForecast.build(state, ...)` from battle state comes in M3, when battle state exists (see `DECISIONS.md`).
+
+**Decisions to confirm:** `DECISIONS.md` → "Added during M1" (#14–24).
 
 ## M2 — Grid and movement
 

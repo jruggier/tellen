@@ -112,6 +112,9 @@ From spec §18. Each is a ruleset flag or value, so changing one is a data edit,
 - **Resolver details:** a brave weapon strikes twice in every attack turn, including follow-ups. Stagger is checked once after the attacker's first turn (any hit that the defender survives). Each strike rolls hit, then crit only on a hit. Damage is capped at the target's remaining HP, and a kill ends the combat.
 - **`Strike.Role`, not `Strike.Side`**: Godot has a built-in global `Side` enum that silently shadowed the name.
 - **`tools/run_tests.sh`** wraps the spec's test command because GUT reports "All tests passed" when a test file fails to parse (it skips the file). The wrapper fails the run on any script error.
+- **Combat Lab renders at native window resolution** (it turns off viewport scaling while open and restores it on exit), because a tuning tool with dozens of fields can't fit in 240×135. It is a debug tool: it refuses to run in release builds, and M8's export presets will exclude `game/scenes/combat_lab.tscn` and `addons/tactics_core/debug/`.
+- **Average stats at a level** (`UnitStats.average_at_level`): personal base + class base + round(combined growth × levels gained / 100), clamped to class caps; Build gets the class bonus, Mov comes from the class. Generic units use the enemy stat rules.
+- **`CombatRules.debug_details()`** exposes intermediate values (weight penalty, effective Spd/Skl, Skill lead, hit/avoid/crit totals) for the Lab and the M3 forecast "details" toggle, without the framework knowing game formulas.
 - **The weapon type id is also its proficiency id**; movement tactics (`ground`, `sky`, `heavy`) use the movement type id.
 
 ---

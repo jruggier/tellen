@@ -231,6 +231,20 @@ func true_hit_chance(hit: int) -> float:
 			return float(hit)
 
 
+func debug_details(attacker: CombatParticipant, defender: CombatParticipant) -> Dictionary[String, String]:
+	return {
+		"Weight penalty": str(weight_penalty(attacker)),
+		"Effective Spd": str(effective_speed(attacker)),
+		"Effective Skl (follow-ups)": str(effective_skill_for_follow_ups(attacker)),
+		"Skill lead": "%+d" % skill_lead(attacker, defender),
+		"Hit total": str(hit_total(attacker)),
+		"Avoid (own)": str(avoid_total(attacker)),
+		"Crit total": str(crit_total(attacker)),
+		"Crit evade (own)": str(crit_evade_total(attacker)),
+		"Attack": str(attack_power(attacker, defender)),
+	}
+
+
 func validate() -> PackedStringArray:
 	var problems := PackedStringArray()
 	for value_name: String in ["hit_skl_divisor", "avoid_dex_divisor", "crit_spd_divisor", "crit_evade_skl_divisor"]:
