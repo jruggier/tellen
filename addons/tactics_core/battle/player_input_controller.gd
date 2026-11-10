@@ -9,7 +9,8 @@ extends Node
 ## ITEM_ACTIONS), Trade (TARGETING → TRADING) or Wait → ANIMATING →
 ## LEVEL_UP (if any) → IDLE. Cancel steps back; cancelling the action menu
 ## undoes the move unless a free action (equip, trade, discard) locked it in.
-## INSPECT shows another unit's ranges.
+## INSPECT shows another unit's ranges. PAUSE_MENU (menu action) offers
+## End Turn and the objective. DISABLED outside the player's phase.
 ##
 ## [method confirm], [method cancel], [method move_selection] and the
 ## cursor's cell are the inputs, so tests can drive everything without
@@ -18,11 +19,19 @@ extends Node
 signal state_changed(new_state: State)
 ## Emitted when an action (and its animations and level-ups) has finished.
 signal action_finished
+## The player asked to end the phase (end_turn action or pause menu).
+signal end_turn_requested
+## The player picked a pause-menu entry other than End Turn.
+signal pause_option_chosen(option_id: StringName)
 
-enum State { IDLE, SELECTED, MOVING, ACTION_MENU, WEAPON_MENU, TARGETING, ITEM_MENU, ITEM_ACTIONS, TRADING, ANIMATING, LEVEL_UP, INSPECT }
+enum State { IDLE, SELECTED, MOVING, ACTION_MENU, WEAPON_MENU, TARGETING, ITEM_MENU, ITEM_ACTIONS, TRADING, ANIMATING, LEVEL_UP, INSPECT, PAUSE_MENU, DISABLED }
 enum TargetMode { ATTACK, HEAL, TRADE }
 
-var state: State = State.IDLE
+var state: State = State.DISABLED
+## Extra pause-menu entries ({id, text}) supplied by the battle flow.
+var pause_options: Array[Dictionary] = []
+## The map's objectives (for Seize / Escape actions).
+var objectives: Array[Objective] = []
 var controller: BattleController
 var cursor: GridCursor
 var overlay: RangeOverlay
@@ -81,8 +90,14 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion and state == State.TARGETING:
 		_hover_target_under_mouse()
 		return
+	if state == State.DISABLED or state == State.ANIMATING or state == State.MOVING:
+		return
 	var handled: bool = true
-	if event.is_action_pressed(&"confirm"):
+	if event.is_action_pressed(&"end_turn") and not event.is_echo() and state == State.IDLE:
+		end_turn_requested.emit()
+	elif event.is_action_pressed(&"menu") and not event.is_echo() and state == State.IDLE:
+		open_pause_menu()
+	elif event.is_action_pressed(&"confirm"):
 		confirm()
 	elif event.is_action_pressed(&"cancel"):
 		cancel()
@@ -112,7 +127,7 @@ func _unhandled_input(event: InputEvent) -> void:
 ## (the map cursor moves itself in the other states).
 func move_selection(direction: Vector2i) -> void:
 	match state:
-		State.ACTION_MENU, State.WEAPON_MENU, State.ITEM_MENU:
+		State.ACTION_MENU, State.WEAPON_MENU, State.ITEM_MENU, State.PAUSE_MENU:
 			menu.move(direction.y if direction.y != 0 else direction.x)
 		State.ITEM_ACTIONS:
 			sub_menu.move(direction.y if direction.y != 0 else direction.x)
@@ -143,7 +158,7 @@ func confirm() -> void:
 				_move_to(cursor.cell)
 			elif other != null and other != _selected and other.faction_id == player_faction and other.is_ready() and not other.has_moved:
 				_select(other)
-		State.ACTION_MENU, State.WEAPON_MENU, State.ITEM_MENU:
+		State.ACTION_MENU, State.WEAPON_MENU, State.ITEM_MENU, State.PAUSE_MENU:
 			menu.accept()
 		State.ITEM_ACTIONS:
 			sub_menu.accept()
@@ -192,8 +207,31 @@ func cancel() -> void:
 			if not trade_panel.cancel_pick():
 				trade_panel.close()
 				_open_action_menu()
-		State.INSPECT:
+		State.INSPECT, State.PAUSE_MENU:
 			_deselect()
+
+
+## Starts the player's phase: input on, cursor on the first ready unit.
+func begin_player_phase() -> void:
+	_deselect()
+	for unit: UnitState in controller.state.units_of(player_faction):
+		if unit.is_ready():
+			cursor.set_cell(unit.cell)
+			break
+
+
+## Turns input off (other factions' phases, victory/defeat).
+func disable() -> void:
+	_deselect()
+	_set_state(State.DISABLED)
+
+
+## Opens the pause menu (End Turn plus [member pause_options]).
+func open_pause_menu() -> void:
+	var options: Array[Dictionary] = [{"id": &"end_turn", "text": tr("UI_END_TURN")}]
+	options.append_array(pause_options)
+	menu.open(options, Vector2(80, 300), tr("UI_PAUSE_TITLE"))
+	_set_state(State.PAUSE_MENU)
 
 
 ## Expands the unit panel (map) or the forecast details (targeting).
@@ -306,6 +344,10 @@ func _open_action_menu() -> void:
 		options.append({"id": &"items", "text": tr("ACTION_ITEMS")})
 	if not CombatContext.adjacent_allies(battle, _selected, _selected.cell).is_empty():
 		options.append({"id": &"trade", "text": tr("ACTION_TRADE")})
+	if SeizeCommand.new(_selected.id, objectives).can_execute(battle):
+		options.insert(0, {"id": &"seize", "text": tr("ACTION_SEIZE")})
+	if EscapeCommand.new(_selected.id, objectives).can_execute(battle):
+		options.insert(0, {"id": &"escape", "text": tr("ACTION_ESCAPE")})
 	options.append({"id": &"wait", "text": tr("ACTION_WAIT")})
 	menu.open(options, _menu_position())
 	_set_state(State.ACTION_MENU)
@@ -314,6 +356,12 @@ func _open_action_menu() -> void:
 
 func _on_menu_chosen(option_id: StringName) -> void:
 	match state:
+		State.PAUSE_MENU:
+			_deselect()
+			if option_id == &"end_turn":
+				end_turn_requested.emit()
+			else:
+				pause_option_chosen.emit(option_id)
 		State.ACTION_MENU:
 			_on_action(option_id)
 		State.WEAPON_MENU:
@@ -342,6 +390,15 @@ func _on_action(action: StringName) -> void:
 		&"wait":
 			menu.close()
 			controller.execute(WaitCommand.new(_selected.id))
+			_finish_action()
+		&"seize":
+			menu.close()
+			controller.execute(SeizeCommand.new(_selected.id, objectives))
+			_finish_action()
+		&"escape":
+			menu.close()
+			controller.execute(EscapeCommand.new(_selected.id, objectives))
+			_refresh_views()
 			_finish_action()
 
 
@@ -480,7 +537,7 @@ func _do_attack(target: UnitState) -> void:
 			toast.show_message(tr("UI_ITEM_RECEIVED") % [controller.state.get_unit(outcome.by_unit_id).get_display_name(), item.get_display_name()])
 		for item: ItemData in outcome.items_lost:
 			toast.show_message(tr("UI_ITEM_LOST") % item.get_display_name())
-	await _show_progress(command.reports.values())
+	await show_progress(command.reports.values())
 	_finish_action()
 
 
@@ -494,13 +551,16 @@ func _do_heal(target: UnitState) -> void:
 	unit_views[target.id].animate_hp(float(target.current_hp) / maxf(1.0, target.max_hp(controller.state.ruleset)), 0.4)
 	await presenter.pause(0.6)
 	_refresh_views()
-	await _show_progress([command.report])
+	await show_progress([command.report])
 	_finish_action()
 
 
-## EXP popups, proficiency toasts and level-up panels, in order.
-func _show_progress(reports: Array) -> void:
+## EXP popups, proficiency toasts and level-up panels, in order. Level-up
+## panels wait for confirm (also during other factions' phases); the
+## previous input state is restored afterwards.
+func show_progress(reports: Array) -> void:
 	var battle: BattleState = controller.state
+	var previous: State = state
 	for entry: Variant in reports:
 		var report: ProgressionService.Report = entry as ProgressionService.Report
 		var unit: UnitState = battle.get_unit(report.unit_id)
@@ -515,6 +575,7 @@ func _show_progress(reports: Array) -> void:
 			_set_state(State.LEVEL_UP)
 			await _level_up_closed
 			level_panel.close()
+			_set_state(previous)
 
 
 func _finish_action() -> void:

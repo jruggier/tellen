@@ -18,43 +18,34 @@ var threat_map := ThreatMap.new()
 var _undo_stack: Array[Command] = []
 
 
-## Builds the battle state from [param map] with [param ruleset].
-## Unit ids come from placements, else the unit/class id with a counter.
-func setup(map: BattleMap, ruleset: Ruleset, master_seed: int) -> void:
+## Builds the battle state from [param map] with [param ruleset] on
+## difficulty [param difficulty]. Turn 1 starts with [method start].
+func setup(map: BattleMap, ruleset: Ruleset, master_seed: int, difficulty: StringName = &"normal") -> void:
 	var layer: TileMapLayer = map.get_terrain_layer()
 	var grid: BattleGrid = BattleGrid.from_tile_map_layer(layer, ruleset) if layer != null else BattleGrid.new()
 	state = BattleState.new(ruleset, grid)
 	state.map_id = map.map_id
 	state.factions = map.factions.duplicate()
+	state.difficulty_id = difficulty
 	state.rng = SeededRng.new(master_seed)
 	TacticsRng.set_rng(state.rng)
-	var counters: Dictionary[StringName, int] = {}
 	for placement: UnitPlacement in map.placements:
-		var problems: PackedStringArray = placement.validate()
-		if not problems.is_empty():
-			for problem: String in problems:
-				TacticsLog.warn("BattleController", problem)
+		var unit: UnitState = UnitFactory.from_placement(state, placement)
+		if unit == null:
 			continue
-		if state.get_faction(placement.faction_id) == null:
-			TacticsLog.warn("BattleController", "Placement at %s uses faction '%s', which the map does not list" % [placement.cell, placement.faction_id])
-			continue
-		var unit_id: StringName = placement.unit_id
-		if unit_id == &"":
-			var base: StringName = placement.unit_data.id if placement.unit_data != null else placement.class_data.id
-			counters[base] = counters.get(base, 0) + 1
-			unit_id = base if placement.unit_data != null and counters[base] == 1 else StringName("%s_%d" % [base, counters[base]])
-		var unit: UnitState
-		if placement.unit_data != null:
-			unit = UnitState.from_unit_data(unit_id, placement.unit_data, ruleset, placement.faction_id, placement.cell)
-		else:
-			unit = UnitState.generic(unit_id, placement.class_data, placement.level, ruleset, placement.faction_id, placement.cell, placement.items, &"normal", placement.drops)
-		unit.is_boss = placement.is_boss
-		if placement.unit_data != null and not placement.drops.is_empty():
-			for item: ItemData in placement.drops:
-				unit.inventory.append(InventorySlot.of(item, true))
 		if state.grid.move_cost(placement.cell, unit.movement_type_id()) < 1:
-			TacticsLog.warn("BattleController", "'%s' is placed on impassable terrain at %s" % [unit_id, placement.cell])
+			TacticsLog.warn("BattleController", "'%s' is placed on impassable terrain at %s" % [unit.id, placement.cell])
 		state.add_unit(unit)
+	ReinforcementRules.queue(state, map.reinforcements)
+	state.trigger_regions = map.trigger_regions.duplicate()
+
+
+## Starts turn 1 (first faction's phase). Returns its phase report.
+func start() -> TurnManager.PhaseReport:
+	var report: TurnManager.PhaseReport = TurnManager.start_battle(state)
+	TacticsEvents.turn_started.emit(state.turn)
+	TacticsEvents.phase_started.emit(report.faction_id, state.turn)
+	return report
 
 
 ## Validates and applies [param command]. Returns false if it was illegal.

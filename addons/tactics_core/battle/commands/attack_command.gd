@@ -63,6 +63,8 @@ func execute(state: BattleState) -> void:
 
 	attacker.current_hp = result.attacker_hp_after
 	defender.current_hp = result.defender_hp_after
+	if AIRules.is_asleep(defender):
+		AIRules.wake(state, defender)
 	if result.defender_defeated():
 		defeats.append(DefeatRules.apply(state, defender, attacker))
 	if result.attacker_defeated():

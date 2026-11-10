@@ -146,14 +146,39 @@ _Post-M1 change: the game is native 1920×1080 with 64 px cells (16 px art at 4�
 
 **Decisions to confirm:** `DECISIONS.md` → "Added during M3" (#25–28).## M4 — Turn loop, AI, objectives
 
-- [ ] **M4.1** `TurnManager` phases, end turn, phase banners, per-phase cleanup.
-- [ ] **M4.2** AI controller, scorer and all §10 behaviors; AI debug scores.
-- [ ] **M4.3** Objectives + defeat conditions; victory/defeat screens.
-- [ ] **M4.4** Reinforcements with telegraph; trigger regions; group aggro.
-- [ ] **M4.5** Enemy stat generation (§6.6) with difficulty setting.
-- [ ] **Checkpoint** (first fully playable map; profile performance)
+- [x] **M4.1** `TurnManager` phases, end turn, phase banners, per-phase cleanup. — Pure `TurnManager` + `EndPhaseCommand`; `BattleFlow` sequences phases; Stagger clears and units refresh at phase end; fort healing at phase start; End Turn (F / pause menu C), auto end turn; `PhaseBanner`; turn + objective line.
+- [x] **M4.2** AI controller, scorer and all §10 behaviors; AI debug scores. — `AIProfile` (7 behaviors + weights), `AIScorer` (forecast-based, exact kill chance), `AIPlanner` (pure, deterministic, §10 turn order), `AIController` (animated). F3 + inspect an enemy shows its scores (★ = its choice). Profiles in `game/data/ai_profiles/`.
+- [x] **M4.3** Objectives + defeat conditions; victory/defeat screens. — Rout, Seize, Defeat Boss, Survive, Defend Tile, Escape; protagonist / all units / protected unit / turn limit; Seize and Escape actions; objective panel; result screen (confirm restarts).
+- [x] **M4.4** Reinforcements with telegraph; trigger regions; group aggro. — `Reinforcement` + `ReinforcementRules` (never act on arrival, wait if blocked, warning markers the player phase before); `TriggerRegion` (wake groups, set flags; undone by cancelling the move); AGGRO_REGION groups wake together, also when attacked.
+- [x] **M4.5** Enemy stat generation (§6.6) with difficulty setting. — `BattleScene.difficulty` → generic units via `UnitFactory`; named units unaffected. 239 tests.
+- [x] **Checkpoint** (first fully playable map; profile performance)
 
-## M5 — Skills, awakening, chain attacks, classes
+### M4 Checkpoint summary
+
+**Built**
+- **A full turn loop**: Player Phase → Enemy Phase banners, turn counter and objective at the top, End Turn (**F**, or **C** → End Turn), automatic end of turn once every unit has acted. Units on forts heal 20% at the start of their phase. Stagger clears at every phase end.
+- **Enemy AI** with all seven §10 behaviors, scoring each (tile, target) with the real forecast: expected damage, exact chance to kill, Stagger chance, target priority (protagonist, healers, wounded, effectiveness), risk from counters, terrain. Units act in §10 order. Plans are deterministic.
+- **Objectives**: Rout (default), Seize, Defeat Boss, Survive, Defend Tile, Escape; defeat if the protagonist falls or all units fall (defaults), a protected unit falls, or a turn limit passes. Pause menu → **Objective** lists them. Victory/defeat screen; confirm plays again.
+- **Reinforcements** with red "!" warnings on their arrival tiles during the player phase before they come; **trigger regions** that wake AI groups; **difficulty** for generic enemy stats.
+- **Arena content**: Charge brigand, Hold brigand, a sleeping Hexcaller that wakes when you reach the bridge (or attack it), a Coward outrider, a Guard archer, a Stationary armor at the fortress door, a Guard boss and a Healer inside, and two reinforcements arriving from the east on turn 3.
+
+**How to try it** (`game/maps/test_arena.tscn`, F6)
+1. Play turns: move, attack, then **F** to end your turn and watch the enemy phase.
+2. Cross the bridge to wake the Hexcaller's group. Watch the east edge on turn 3 for the red "!" warnings.
+3. Hurt the Outrider (O) below 40% HP: it runs away. The archer (H, south of the river) only fights near its post.
+4. **F3**, then confirm on an enemy: green numbers are its attack scores from each tile; ★ marks its choice.
+5. **C** → Objective. Defeat every enemy to win; lose Tellen and it's over.
+6. Difficulty: select the BattleScene root in `battle_scene.tscn` → Inspector → *Difficulty* (`normal` / `hard` / `maddening`). Hosting a map with F6 uses `normal` until settings exist (M8).
+
+**Performance (§2a.9)**: 40×40 map, 40 units, threat overlay on: 8.3 ms per frame (~120 fps, 9.8 ms p95). A full 20-unit enemy phase takes ~390 ms of logic (~20 ms per unit; budget 50 ms). Slowest single AI decision in tests: 14 ms.
+
+**Known issues / not yet built**
+- AI units don't use items (Vulneraries) or trade, and healers only heal (no attacking).
+- Level-ups that happen during the enemy phase wait for a confirm press.
+- Restart after victory/defeat replays the same map; title/flow comes in M8.
+- Class initials still collide on placeholder units.
+
+**Decisions to confirm:** `DECISIONS.md` → "Added during M4" (#29–37).## M5 — Skills, awakening, chain attacks, classes
 
 - [ ] **M5.1** Skill hook system + 5 slots + class abilities + sample skills.
 - [ ] **M5.2** Both awakening rules, signature attack action, UI meter/cooldown.

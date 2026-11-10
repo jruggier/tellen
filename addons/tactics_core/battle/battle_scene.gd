@@ -12,9 +12,12 @@ extends Node
 ## │   ├── <map>  ├── RangeOverlay  ├── PathArrow  ├── Units  └── GridCursor
 ## ├── BattleCamera
 ## ├── HUD (CanvasLayer): TerrainPanel, UnitInfoPanel, ForecastPanel, menus,
-## │   LevelUpPanel, TradePanel, Toast, hint line
+## │   LevelUpPanel, TradePanel, Toast, turn/objective line, hint line,
+## │   PhaseBanner, ObjectivePanel, ResultPanel
 ## ├── CombatPresenter
 ## ├── PlayerInputController
+## ├── AIController
+## ├── BattleFlow (phases, AI turns, objectives, victory/defeat)
 ## └── (debug builds) DebugOverlay inside World, toggled with F3
 ## [/codeblock]
 
@@ -26,6 +29,12 @@ extends Node
 @export var move_seconds_per_cell: float = 0.07
 ## Seconds per combat strike; 0 = instant.
 @export var seconds_per_strike: float = 0.45
+## Phase banner duration; 0 = no banner.
+@export var phase_banner_seconds: float = 1.1
+## Pause between AI units; 0 = none.
+@export var ai_seconds_between_units: float = 0.25
+## Difficulty id for generic enemy stats (see the enemy stat rules).
+@export var difficulty: StringName = &"normal"
 
 ## Set by [BattleMap] when a map scene is run directly.
 var map_instance: BattleMap
@@ -48,6 +57,15 @@ var trade_panel: TradePanel
 var toast: Toast
 var presenter: CombatPresenter
 var hint_label: Label
+var turn_label: Label
+var banner: PhaseBanner
+var objective_panel: ObjectivePanel
+var result_panel: ResultPanel
+var flow: BattleFlow
+var ai: AIController
+## The map's objectives and defeat conditions (empty = defaults).
+var objectives: Array[Objective] = []
+var defeat_conditions: Array[DefeatCondition] = []
 var unit_views: Dictionary[StringName, UnitView] = {}
 ## Debug overlay (null in release builds).
 var debug_overlay: DebugOverlay
@@ -67,7 +85,9 @@ func _ready() -> void:
 	controller = BattleController.new()
 	controller.name = "BattleController"
 	add_child(controller)
-	controller.setup(map_instance, ruleset, seed)
+	controller.setup(map_instance, ruleset, seed, difficulty)
+	objectives = map_instance.objectives.duplicate()
+	defeat_conditions = map_instance.defeat_conditions.duplicate()
 	_build_world(ruleset)
 	_build_hud()
 	_build_input()
@@ -82,8 +102,21 @@ func _ready() -> void:
 	cursor.set_cell(start, true)
 	camera.snap_to(cursor.cell_center(start))
 	_on_cursor_moved(start)
-	TacticsLog.info("BattleScene", "Battle '%s' started: %d units, seed %d" % [controller.state.map_id, controller.state.all_units().size(), seed])
+	TacticsLog.info("BattleScene", "Battle '%s' started: %d units, seed %d, %s" % [controller.state.map_id, controller.state.all_units().size(), seed, difficulty])
 	TacticsEvents.battle_started.emit(controller.state.map_id)
+	ai = AIController.new()
+	ai.name = "AIController"
+	ai.scene = self
+	ai.seconds_between_units = ai_seconds_between_units
+	add_child(ai)
+	flow = BattleFlow.new()
+	flow.name = "BattleFlow"
+	flow.scene = self
+	flow.ai = ai
+	ai.flow = flow
+	add_child(flow)
+	flow.battle_finished.connect(_on_battle_finished)
+	flow.start()
 
 
 func _build_world(ruleset: Ruleset) -> void:
@@ -105,15 +138,7 @@ func _build_world(ruleset: Ruleset) -> void:
 	units_layer.name = "Units"
 	world.add_child(units_layer)
 	for unit: UnitState in controller.state.all_units():
-		var view := UnitView.new()
-		view.name = String(unit.id)
-		view.cell_size = cell_px
-		view.zoom = zoom
-		view.seconds_per_cell = move_seconds_per_cell
-		var faction: FactionData = controller.state.get_faction(unit.faction_id)
-		view.setup(unit, faction.color if faction != null else Color.WHITE, ruleset)
-		units_layer.add_child(view)
-		unit_views[unit.id] = view
+		add_unit_view(unit)
 	cursor = GridCursor.new()
 	cursor.name = "GridCursor"
 	cursor.cell_size = cell_px
@@ -152,6 +177,15 @@ func _build_hud() -> void:
 	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	top.add_child(spacer)
+	turn_label = UiStyle.label("", 26)
+	turn_label.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	turn_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85))
+	turn_label.add_theme_constant_override("outline_size", 6)
+	top.add_child(turn_label)
+	var spacer_right := Control.new()
+	spacer_right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	spacer_right.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	top.add_child(spacer_right)
 	forecast_panel = ForecastPanel.new()
 	forecast_panel.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 	top.add_child(forecast_panel)
@@ -167,6 +201,13 @@ func _build_hud() -> void:
 	hud.add_child(level_panel)
 	toast = Toast.new()
 	hud.add_child(toast)
+	banner = PhaseBanner.new()
+	banner.seconds = phase_banner_seconds
+	hud.add_child(banner)
+	objective_panel = ObjectivePanel.new()
+	hud.add_child(objective_panel)
+	result_panel = ResultPanel.new()
+	hud.add_child(result_panel)
 	hint_label = Label.new()
 	hint_label.size_flags_horizontal = Control.SIZE_SHRINK_END
 	hint_label.size_flags_vertical = Control.SIZE_SHRINK_END
@@ -200,11 +241,77 @@ func _build_input() -> void:
 	input.level_panel = level_panel
 	input.toast = toast
 	input.trade_panel = trade_panel
+	input.objectives = objectives
+	input.pause_options = [{"id": &"objective", "text": tr("UI_OBJECTIVE_TITLE")}]
+	input.pause_option_chosen.connect(_on_pause_option)
 	input.player_faction = _player_faction()
 	add_child(input)
 	input.state_changed.connect(func(_s: PlayerInputController.State) -> void: _update_hint())
 	cursor.cell_changed.connect(_on_cursor_moved)
 	_update_hint()
+
+
+## Creates the map view for [param unit] (battle start and reinforcements).
+func add_unit_view(unit: UnitState) -> void:
+	if unit_views.has(unit.id):
+		return
+	var ruleset: Ruleset = controller.state.ruleset
+	var view := UnitView.new()
+	view.name = String(unit.id)
+	view.cell_size = ruleset.tile_source_size
+	view.zoom = float(ruleset.tile_display_scale)
+	view.seconds_per_cell = move_seconds_per_cell
+	var faction: FactionData = controller.state.get_faction(unit.faction_id)
+	view.setup(unit, faction.color if faction != null else Color.WHITE, ruleset)
+	units_layer.add_child(view)
+	unit_views[unit.id] = view
+
+
+## Syncs every unit view with the battle state.
+func refresh_views() -> void:
+	for unit: UnitState in controller.state.all_units():
+		var view: UnitView = unit_views.get(unit.id)
+		if view != null:
+			view.refresh(unit, controller.state.ruleset)
+			if unit.is_alive():
+				view.place_at(unit.cell)
+
+
+## "Turn N · objective (progress)" at the bottom center.
+func update_turn_label() -> void:
+	var state: BattleState = controller.state
+	var goal: Objective = ObjectiveRules.effective_objectives(objectives)[0]
+	var progress: String = goal.progress(state)
+	turn_label.text = "%s %d    %s%s" % [tr("UI_TURN"), state.turn, goal.describe(), ("  (%s)" % progress) if not progress.is_empty() else ""]
+
+
+func _on_pause_option(option_id: StringName) -> void:
+	if option_id == &"objective":
+		objective_panel.show_objectives(controller.state, objectives, defeat_conditions)
+
+
+func _on_battle_finished(victory: bool) -> void:
+	var state: BattleState = controller.state
+	var lines: PackedStringArray = [tr("UI_RESULT_TURNS") % state.turn]
+	result_panel.show_result(victory, lines)
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if objective_panel.visible and (event.is_action_pressed(&"confirm") or event.is_action_pressed(&"cancel")):
+		objective_panel.close()
+		get_viewport().set_input_as_handled()
+	elif result_panel.visible and event.is_action_pressed(&"confirm") and not event.is_echo():
+		get_viewport().set_input_as_handled()
+		restart()
+
+
+## Restarts this battle from the beginning.
+func restart() -> void:
+	var path: String = map_instance.scene_file_path if map_instance != null else ""
+	if map_scene == null and not path.is_empty():
+		SceneRouter.go_to(path)
+	else:
+		get_tree().reload_current_scene()
 
 
 func _on_cursor_moved(cell: Vector2i) -> void:
@@ -225,6 +332,8 @@ func _update_hint() -> void:
 		PlayerInputController.State.ANIMATING: "UI_HINT_ANIMATING",
 		PlayerInputController.State.LEVEL_UP: "UI_HINT_LEVEL_UP",
 		PlayerInputController.State.INSPECT: "UI_HINT_INSPECT",
+		PlayerInputController.State.PAUSE_MENU: "UI_HINT_MENU",
+		PlayerInputController.State.DISABLED: "",
 	}
 	var key: String = keys[input.state]
 	hint_label.text = tr(key) if not key.is_empty() else ""

@@ -10,7 +10,11 @@ var unit_id: StringName
 var destination: Vector2i
 ## Filled on execute: the cells walked, start and destination included.
 var path: Array[Vector2i] = []
+## Trigger regions that fired when the unit stopped.
+var fired_regions: Array[TriggerRegion] = []
 var _from: Vector2i
+var _flags_before: Dictionary = {}
+var _awake_before: Dictionary[StringName, bool] = {}
 
 
 func _init(moving_unit_id: StringName = &"", to_cell: Vector2i = Vector2i.ZERO) -> void:
@@ -35,8 +39,13 @@ func execute(state: BattleState) -> void:
 	var unit: UnitState = state.get_unit(unit_id)
 	path = RangeCalculator.movement(state, unit).path_to(destination)
 	_from = unit.cell
+	_flags_before = state.flags.duplicate(true)
+	_awake_before.clear()
+	for other: UnitState in state.all_units():
+		_awake_before[other.id] = other.ai_awake
 	state.move_unit(unit_id, destination)
 	unit.has_moved = true
+	fired_regions = TriggerRules.on_unit_moved(state, state.trigger_regions, unit)
 
 
 func can_undo() -> bool:
@@ -47,6 +56,9 @@ func undo(state: BattleState) -> void:
 	var unit: UnitState = state.get_unit(unit_id)
 	state.move_unit(unit_id, _from)
 	unit.has_moved = false
+	state.flags = _flags_before.duplicate(true)
+	for other: UnitState in state.all_units():
+		other.ai_awake = _awake_before.get(other.id, other.ai_awake)
 
 
 func emit_events(events: Node) -> void:

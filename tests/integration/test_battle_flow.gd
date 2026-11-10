@@ -47,6 +47,8 @@ func _make_scene() -> BattleScene:
 	scene.battle_seed = 7
 	scene.move_seconds_per_cell = 0.0
 	scene.seconds_per_strike = 0.0
+	scene.phase_banner_seconds = 0.0
+	scene.ai_seconds_between_units = 0.0
 	add_child_autofree(scene)
 	return scene
 
@@ -233,6 +235,8 @@ func _scene_with_adjacent_brigand() -> BattleScene:
 	scene.battle_seed = 7
 	scene.move_seconds_per_cell = 0.0
 	scene.seconds_per_strike = 0.0
+	scene.phase_banner_seconds = 0.0
+	scene.ai_seconds_between_units = 0.0
 	add_child_autofree(scene)
 	return scene
 
@@ -287,8 +291,10 @@ func test_defeat_drop_and_level_up_flow() -> void:
 	assert_eq(tellen.level, 2)
 	input.confirm()
 	await wait_process_frames(2)
-	assert_eq(input.state, PlayerInputController.State.IDLE)
 	assert_false(scene.level_panel.visible)
+	assert_true(scene.flow.finished, "the only enemy fell: Rout complete")
+	assert_true(scene.result_panel.visible, "victory screen")
+	assert_eq(input.state, PlayerInputController.State.DISABLED)
 	assert_false(brigand.is_alive())
 	assert_false(scene.unit_views[&"brigand_1"].visible)
 	assert_eq(tellen.inventory.back().item.id, &"elixir", "drop received")
@@ -301,6 +307,8 @@ func test_heal_flow() -> void:
 	scene.map_instance = map
 	scene.move_seconds_per_cell = 0.0
 	scene.seconds_per_strike = 0.0
+	scene.phase_banner_seconds = 0.0
+	scene.ai_seconds_between_units = 0.0
 	add_child_autofree(scene)
 	var state: BattleState = scene.controller.state
 	var tellen: UnitState = state.get_unit(&"tellen")
@@ -434,3 +442,46 @@ func test_debug_overlay_toggles_and_tracks_movement_type() -> void:
 	assert_eq(debug.get_movement_type_id(), &"foot", "empty cell: first movement type")
 	debug.toggle()
 	assert_false(debug.visible)
+
+
+func test_end_turn_runs_enemy_phase_and_returns() -> void:
+	var scene: BattleScene = _scene_with_adjacent_brigand()
+	var state: BattleState = scene.controller.state
+	assert_eq(state.turn, 1)
+	assert_eq(scene.input.state, PlayerInputController.State.IDLE)
+	scene.input.end_turn_requested.emit()
+	await wait_process_frames(3)
+	assert_eq(state.turn, 2, "back to the player on turn 2")
+	assert_eq(state.current_faction().id, &"player")
+	assert_eq(scene.input.state, PlayerInputController.State.IDLE)
+	var types: Array[String] = []
+	for entry: Dictionary in scene.controller.action_log.entries():
+		types.append(str(entry["type"]))
+	assert_true(types.has("attack"), "the adjacent brigand attacked: %s" % [types])
+	assert_eq(types.count("end_phase"), 2)
+	assert_true(state.get_unit(&"tellen").is_ready(), "player units ready again")
+
+
+func test_auto_end_turn_when_all_acted() -> void:
+	var scene: BattleScene = _make_scene()
+	var state: BattleState = scene.controller.state
+	for unit_id: StringName in [&"tellen", &"recruit_spearhand"]:
+		scene.cursor.set_cell(state.get_unit(unit_id).cell)
+		scene.input.confirm()
+		scene.input.confirm()
+		_choose(scene, &"wait")
+	await wait_process_frames(3)
+	assert_eq(state.turn, 2, "last unit waited: enemy phase ran automatically")
+
+
+func test_pause_menu_end_turn_and_objective() -> void:
+	var scene: BattleScene = _make_scene()
+	scene.input.open_pause_menu()
+	assert_eq(scene.input.state, PlayerInputController.State.PAUSE_MENU)
+	_choose(scene, &"objective")
+	assert_true(scene.objective_panel.visible)
+	scene.objective_panel.close()
+	scene.input.open_pause_menu()
+	_choose(scene, &"end_turn")
+	await wait_process_frames(3)
+	assert_eq(scene.controller.state.turn, 2)

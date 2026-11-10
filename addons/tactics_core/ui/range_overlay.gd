@@ -13,6 +13,8 @@ var cell_size: int = 16
 var _move: Dictionary[Vector2i, bool] = {}
 var _attack: Dictionary[Vector2i, bool] = {}
 var _threat: Dictionary[Vector2i, bool] = {}
+var _warnings: Array[Vector2i] = []
+var _time: float = 0.0
 
 
 ## Shows a unit's movement and attack cells (attack cells under movement
@@ -40,6 +42,22 @@ func show_threat(cells: Dictionary[Vector2i, bool]) -> void:
 
 func is_threat_visible() -> bool:
 	return not _threat.is_empty()
+
+
+## Shows reinforcement warning markers on [param cells].
+func show_warnings(cells: Array[Vector2i]) -> void:
+	_warnings = cells
+	queue_redraw()
+
+
+func get_warnings() -> Array[Vector2i]:
+	return _warnings
+
+
+func _process(delta: float) -> void:
+	if not _warnings.is_empty():
+		_time += delta
+		queue_redraw()
 
 
 func _draw() -> void:
@@ -72,3 +90,11 @@ func _draw() -> void:
 			for dx: int in [4, 11]:
 				draw_rect(Rect2(origin + Vector2(dx, dy), Vector2(1, 1)), dot)
 		draw_rect(Rect2(origin, Vector2(s, s)), Color(move_color, 0.85), false, 1.0)
+	var pulse: float = 0.55 + 0.45 * sin(_time * 5.0)
+	for cell: Vector2i in _warnings:
+		# red striped frame with an exclamation mark
+		var origin := Vector2(cell) * s
+		draw_rect(Rect2(origin + Vector2(1, 1), Vector2(s - 2, s - 2)), Color(0.9, 0.1, 0.1, 0.25 * pulse))
+		draw_rect(Rect2(origin + Vector2(1, 1), Vector2(s - 2, s - 2)), Color(1.0, 0.2, 0.2, pulse), false, 1.0)
+		draw_rect(Rect2(origin + Vector2(7, 3), Vector2(2, 7)), Color(1, 0.95, 0.9, pulse))
+		draw_rect(Rect2(origin + Vector2(7, 11), Vector2(2, 2)), Color(1, 0.95, 0.9, pulse))

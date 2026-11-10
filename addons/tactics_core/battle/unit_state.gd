@@ -43,6 +43,14 @@ var has_acted: bool = false
 var stagger_combats: int = 0
 ## Defeated player unit that left the map (back next map, spec §8.4).
 var retreated: bool = false
+## Left the map through an escape tile (Escape objective).
+var escaped: bool = false
+## AI behavior (null = default CHARGE profile).
+var ai_profile: AIProfile = null
+## Units sharing a group wake up together (AGGRO_REGION).
+var ai_group: StringName = &""
+## AGGRO_REGION units start asleep; true once triggered.
+var ai_awake: bool = false
 
 
 ## Creates a named unit from [param data] at its authored level.
@@ -222,4 +230,8 @@ func copy() -> UnitState:
 	other.has_acted = has_acted
 	other.stagger_combats = stagger_combats
 	other.retreated = retreated
+	other.escaped = escaped
+	other.ai_profile = ai_profile
+	other.ai_group = ai_group
+	other.ai_awake = ai_awake
 	return other

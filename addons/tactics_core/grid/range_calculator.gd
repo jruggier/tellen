@@ -11,6 +11,12 @@ extends RefCounted
 
 ## Movement range of [param unit] from its current cell.
 static func movement(state: BattleState, unit: UnitState) -> MoveRange:
+	return movement_with_budget(state, unit, unit.mov(state.ruleset))
+
+
+## Like [method movement] with [param budget] movement points (the AI uses a
+## large budget to find paths toward distant targets).
+static func movement_with_budget(state: BattleState, unit: UnitState, budget: int) -> MoveRange:
 	var can_pass: Callable = func(cell: Vector2i) -> bool:
 		var occupant: UnitState = state.unit_at(cell)
 		return occupant == null or state.are_allied(occupant.faction_id, unit.faction_id)
@@ -20,7 +26,7 @@ static func movement(state: BattleState, unit: UnitState) -> MoveRange:
 	var must_stop := Callable()
 	if state.ruleset != null and state.ruleset.zone_of_control:
 		must_stop = func(cell: Vector2i) -> bool: return _in_enemy_zoc(state, unit, cell)
-	return Pathfinder.flood(state.grid, unit.cell, unit.mov(state.ruleset), unit.movement_type_id(), can_pass, can_stop, must_stop)
+	return Pathfinder.flood(state.grid, unit.cell, budget, unit.movement_type_id(), can_pass, can_stop, must_stop)
 
 
 ## Cells [param unit] could attack from any cell it can stop on in [param move_range].

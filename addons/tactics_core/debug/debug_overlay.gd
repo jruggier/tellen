@@ -6,7 +6,8 @@ extends Node2D
 ## On the map: each cell's coordinates and its movement cost for the
 ## movement type being inspected (× = impassable). In the corner: RNG seed,
 ## cursor cell, terrain, inspected movement type and state version.
-## Extension point: AI score display (M4) draws through [method set_cell_notes].
+## Inspecting an AI unit shows its best attack score from each destination
+## (★ marks the tile it would choose).
 
 var battle: BattleScene
 var zoom: float = 4.0
@@ -68,6 +69,15 @@ func _refresh() -> void:
 		_movement_type_id = focus.movement_type_id()
 	elif not state.ruleset.movement_types.is_empty():
 		_movement_type_id = state.ruleset.movement_types[0].id
+	_notes = {}
+	if battle.input.state == PlayerInputController.State.INSPECT and focus != null:
+		var faction: FactionData = state.get_faction(focus.faction_id)
+		if faction != null and faction.controller == FactionData.Controller.AI:
+			var plan: AIPlanner.Plan = AIPlanner.plan(state, focus)
+			for cell: Vector2i in plan.cell_scores:
+				_notes[cell] = "%.0f" % plan.cell_scores[cell]
+			if plan.action != AIPlanner.Action.WAIT:
+				_notes[plan.destination] = "★%.0f" % plan.score
 	var terrain: TerrainData = state.grid.terrain_at(battle.cursor.cell)
 	_info.text = "\n".join(PackedStringArray([
 		"DEBUG (F3)",
@@ -95,4 +105,4 @@ func _draw() -> void:
 			WorldText.draw_centered(self, origin + Vector2(s * 0.5, s * 0.58), cost_text, 7.0, zoom, cost_color, Color.BLACK)
 			WorldText.draw_centered(self, origin + Vector2(s * 0.5, 2.5), "%d,%d" % [x, y], 3.0, zoom, Color(0.8, 0.9, 1.0, 0.85), Color.BLACK)
 			if _notes.has(cell):
-				WorldText.draw_centered(self, origin + Vector2(s * 0.5, s - 2.5), _notes[cell], 3.5, zoom, Color(0.6, 1.0, 0.6), Color.BLACK)
+				WorldText.draw_centered(self, origin + Vector2(s * 0.5, s - 3.0), _notes[cell], 5.0, zoom, Color(0.6, 1.0, 0.6), Color.BLACK)

@@ -21,6 +21,15 @@ var phase_index: int = 0
 var rng: SeededRng = SeededRng.new(0)
 ## Incremented on every state change.
 var version: int = 0
+## Difficulty id used for generic unit stats (see the enemy stat rules).
+var difficulty_id: StringName = &"normal"
+## Map-local flags (events, objectives); keys are flag names.
+var flags: Dictionary = {}
+## Regions that fire when units stop in them (copied from the map).
+var trigger_regions: Array[TriggerRegion] = []
+## Reinforcement arrivals not yet spawned: {placement, turn, faction, telegraph}.
+var pending_arrivals: Array[Dictionary] = []
+var _id_counters: Dictionary[StringName, int] = {}
 
 var _units: Dictionary[StringName, UnitState] = {}
 var _order: Array[StringName] = []
@@ -46,6 +55,17 @@ func add_unit(unit: UnitState) -> bool:
 		_occupancy[unit.cell] = unit.id
 	mark_changed()
 	return true
+
+
+## A fresh unit id: [param base] for the first named unit, else
+## "base_N" with a per-base counter.
+func next_unit_id(base: StringName, named: bool) -> StringName:
+	_id_counters[base] = _id_counters.get(base, 0) + 1
+	var candidate: StringName = base if named and _id_counters[base] == 1 else StringName("%s_%d" % [base, _id_counters[base]])
+	while _units.has(candidate):
+		_id_counters[base] += 1
+		candidate = StringName("%s_%d" % [base, _id_counters[base]])
+	return candidate
 
 
 ## The unit with [param unit_id], or null.
@@ -145,6 +165,11 @@ func copy() -> BattleState:
 	other.phase_index = phase_index
 	other.rng = rng.duplicate_rng()
 	other.version = version
+	other.difficulty_id = difficulty_id
+	other.flags = flags.duplicate(true)
+	other.pending_arrivals = pending_arrivals.duplicate()
+	other.trigger_regions = trigger_regions
+	other._id_counters = _id_counters.duplicate()
 	for unit_id: StringName in _order:
 		var unit: UnitState = _units[unit_id].copy()
 		other._units[unit_id] = unit

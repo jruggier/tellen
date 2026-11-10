@@ -19,6 +19,10 @@ extends Resource
 ## Extra items carried and dropped to the unit that defeats this one.
 @export var drops: Array[ItemData] = []
 @export var is_boss: bool = false
+## AI behavior for non-player units (empty = charge).
+@export var ai_profile: AIProfile
+## Units with the same group wake together (AGGRO_REGION).
+@export var ai_group: StringName = &""
 ## Battle id; generated from the unit or class id when empty.
 @export var unit_id: StringName = &""
 

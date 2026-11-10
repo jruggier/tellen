@@ -30,7 +30,7 @@ func test_arena_is_larger_than_the_screen() -> void:
 func test_arena_units_are_placed_legally() -> void:
 	var state: BattleState = _arena_state()
 	assert_eq(state.units_of(&"player").size(), 6)
-	assert_eq(state.units_of(&"enemy").size(), 8)
+	assert_eq(state.units_of(&"enemy").size(), 9)
 	var movement_types: Dictionary[StringName, bool] = {}
 	for unit: UnitState in state.all_units():
 		assert_gt(state.grid.move_cost(unit.cell, unit.movement_type_id()), 0, "%s stands on passable terrain" % unit.id)

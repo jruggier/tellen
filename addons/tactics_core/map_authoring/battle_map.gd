@@ -20,6 +20,14 @@ const DEFAULT_BATTLE_SCENE: String = "res://game/scenes/battle_scene.tscn"
 @export var factions: Array[FactionData] = []
 ## Units placed when the battle starts.
 @export var placements: Array[UnitPlacement] = []
+## Units that arrive later.
+@export var reinforcements: Array[Reinforcement] = []
+## Victory objectives (all must be met; empty = Rout).
+@export var objectives: Array[Objective] = []
+## Ways to lose (empty = protagonist defeated, or all units defeated).
+@export var defeat_conditions: Array[DefeatCondition] = []
+## Regions that fire events when units stop inside.
+@export var trigger_regions: Array[TriggerRegion] = []
 ## Path to the terrain layer.
 @export var terrain_layer_path: NodePath = ^"Terrain"
 

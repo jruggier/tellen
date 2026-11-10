@@ -108,7 +108,7 @@ UI_TERRAIN_AVOID,Avoid
 UI_TERRAIN_DEF,Def
 UI_TERRAIN_RES,Res
 UI_TERRAIN_HEAL,Heal
-UI_HINT_IDLE,Confirm: select    R: unit details    Q / E: cycle units    T: enemy threat
+UI_HINT_IDLE,Confirm: select    R: details    Q / E: cycle units    T: threat    F: end turn    C: menu
 UI_HINT_SELECTED,Confirm: move here    Cancel: back
 UI_HINT_INSPECT,Cancel: close
 ACTION_ATTACK,Attack
@@ -163,3 +163,27 @@ UI_HINT_TARGETING,Arrows: change target    R: details    Confirm: go    Cancel: 
 UI_HINT_TRADING,Confirm: pick / place item    Cancel: back
 UI_HINT_ANIMATING,Hold Shift: faster
 UI_HINT_LEVEL_UP,Confirm: continue
+UI_PHASE_BANNER,%s Phase
+UI_END_TURN,End Turn
+UI_PAUSE_TITLE,Menu
+UI_TURN,Turn
+UI_OBJECTIVE_TITLE,Objective
+UI_DEFEAT_TITLE,Defeat if
+UI_VICTORY,VICTORY
+UI_DEFEAT,DEFEAT
+UI_RESULT_TURNS,Turns taken: %d
+UI_RESULT_PROMPT,Confirm: play again
+ACTION_SEIZE,Seize
+ACTION_ESCAPE,Escape
+OBJECTIVE_ROUT,Rout the enemy
+OBJECTIVE_ENEMIES_LEFT,%d left
+OBJECTIVE_SEIZE,Seize the tile at %d / %d
+OBJECTIVE_DEFEAT_BOSS,Defeat the boss
+OBJECTIVE_SURVIVE,Survive %d turns
+OBJECTIVE_TURNS_PROGRESS,turn %d of %d
+OBJECTIVE_DEFEND,Defend the tile at %d / %d for %d turns
+OBJECTIVE_ESCAPE,Escape with %d units
+DEFEAT_LORD,The protagonist is defeated
+DEFEAT_ALL_UNITS,All units are defeated
+DEFEAT_UNIT,%s is defeated
+DEFEAT_TURN_LIMIT,Turn %d ends

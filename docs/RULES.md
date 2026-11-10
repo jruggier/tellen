@@ -22,3 +22,8 @@ Where out-of-scope features plug in later without rewriting core systems. Each s
 | Save format changes | `SaveMigrator.register_step()` | M0 |
 | Skill/aura/support bonuses in combat | `CombatParticipant.modifiers` (hit, avoid, crit, crit_evade, might, damage, defense, resistance) | M1 |
 | A different game's formulas | Subclass `CombatRules` / `GrowthRules` / `ExpRules` / `EnemyStatRules`, point the ruleset at it | M1 |
+| Permadeath | `DefeatRules.apply` (replace the retreat flag) | M3 |
+| Convoy | `DefeatRules` items_lost; inventory-full branches | M3 |
+| New objectives / defeat rules | Subclass `Objective`; add a `DefeatCondition.Kind` | M4 |
+| Map events (dialogue, items) | `TriggerRegion.event_id`, `TacticsEvents` | M4 |
+| Fog of war | `ThreatMap` / `RangeCalculator` visibility filter; AI target lists | M4 |
