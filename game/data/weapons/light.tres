@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/weapon_data.gd" id="1_xdpya"]
+[ext_resource type="Resource" path="res://game/data/weapon_types/white.tres" id="2_ymx2r"]
+
+[resource]
+script = ExtResource("1_xdpya")
+weapon_type = ExtResource("2_ymx2r")
+damage_type = 1
+might = 5
+hit = 85
+weight = 3
+range_max = 2
+id = &"light"
+display_name = "WEAPON_LIGHT_NAME"

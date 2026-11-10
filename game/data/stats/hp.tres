@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="StatDefinition" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/stat_definition.gd" id="1_ty4xe"]
+
+[resource]
+script = ExtResource("1_ty4xe")
+abbreviation = "STAT_HP_ABBR"
+default_cap = 80
+id = &"hp"
+display_name = "STAT_HP_NAME"

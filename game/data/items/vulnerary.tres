@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="ConsumableData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/consumable_data.gd" id="1_4y30p"]
+
+[resource]
+script = ExtResource("1_4y30p")
+uses = 3
+heal_amount = 10
+id = &"vulnerary"
+display_name = "ITEM_VULNERARY_NAME"

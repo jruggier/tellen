@@ -1,0 +1,53 @@
+[gd_resource type="Resource" script_class="UnitData" format=3]
+
+[ext_resource type="Resource" path="res://game/data/characters/sable.tres" id="1_kxlwf"]
+[ext_resource type="Resource" path="res://game/data/classes/hexcaller.tres" id="2_b83dv"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/class_data.gd" id="3_eicrj"]
+[ext_resource type="Resource" path="res://game/data/classes/warlock.tres" id="4_ag8v2"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/item_data.gd" id="5_0ud5s"]
+[ext_resource type="Resource" path="res://game/data/weapons/flux.tres" id="6_61aqw"]
+[ext_resource type="Resource" path="res://game/data/items/vulnerary.tres" id="7_ngfv7"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/stat_block.gd" id="8_8ooq7"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/unit_data.gd" id="9_jdoou"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/skill_data.gd" id="10_bae42"]
+
+[sub_resource type="Resource" id="Resource_bujed"]
+script = ExtResource("8_8ooq7")
+values = Dictionary[StringName, int]({
+&"bld": 5,
+&"def": 2,
+&"dex": 7,
+&"hp": 17,
+&"mag": 7,
+&"res": 6,
+&"skl": 6,
+&"spd": 7,
+&"str": 1
+})
+
+[sub_resource type="Resource" id="Resource_irc76"]
+script = ExtResource("8_8ooq7")
+values = Dictionary[StringName, int]({
+&"def": 15,
+&"dex": 40,
+&"hp": 50,
+&"mag": 50,
+&"res": 40,
+&"skl": 30,
+&"spd": 40,
+&"str": 5
+})
+
+[resource]
+script = ExtResource("9_jdoou")
+character = ExtResource("1_kxlwf")
+class_data = ExtResource("2_b83dv")
+personal_base = SubResource("Resource_bujed")
+personal_growths = SubResource("Resource_irc76")
+inventory = Array[ExtResource("5_0ud5s")]([ExtResource("6_61aqw"), ExtResource("7_ngfv7")])
+proficiencies = Dictionary[StringName, int]({
+&"dark": 1
+})
+class_tree = Array[ExtResource("3_eicrj")]([ExtResource("2_b83dv"), ExtResource("4_ag8v2")])
+id = &"sable"
+display_name = "UNIT_SABLE_NAME"

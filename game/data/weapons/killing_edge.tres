@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/weapon_data.gd" id="1_bnfoh"]
+[ext_resource type="Resource" path="res://game/data/weapon_types/sword.tres" id="2_kcmd3"]
+
+[resource]
+script = ExtResource("1_bnfoh")
+weapon_type = ExtResource("2_kcmd3")
+might = 9
+hit = 75
+crit = 30
+weight = 7
+required_proficiency = 2
+id = &"killing_edge"
+display_name = "WEAPON_KILLING_EDGE_NAME"

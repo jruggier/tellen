@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/weapon_data.gd" id="1_svk1b"]
+[ext_resource type="Resource" path="res://game/data/weapon_types/lance.tres" id="2_gvtad"]
+
+[resource]
+script = ExtResource("1_svk1b")
+weapon_type = ExtResource("2_gvtad")
+might = 5
+hit = 65
+weight = 9
+range_max = 2
+required_proficiency = 1
+id = &"javelin"
+display_name = "WEAPON_JAVELIN_NAME"

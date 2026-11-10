@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="MovementType" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/movement_type.gd" id="1_jqlj6"]
+
+[resource]
+script = ExtResource("1_jqlj6")
+stagger_immune = true
+id = &"heavy"
+display_name = "MOVE_HEAVY_NAME"

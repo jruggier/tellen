@@ -38,6 +38,11 @@ From spec §18. Each is a ruleset flag or value, so changing one is a data edit,
 | 16 | Difficulty bonus levels: normal 0, hard 3, maddening 6 | `CrossroadsEnemyStatRules.difficulty_bonus_levels` | ☐ |
 | 17 | EXP tier level offset 0 (levels are one continuous track, so a level-20 Intermediate is simply level 20) | `CrossroadsExpRules.tier_level_offset` | ☐ |
 | 18 | Proficiency: levels 1–5 at 10/25/45/70/100 total points; gains per combat as §6.4 (Beginner +1 each, Intermediate+ +2 primary/+1 secondary) | `ProficiencyRules` | ☐ |
+| 20 | Weapon proficiency requirements: Iron/Light/Mend/Flux 0; Steel, Javelin, Hand Axe, Steel Knife, Bolt 1; Killing Edge 2; Silver Lance 3 | `game/data/weapons/*.tres` | ☐ |
+| 21 | Class stat bonuses for named units: Beginner +0; each tier above adds +2 to Str/Mag/Skl/Dex/Spd and +3 to HP/Def/Res | `ClassData.base_stats` | ☐ |
+| 22 | Class caps: Beginner HP 45, other stats 22; +15 HP / +8 others per tier; armored classes +4 Def, −4 Spd | `ClassData.caps` | ☐ |
+| 23 | Intermediate movement: Duelist 5, Warlock 5, Vanguard (mounted) 6 | `ClassData.mov` | ☐ |
+| 24 | Stat boosters: +7 HP, +2 to other stats, +1 Mov, +2 Build | `game/data/items/*.tres` | ☐ |
 | 19 | 2RN: hit if the average of two 0–99 rolls is below the displayed hit. HYBRID: below 50 uses 1RN | `CrossroadsCombatRules.roll_hit` | ☐ |
 
 **Input bindings (M0)**
@@ -96,6 +101,12 @@ From spec §18. Each is a ruleset flag or value, so changing one is a data edit,
 - **Combat rules work on `CombatParticipant` snapshots** (stats, weapon, terrain, tags, Stagger flag, modifiers), not on battle state. The forecast and resolver build snapshots; rules stay pure and testable. Skill effects plug in through the `modifiers` dictionary (`hit`, `avoid`, `crit`, `crit_evade`, `might`, `damage`, `defense`, `resistance`).
 - **The framework provides FE-standard defaults** in the abstract `CombatRules` (counter eligibility, brave strikes, effectiveness by tag, follow-up damage floor). The game overrides only what differs.
 - **Proficiency rules are a concrete framework class** (`ProficiencyRules`): thresholds and per-tier gains are generic numbers, not game formulas.
+- **8 weapon types: sword, axe, lance, knife, gauntlet, dark, white, bow.** §5.5's "Tome = dark AND white magic" fills the Tome slot of the loop with two types: gauntlet staggers both, and both stagger knife. Separate types give Hexcaller and Acolyte separate proficiencies.
+- **Sample data was generated once by a script, then the files took over.** The `.tres` files under `game/data/` are the source of truth; edit them in the Inspector. Player-facing names are translation keys in `game/localization/strings.csv`.
+- **Sample classes:** 11 Beginner (the §6.5 names), 3 Intermediate examples (Duelist: sword 2; Warlock: dark 2; Vanguard: axe 2, mounted) and an enemy-only Brigand (tagged `enemy_only`). Tellen → Sellsword/Duelist, Sable → Hexcaller/Warlock, Gid → Hatchetman/Vanguard; the three recruits have open class trees.
+- **Generic enemy stat lines** are built from the §6.2 baseline unit plus per-class adjustments, so a level-1 generic is roughly the baseline unit flavored by class.
+- **Character ids are lowercase** (`tellen`). The dialogue parser (M6) will match speaker names like `TELLEN` case-insensitively.
+- **`DataValidator`** checks every content file against the ruleset: unknown stats, weapon/movement types missing from the catalog, unknown proficiency ids, slot limits, level cap, duplicate ids, and starting weapons the unit can't equip (class or proficiency). It runs in the tests, at startup in debug builds (logs loudly), and from the editor (`addons/tactics_core/debug/validate_data.gd`, File → Run).
 - **The weapon type id is also its proficiency id**; movement tactics (`ground`, `sky`, `heavy`) use the movement type id.
 
 ---

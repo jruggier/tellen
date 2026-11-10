@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="TerrainData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/terrain_data.gd" id="1_3xki6"]
+
+[resource]
+script = ExtResource("1_3xki6")
+move_costs = Dictionary[StringName, int]({
+&"foot": 2,
+&"ground": 3,
+&"heavy": 2,
+&"sky": 1
+})
+avoid_bonus = 20
+id = &"forest"
+display_name = "TERRAIN_FOREST_NAME"

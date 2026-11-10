@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="StatDefinition" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/stat_definition.gd" id="1_5pb3j"]
+
+[resource]
+script = ExtResource("1_5pb3j")
+abbreviation = "STAT_SKL_ABBR"
+default_cap = 40
+id = &"skl"
+display_name = "STAT_SKL_NAME"

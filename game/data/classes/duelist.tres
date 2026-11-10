@@ -1,0 +1,90 @@
+[gd_resource type="Resource" script_class="ClassData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/skill_data.gd" id="1_iudxl"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/stat_block.gd" id="2_yrgyq"]
+[ext_resource type="Resource" path="res://game/data/movement_types/foot.tres" id="3_0ek0m"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/class_data.gd" id="4_5ivsa"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/weapon_type.gd" id="5_wr1dn"]
+[ext_resource type="Resource" path="res://game/data/weapon_types/sword.tres" id="6_k3tt8"]
+[ext_resource type="Resource" path="res://game/data/weapon_types/knife.tres" id="7_new5d"]
+
+[sub_resource type="Resource" id="Resource_srd56"]
+script = ExtResource("2_yrgyq")
+values = Dictionary[StringName, int]({
+&"def": 3,
+&"dex": 2,
+&"hp": 3,
+&"mag": 2,
+&"res": 3,
+&"skl": 2,
+&"spd": 2,
+&"str": 2
+})
+
+[sub_resource type="Resource" id="Resource_wejwi"]
+script = ExtResource("2_yrgyq")
+values = Dictionary[StringName, int]({
+&"def": 30,
+&"dex": 30,
+&"hp": 60,
+&"mag": 30,
+&"res": 30,
+&"skl": 30,
+&"spd": 30,
+&"str": 30
+})
+
+[sub_resource type="Resource" id="Resource_yxlrf"]
+script = ExtResource("2_yrgyq")
+values = Dictionary[StringName, int]({
+&"bld": 7,
+&"def": 8,
+&"dex": 11,
+&"hp": 23,
+&"mag": 3,
+&"res": 6,
+&"skl": 11,
+&"spd": 11,
+&"str": 8
+})
+
+[sub_resource type="Resource" id="Resource_qm22g"]
+script = ExtResource("2_yrgyq")
+values = Dictionary[StringName, int]({
+&"def": 30,
+&"dex": 40,
+&"hp": 65,
+&"mag": 10,
+&"res": 20,
+&"skl": 40,
+&"spd": 45,
+&"str": 40
+})
+
+[sub_resource type="Resource" id="Resource_fhakr"]
+script = ExtResource("2_yrgyq")
+values = Dictionary[StringName, int]({
+&"skl": 10,
+&"spd": 10
+})
+
+[resource]
+script = ExtResource("4_5ivsa")
+tier = 1
+movement_type = ExtResource("3_0ek0m")
+mov = 5
+build_bonus = 1
+base_stats = SubResource("Resource_srd56")
+growth_modifiers = SubResource("Resource_fhakr")
+caps = SubResource("Resource_wejwi")
+generic_base_stats = SubResource("Resource_yxlrf")
+generic_growths = SubResource("Resource_qm22g")
+usable_weapon_types = Array[ExtResource("5_wr1dn")]([ExtResource("6_k3tt8"), ExtResource("7_new5d")])
+primary_proficiency = &"sword"
+secondary_proficiencies = Array[StringName]([&"knife"])
+requirements = Dictionary[StringName, int]({
+&"sword": 2
+})
+tags = Array[StringName]([&"foot"])
+id = &"duelist"
+display_name = "CLASS_DUELIST_NAME"

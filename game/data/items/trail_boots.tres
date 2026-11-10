@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ConsumableData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/stat_block.gd" id="1_xigk5"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/consumable_data.gd" id="2_w1pox"]
+
+[sub_resource type="Resource" id="Resource_pky5m"]
+script = ExtResource("1_xigk5")
+values = Dictionary[StringName, int]({
+&"mov": 1
+})
+
+[resource]
+script = ExtResource("2_w1pox")
+permanent_boosts = SubResource("Resource_pky5m")
+tags = Array[StringName]([&"booster"])
+id = &"trail_boots"
+display_name = "ITEM_TRAIL_BOOTS_NAME"

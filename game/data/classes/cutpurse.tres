@@ -1,0 +1,83 @@
+[gd_resource type="Resource" script_class="ClassData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/skill_data.gd" id="1_l3ami"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/stat_block.gd" id="2_r5uy2"]
+[ext_resource type="Resource" path="res://game/data/movement_types/foot.tres" id="3_x4tga"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/class_data.gd" id="4_0iase"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/weapon_type.gd" id="5_vp2xj"]
+[ext_resource type="Resource" path="res://game/data/weapon_types/knife.tres" id="6_ft470"]
+
+[sub_resource type="Resource" id="Resource_imo40"]
+script = ExtResource("2_r5uy2")
+values = Dictionary[StringName, int]({
+&"def": 0,
+&"dex": 0,
+&"hp": 0,
+&"mag": 0,
+&"res": 0,
+&"skl": 0,
+&"spd": 0,
+&"str": 0
+})
+
+[sub_resource type="Resource" id="Resource_hy7pb"]
+script = ExtResource("2_r5uy2")
+values = Dictionary[StringName, int]({
+&"def": 22,
+&"dex": 22,
+&"hp": 45,
+&"mag": 22,
+&"res": 22,
+&"skl": 22,
+&"spd": 22,
+&"str": 22
+})
+
+[sub_resource type="Resource" id="Resource_wyjxr"]
+script = ExtResource("2_r5uy2")
+values = Dictionary[StringName, int]({
+&"bld": 6,
+&"def": 3,
+&"dex": 9,
+&"hp": 20,
+&"mag": 1,
+&"res": 3,
+&"skl": 6,
+&"spd": 8,
+&"str": 4
+})
+
+[sub_resource type="Resource" id="Resource_hvrft"]
+script = ExtResource("2_r5uy2")
+values = Dictionary[StringName, int]({
+&"def": 30,
+&"dex": 45,
+&"hp": 65,
+&"mag": 10,
+&"res": 20,
+&"skl": 30,
+&"spd": 45,
+&"str": 30
+})
+
+[sub_resource type="Resource" id="Resource_1kqfi"]
+script = ExtResource("2_r5uy2")
+values = Dictionary[StringName, int]({
+&"dex": 5,
+&"spd": 10,
+&"str": -5
+})
+
+[resource]
+script = ExtResource("4_0iase")
+movement_type = ExtResource("3_x4tga")
+base_stats = SubResource("Resource_imo40")
+growth_modifiers = SubResource("Resource_1kqfi")
+caps = SubResource("Resource_hy7pb")
+generic_base_stats = SubResource("Resource_wyjxr")
+generic_growths = SubResource("Resource_hvrft")
+usable_weapon_types = Array[ExtResource("5_vp2xj")]([ExtResource("6_ft470")])
+primary_proficiency = &"knife"
+tags = Array[StringName]([&"foot"])
+id = &"cutpurse"
+display_name = "CLASS_CUTPURSE_NAME"

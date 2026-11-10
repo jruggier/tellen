@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ConsumableData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/stat_block.gd" id="1_wxj7t"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/consumable_data.gd" id="2_e0qeh"]
+
+[sub_resource type="Resource" id="Resource_byhpl"]
+script = ExtResource("1_wxj7t")
+values = Dictionary[StringName, int]({
+&"def": 2
+})
+
+[resource]
+script = ExtResource("2_e0qeh")
+permanent_boosts = SubResource("Resource_byhpl")
+tags = Array[StringName]([&"booster"])
+id = &"iron_salve"
+display_name = "ITEM_IRON_SALVE_NAME"

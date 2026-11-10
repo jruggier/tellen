@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ConsumableData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/stat_block.gd" id="1_yxkia"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/consumable_data.gd" id="2_n84hf"]
+
+[sub_resource type="Resource" id="Resource_lksfd"]
+script = ExtResource("1_yxkia")
+values = Dictionary[StringName, int]({
+&"skl": 2
+})
+
+[resource]
+script = ExtResource("2_n84hf")
+permanent_boosts = SubResource("Resource_lksfd")
+tags = Array[StringName]([&"booster"])
+id = &"keen_whetstone"
+display_name = "ITEM_KEEN_WHETSTONE_NAME"

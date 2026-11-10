@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ConsumableData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/stat_block.gd" id="1_oougj"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/consumable_data.gd" id="2_b8sp0"]
+
+[sub_resource type="Resource" id="Resource_56ae4"]
+script = ExtResource("1_oougj")
+values = Dictionary[StringName, int]({
+&"spd": 2
+})
+
+[resource]
+script = ExtResource("2_b8sp0")
+permanent_boosts = SubResource("Resource_56ae4")
+tags = Array[StringName]([&"booster"])
+id = &"swift_feather"
+display_name = "ITEM_SWIFT_FEATHER_NAME"

@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/weapon_data.gd" id="1_ngn4c"]
+[ext_resource type="Resource" path="res://game/data/weapon_types/gauntlet.tres" id="2_ornrm"]
+
+[resource]
+script = ExtResource("1_ngn4c")
+weapon_type = ExtResource("2_ornrm")
+might = 4
+hit = 85
+crit = 5
+crit_evade = 5
+weight = 2
+id = &"iron_gauntlets"
+display_name = "WEAPON_IRON_GAUNTLETS_NAME"

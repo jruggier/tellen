@@ -1,0 +1,92 @@
+[gd_resource type="Resource" script_class="ClassData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/skill_data.gd" id="1_ec0ba"]
+[ext_resource type="Resource" path="res://game/data/skills/canto.tres" id="2_gwi6l"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/stat_block.gd" id="3_3g7rf"]
+[ext_resource type="Resource" path="res://game/data/movement_types/ground.tres" id="4_ftkri"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/class_data.gd" id="5_qwkdl"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/weapon_type.gd" id="6_3ur4o"]
+[ext_resource type="Resource" path="res://game/data/weapon_types/axe.tres" id="7_dqrqe"]
+[ext_resource type="Resource" path="res://game/data/weapon_types/lance.tres" id="8_56pep"]
+
+[sub_resource type="Resource" id="Resource_fmbkm"]
+script = ExtResource("3_3g7rf")
+values = Dictionary[StringName, int]({
+&"def": 3,
+&"dex": 2,
+&"hp": 3,
+&"mag": 2,
+&"res": 3,
+&"skl": 2,
+&"spd": 2,
+&"str": 2
+})
+
+[sub_resource type="Resource" id="Resource_inify"]
+script = ExtResource("3_3g7rf")
+values = Dictionary[StringName, int]({
+&"def": 30,
+&"dex": 30,
+&"hp": 60,
+&"mag": 30,
+&"res": 30,
+&"skl": 30,
+&"spd": 30,
+&"str": 30
+})
+
+[sub_resource type="Resource" id="Resource_fsc07"]
+script = ExtResource("3_3g7rf")
+values = Dictionary[StringName, int]({
+&"bld": 12,
+&"def": 10,
+&"dex": 9,
+&"hp": 27,
+&"mag": 3,
+&"res": 6,
+&"skl": 8,
+&"spd": 8,
+&"str": 10
+})
+
+[sub_resource type="Resource" id="Resource_65rk4"]
+script = ExtResource("3_3g7rf")
+values = Dictionary[StringName, int]({
+&"def": 35,
+&"dex": 40,
+&"hp": 75,
+&"mag": 10,
+&"res": 20,
+&"skl": 30,
+&"spd": 35,
+&"str": 50
+})
+
+[sub_resource type="Resource" id="Resource_fsf3p"]
+script = ExtResource("3_3g7rf")
+values = Dictionary[StringName, int]({
+&"hp": 10,
+&"str": 10
+})
+
+[resource]
+script = ExtResource("5_qwkdl")
+tier = 1
+movement_type = ExtResource("4_ftkri")
+mov = 6
+build_bonus = 3
+base_stats = SubResource("Resource_fmbkm")
+growth_modifiers = SubResource("Resource_fsf3p")
+caps = SubResource("Resource_inify")
+generic_base_stats = SubResource("Resource_fsc07")
+generic_growths = SubResource("Resource_65rk4")
+usable_weapon_types = Array[ExtResource("6_3ur4o")]([ExtResource("7_dqrqe"), ExtResource("8_56pep")])
+primary_proficiency = &"axe"
+secondary_proficiencies = Array[StringName]([&"lance", &"ground"])
+abilities = Array[ExtResource("1_ec0ba")]([ExtResource("2_gwi6l")])
+requirements = Dictionary[StringName, int]({
+&"axe": 2
+})
+tags = Array[StringName]([&"ground"])
+id = &"vanguard"
+display_name = "CLASS_VANGUARD_NAME"

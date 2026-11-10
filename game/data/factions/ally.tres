@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="FactionData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/faction_data.gd" id="1_r307v"]
+
+[resource]
+script = ExtResource("1_r307v")
+color = Color(0.35, 0.8, 0.4, 1)
+allied_with = Array[StringName]([&"player"])
+id = &"ally"
+display_name = "FACTION_ALLY_NAME"

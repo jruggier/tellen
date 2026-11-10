@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="TerrainData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/terrain_data.gd" id="1_ecp5s"]
+
+[resource]
+script = ExtResource("1_ecp5s")
+move_costs = Dictionary[StringName, int]({
+&"foot": 2,
+&"ground": 3,
+&"heavy": 3,
+&"sky": 1
+})
+avoid_bonus = 10
+defense_bonus = 1
+resistance_bonus = 1
+id = &"hill"
+display_name = "TERRAIN_HILL_NAME"

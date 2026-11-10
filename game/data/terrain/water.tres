@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="TerrainData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/terrain_data.gd" id="1_ddta1"]
+
+[resource]
+script = ExtResource("1_ddta1")
+move_costs = Dictionary[StringName, int]({
+&"sky": 1
+})
+id = &"water"
+display_name = "TERRAIN_WATER_NAME"

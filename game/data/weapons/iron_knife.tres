@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/weapon_data.gd" id="1_x8pr3"]
+[ext_resource type="Resource" path="res://game/data/weapon_types/knife.tres" id="2_ud5li"]
+
+[resource]
+script = ExtResource("1_x8pr3")
+weapon_type = ExtResource("2_ud5li")
+might = 4
+hit = 90
+crit = 5
+crit_evade = 10
+weight = 2
+range_max = 2
+id = &"iron_knife"
+display_name = "WEAPON_IRON_KNIFE_NAME"

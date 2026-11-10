@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/weapon_data.gd" id="1_vmi22"]
+[ext_resource type="Resource" path="res://game/data/weapon_types/dark.tres" id="2_npmgb"]
+
+[resource]
+script = ExtResource("1_vmi22")
+weapon_type = ExtResource("2_npmgb")
+damage_type = 1
+might = 8
+hit = 75
+weight = 6
+range_max = 2
+id = &"flux"
+display_name = "WEAPON_FLUX_NAME"

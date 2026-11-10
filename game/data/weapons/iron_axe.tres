@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/weapon_data.gd" id="1_2qq10"]
+[ext_resource type="Resource" path="res://game/data/weapon_types/axe.tres" id="2_n2fl6"]
+
+[resource]
+script = ExtResource("1_2qq10")
+weapon_type = ExtResource("2_n2fl6")
+might = 8
+hit = 65
+weight = 10
+id = &"iron_axe"
+display_name = "WEAPON_IRON_AXE_NAME"

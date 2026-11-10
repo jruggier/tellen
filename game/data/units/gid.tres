@@ -1,0 +1,53 @@
+[gd_resource type="Resource" script_class="UnitData" format=3]
+
+[ext_resource type="Resource" path="res://game/data/characters/gid.tres" id="1_othqi"]
+[ext_resource type="Resource" path="res://game/data/classes/hatchetman.tres" id="2_jcoje"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/class_data.gd" id="3_7wk6k"]
+[ext_resource type="Resource" path="res://game/data/classes/vanguard.tres" id="4_voy8i"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/item_data.gd" id="5_koebw"]
+[ext_resource type="Resource" path="res://game/data/weapons/iron_axe.tres" id="6_7f25o"]
+[ext_resource type="Resource" path="res://game/data/weapons/hand_axe.tres" id="7_la6n5"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/stat_block.gd" id="8_1j1fi"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/unit_data.gd" id="9_1q3sx"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/skill_data.gd" id="10_7v66w"]
+
+[sub_resource type="Resource" id="Resource_8rito"]
+script = ExtResource("8_1j1fi")
+values = Dictionary[StringName, int]({
+&"bld": 9,
+&"def": 6,
+&"dex": 6,
+&"hp": 24,
+&"mag": 0,
+&"res": 1,
+&"skl": 4,
+&"spd": 4,
+&"str": 8
+})
+
+[sub_resource type="Resource" id="Resource_d1yru"]
+script = ExtResource("8_1j1fi")
+values = Dictionary[StringName, int]({
+&"def": 35,
+&"dex": 35,
+&"hp": 80,
+&"mag": 0,
+&"res": 10,
+&"skl": 20,
+&"spd": 30,
+&"str": 50
+})
+
+[resource]
+script = ExtResource("9_1q3sx")
+character = ExtResource("1_othqi")
+class_data = ExtResource("2_jcoje")
+personal_base = SubResource("Resource_8rito")
+personal_growths = SubResource("Resource_d1yru")
+inventory = Array[ExtResource("5_koebw")]([ExtResource("6_7f25o"), ExtResource("7_la6n5")])
+proficiencies = Dictionary[StringName, int]({
+&"axe": 1
+})
+class_tree = Array[ExtResource("3_7wk6k")]([ExtResource("2_jcoje"), ExtResource("4_voy8i")])
+id = &"gid"
+display_name = "UNIT_GID_NAME"

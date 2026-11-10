@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="WeaponType" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/weapon_type.gd" id="1_ygonv"]
+
+[resource]
+script = ExtResource("1_ygonv")
+staggers = Array[StringName]([&"gauntlet"])
+id = &"knife"
+display_name = "WTYPE_KNIFE_NAME"

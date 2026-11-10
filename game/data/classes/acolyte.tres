@@ -1,0 +1,83 @@
+[gd_resource type="Resource" script_class="ClassData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/skill_data.gd" id="1_1gx1i"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/stat_block.gd" id="2_kmyx3"]
+[ext_resource type="Resource" path="res://game/data/movement_types/foot.tres" id="3_p1l57"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/class_data.gd" id="4_urewn"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/weapon_type.gd" id="5_pqlb4"]
+[ext_resource type="Resource" path="res://game/data/weapon_types/white.tres" id="6_xohil"]
+
+[sub_resource type="Resource" id="Resource_m1j3i"]
+script = ExtResource("2_kmyx3")
+values = Dictionary[StringName, int]({
+&"def": 0,
+&"dex": 0,
+&"hp": 0,
+&"mag": 0,
+&"res": 0,
+&"skl": 0,
+&"spd": 0,
+&"str": 0
+})
+
+[sub_resource type="Resource" id="Resource_02tgc"]
+script = ExtResource("2_kmyx3")
+values = Dictionary[StringName, int]({
+&"def": 22,
+&"dex": 22,
+&"hp": 45,
+&"mag": 22,
+&"res": 22,
+&"skl": 22,
+&"spd": 22,
+&"str": 22
+})
+
+[sub_resource type="Resource" id="Resource_806x6"]
+script = ExtResource("2_kmyx3")
+values = Dictionary[StringName, int]({
+&"bld": 5,
+&"def": 2,
+&"dex": 7,
+&"hp": 17,
+&"mag": 6,
+&"res": 8,
+&"skl": 6,
+&"spd": 6,
+&"str": 1
+})
+
+[sub_resource type="Resource" id="Resource_3eylx"]
+script = ExtResource("2_kmyx3")
+values = Dictionary[StringName, int]({
+&"def": 15,
+&"dex": 40,
+&"hp": 50,
+&"mag": 45,
+&"res": 50,
+&"skl": 30,
+&"spd": 35,
+&"str": 5
+})
+
+[sub_resource type="Resource" id="Resource_yq0ie"]
+script = ExtResource("2_kmyx3")
+values = Dictionary[StringName, int]({
+&"mag": 5,
+&"res": 10
+})
+
+[resource]
+script = ExtResource("4_urewn")
+movement_type = ExtResource("3_p1l57")
+build_bonus = -1
+base_stats = SubResource("Resource_m1j3i")
+growth_modifiers = SubResource("Resource_yq0ie")
+caps = SubResource("Resource_02tgc")
+generic_base_stats = SubResource("Resource_806x6")
+generic_growths = SubResource("Resource_3eylx")
+usable_weapon_types = Array[ExtResource("5_pqlb4")]([ExtResource("6_xohil")])
+primary_proficiency = &"white"
+tags = Array[StringName]([&"foot"])
+id = &"acolyte"
+display_name = "CLASS_ACOLYTE_NAME"

@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="FactionData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/faction_data.gd" id="1_c7qjl"]
+
+[resource]
+script = ExtResource("1_c7qjl")
+color = Color(0.9, 0.3, 0.3, 1)
+id = &"enemy"
+display_name = "FACTION_ENEMY_NAME"

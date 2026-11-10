@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/weapon_data.gd" id="1_dpixo"]
+[ext_resource type="Resource" path="res://game/data/weapon_types/sword.tres" id="2_rrga1"]
+
+[resource]
+script = ExtResource("1_dpixo")
+weapon_type = ExtResource("2_rrga1")
+might = 5
+hit = 80
+crit_evade = 5
+weight = 5
+id = &"iron_sword"
+display_name = "WEAPON_IRON_SWORD_NAME"

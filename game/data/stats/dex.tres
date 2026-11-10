@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="StatDefinition" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/stat_definition.gd" id="1_dbixq"]
+
+[resource]
+script = ExtResource("1_dbixq")
+abbreviation = "STAT_DEX_ABBR"
+default_cap = 40
+id = &"dex"
+display_name = "STAT_DEX_NAME"

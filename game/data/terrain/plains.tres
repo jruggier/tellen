@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="TerrainData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/terrain_data.gd" id="1_aqlpv"]
+
+[resource]
+script = ExtResource("1_aqlpv")
+move_costs = Dictionary[StringName, int]({
+&"foot": 1,
+&"ground": 1,
+&"heavy": 1,
+&"sky": 1
+})
+id = &"plains"
+display_name = "TERRAIN_PLAINS_NAME"

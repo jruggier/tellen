@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/weapon_data.gd" id="1_f230o"]
+[ext_resource type="Resource" path="res://game/data/weapon_types/sword.tres" id="2_jxw1l"]
+
+[resource]
+script = ExtResource("1_f230o")
+weapon_type = ExtResource("2_jxw1l")
+might = 8
+hit = 75
+crit_evade = 5
+weight = 9
+required_proficiency = 1
+id = &"steel_sword"
+display_name = "WEAPON_STEEL_SWORD_NAME"

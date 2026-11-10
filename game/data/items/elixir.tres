@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="ConsumableData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/consumable_data.gd" id="1_u44ka"]
+
+[resource]
+script = ExtResource("1_u44ka")
+heal_full = true
+id = &"elixir"
+display_name = "ITEM_ELIXIR_NAME"

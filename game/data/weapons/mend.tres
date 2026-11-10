@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/weapon_data.gd" id="1_ektmo"]
+[ext_resource type="Resource" path="res://game/data/weapon_types/white.tres" id="2_vrbla"]
+
+[resource]
+script = ExtResource("1_ektmo")
+weapon_type = ExtResource("2_vrbla")
+damage_type = 1
+weight = 3
+heals = true
+heal_power = 10
+id = &"mend"
+display_name = "WEAPON_MEND_NAME"

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ConsumableData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/stat_block.gd" id="1_ug1ao"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/consumable_data.gd" id="2_5wxih"]
+
+[sub_resource type="Resource" id="Resource_slfld"]
+script = ExtResource("1_ug1ao")
+values = Dictionary[StringName, int]({
+&"dex": 2
+})
+
+[resource]
+script = ExtResource("2_5wxih")
+permanent_boosts = SubResource("Resource_slfld")
+tags = Array[StringName]([&"booster"])
+id = &"steady_lens"
+display_name = "ITEM_STEADY_LENS_NAME"

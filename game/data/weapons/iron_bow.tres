@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/weapon_data.gd" id="1_a2ffd"]
+[ext_resource type="Resource" path="res://game/data/weapon_types/bow.tres" id="2_w4yjw"]
+
+[resource]
+script = ExtResource("1_a2ffd")
+weapon_type = ExtResource("2_w4yjw")
+might = 6
+hit = 80
+weight = 5
+range_min = 2
+range_max = 2
+effective_against = Array[StringName]([&"sky"])
+id = &"iron_bow"
+display_name = "WEAPON_IRON_BOW_NAME"

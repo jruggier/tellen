@@ -15,7 +15,18 @@ func _ready() -> void:
 	if path.is_empty():
 		TacticsLog.info("RulesetProvider", "No default ruleset configured")
 		return
-	load_ruleset(path)
+	if load_ruleset(path) and OS.is_debug_build():
+		_validate_content()
+
+
+## Debug builds check all content at startup so data errors surface
+## immediately; release builds skip this and degrade gracefully instead.
+func _validate_content() -> void:
+	var problems: PackedStringArray = DataValidator.validate_project(_ruleset)
+	for problem: String in problems:
+		TacticsLog.warn("DataValidator", problem)
+	if not problems.is_empty():
+		TacticsLog.error("DataValidator", "%d content problem(s); see warnings above" % problems.size())
 
 
 ## Loads the ruleset at [param path] and makes it active. Returns false if

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/weapon_data.gd" id="1_37tyv"]
+[ext_resource type="Resource" path="res://game/data/weapon_types/lance.tres" id="2_h2m0x"]
+
+[resource]
+script = ExtResource("1_37tyv")
+weapon_type = ExtResource("2_h2m0x")
+might = 6
+hit = 75
+weight = 7
+id = &"iron_lance"
+display_name = "WEAPON_IRON_LANCE_NAME"

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/weapon_data.gd" id="1_w78rk"]
+[ext_resource type="Resource" path="res://game/data/weapon_types/lance.tres" id="2_bsbmj"]
+
+[resource]
+script = ExtResource("1_w78rk")
+weapon_type = ExtResource("2_bsbmj")
+might = 14
+hit = 75
+weight = 10
+required_proficiency = 3
+id = &"silver_lance"
+display_name = "WEAPON_SILVER_LANCE_NAME"

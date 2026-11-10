@@ -1,0 +1,83 @@
+[gd_resource type="Resource" script_class="ClassData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/skill_data.gd" id="1_75xxh"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/stat_block.gd" id="2_njh4g"]
+[ext_resource type="Resource" path="res://game/data/movement_types/foot.tres" id="3_x0twh"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/class_data.gd" id="4_5x3kh"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/weapon_type.gd" id="5_58oow"]
+[ext_resource type="Resource" path="res://game/data/weapon_types/lance.tres" id="6_ilfon"]
+
+[sub_resource type="Resource" id="Resource_c74yp"]
+script = ExtResource("2_njh4g")
+values = Dictionary[StringName, int]({
+&"def": 0,
+&"dex": 0,
+&"hp": 0,
+&"mag": 0,
+&"res": 0,
+&"skl": 0,
+&"spd": 0,
+&"str": 0
+})
+
+[sub_resource type="Resource" id="Resource_vle5s"]
+script = ExtResource("2_njh4g")
+values = Dictionary[StringName, int]({
+&"def": 22,
+&"dex": 22,
+&"hp": 45,
+&"mag": 22,
+&"res": 22,
+&"skl": 22,
+&"spd": 22,
+&"str": 22
+})
+
+[sub_resource type="Resource" id="Resource_okyrr"]
+script = ExtResource("2_njh4g")
+values = Dictionary[StringName, int]({
+&"bld": 8,
+&"def": 6,
+&"dex": 7,
+&"hp": 20,
+&"mag": 1,
+&"res": 3,
+&"skl": 6,
+&"spd": 6,
+&"str": 6
+})
+
+[sub_resource type="Resource" id="Resource_7uom5"]
+script = ExtResource("2_njh4g")
+values = Dictionary[StringName, int]({
+&"def": 35,
+&"dex": 40,
+&"hp": 65,
+&"mag": 10,
+&"res": 20,
+&"skl": 30,
+&"spd": 35,
+&"str": 40
+})
+
+[sub_resource type="Resource" id="Resource_wgxbq"]
+script = ExtResource("2_njh4g")
+values = Dictionary[StringName, int]({
+&"def": 5,
+&"hp": 5
+})
+
+[resource]
+script = ExtResource("4_5x3kh")
+movement_type = ExtResource("3_x0twh")
+build_bonus = 1
+base_stats = SubResource("Resource_c74yp")
+growth_modifiers = SubResource("Resource_wgxbq")
+caps = SubResource("Resource_vle5s")
+generic_base_stats = SubResource("Resource_okyrr")
+generic_growths = SubResource("Resource_7uom5")
+usable_weapon_types = Array[ExtResource("5_58oow")]([ExtResource("6_ilfon")])
+primary_proficiency = &"lance"
+tags = Array[StringName]([&"foot"])
+id = &"spearhand"
+display_name = "CLASS_SPEARHAND_NAME"

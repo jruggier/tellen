@@ -46,7 +46,7 @@ Run tests: `godot --headless --path . -s addons/gut/gut_cmdln.gd -gdir=res://tes
 
 - [x] **M1.1** Framework data resources (§3 `data/`), `StatDefinition` / `StatBlock`. — `TacticsData` base (id, name/description keys, `validate()`) + StatDefinition, StatBlock, MovementType, WeaponType, TerrainData, ItemData, WeaponData, ConsumableData, SkillData, ClassData, CharacterData, UnitData, FactionData. 54 tests.
 - [x] **M1.2** `Ruleset` + abstract rules; Crossroads concrete rules implementing §5–§6. — Abstract CombatRules/GrowthRules/ExpRules/EnemyStatRules + ProficiencyRules; Crossroads implementations wired into the ruleset. All §13.2 formula values, follow-up edges, Stagger rules, true-hit modes, growth modes, EXP and enemy stats tested. 98 tests.
-- [ ] **M1.3** Sample data: 8 stats, 4 movement types, 8 weapon types with stagger links, ~11 Beginner + 3 Intermediate classes, weapon table, terrain table, consumables, 6 sample units (Tellen, Sable, Gid + 3 generic), enemy classes.
+- [x] **M1.3** Sample data: 8 stats, 4 movement types, 8 weapon types with stagger links, ~11 Beginner + 3 Intermediate classes, weapon table, terrain table, consumables, 6 sample units (Tellen, Sable, Gid + 3 generic), enemy classes. — 88 `.tres` files under `game/data/` + 103 strings; `DataValidator` (tests, debug startup, editor script). 109 tests.
 - [ ] **M1.4** `CombatForecast` + `CombatResolver` (headless), all §13.2 fixtures passing.
 - [ ] **M1.5** Combat Lab scene.
 - [ ] **Checkpoint** (Jake tunes numbers in Combat Lab)

@@ -1,0 +1,49 @@
+[gd_resource type="Resource" script_class="UnitData" format=3]
+
+[ext_resource type="Resource" path="res://game/data/classes/hunter.tres" id="1_e4etu"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/class_data.gd" id="2_5w2vd"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/item_data.gd" id="3_oyebh"]
+[ext_resource type="Resource" path="res://game/data/weapons/iron_bow.tres" id="4_j20ox"]
+[ext_resource type="Resource" path="res://game/data/items/vulnerary.tres" id="5_3p22j"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/stat_block.gd" id="6_gttuf"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/unit_data.gd" id="7_cfefp"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/skill_data.gd" id="8_iuwph"]
+
+[sub_resource type="Resource" id="Resource_he338"]
+script = ExtResource("6_gttuf")
+values = Dictionary[StringName, int]({
+&"bld": 6,
+&"def": 4,
+&"dex": 9,
+&"hp": 19,
+&"mag": 0,
+&"res": 2,
+&"skl": 6,
+&"spd": 7,
+&"str": 6
+})
+
+[sub_resource type="Resource" id="Resource_wfkvl"]
+script = ExtResource("6_gttuf")
+values = Dictionary[StringName, int]({
+&"def": 25,
+&"dex": 50,
+&"hp": 60,
+&"mag": 5,
+&"res": 15,
+&"skl": 30,
+&"spd": 40,
+&"str": 40
+})
+
+[resource]
+script = ExtResource("7_cfefp")
+class_data = ExtResource("1_e4etu")
+personal_base = SubResource("Resource_he338")
+personal_growths = SubResource("Resource_wfkvl")
+inventory = Array[ExtResource("3_oyebh")]([ExtResource("4_j20ox"), ExtResource("5_3p22j")])
+proficiencies = Dictionary[StringName, int]({
+&"bow": 0
+})
+id = &"recruit_hunter"
+display_name = "UNIT_RECRUIT_HUNTER_NAME"
