@@ -181,7 +181,7 @@ _Post-M1 change: the game is native 1920×1080 with 64 px cells (16 px art at 4�
 **Decisions to confirm:** `DECISIONS.md` → "Added during M4" (#29–37).## M5 — Skills, awakening, chain attacks, classes
 
 - [x] **M5.1** Skill hook system + 5 slots + class abilities + sample skills. — `SkillHooks`/`SkillContext`/`SkillRunner`; skills apply where combatants are built (forecast = resolver = AI); Vantage (`strikes_first`); Canto (`CantoMoveCommand`, CANTO input state). Samples: Canto (mounted), Shield Wall (Bulwark aura), Fleetfoot (Sable), Vigil (Spearhand recruit), Second Wind (Tellen). 249 tests.
-- [ ] **M5.2** Both awakening rules, signature attack action, UI meter/cooldown.
+- [x] **M5.2** Both awakening rules, signature attack action, UI meter/cooldown. — `AwakeningRule` + `CooldownAwakeningRule` (default) + `ActionChargeAwakeningRule`; `AwakeningData` on units (stat mods, skills, signature); `AwakenCommand` (free action), `SignatureAttackCommand` (once per awakening, params-driven); glowing map outline, status in the unit panel, forecast charge row; AI awakens before attacking. Awakenings for Tellen, Sable, Gid. 258 tests.
 - [ ] **M5.3** Chain attacks (§9.4).
 - [ ] **M5.4** Class change via proficiency requirements; per-character class trees.
 - [ ] **Checkpoint**

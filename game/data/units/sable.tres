@@ -1,5 +1,6 @@
 [gd_resource type="Resource" script_class="UnitData" format=3]
 
+[ext_resource type="Resource" path="res://game/data/awakenings/moonlit_veil.tres" id="1_eicrj"]
 [ext_resource type="Resource" path="res://game/data/characters/sable.tres" id="1_kxlwf"]
 [ext_resource type="Resource" path="res://game/data/classes/hexcaller.tres" id="2_b83dv"]
 [ext_resource type="Script" path="res://addons/tactics_core/data/class_data.gd" id="3_eicrj"]
@@ -51,5 +52,6 @@ proficiencies = Dictionary[StringName, int]({
 &"dark": 1
 })
 class_tree = Array[ExtResource("3_eicrj")]([ExtResource("2_b83dv"), ExtResource("4_ag8v2")])
+awakening = ExtResource("1_eicrj")
 id = &"sable"
 display_name = "UNIT_SABLE_NAME"

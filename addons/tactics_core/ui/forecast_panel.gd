@@ -50,6 +50,10 @@ func show_forecast(forecast: CombatForecast, sides: Dictionary, details: Array[D
 	if not a_status.is_empty() or not d_status.is_empty():
 		_row("", a_status, d_status, 22, UiStyle.WARN, UiStyle.WARN)
 	_row(tr("FORECAST_TERRAIN"), _terrain(a_info.get("terrain")), _terrain(d_info.get("terrain")), 22, UiStyle.TEXT_DIM, UiStyle.TEXT_DIM)
+	if int(a_info.get("awaken_gain", 0)) > 0:
+		_row(tr("FORECAST_AWAKEN"), "+%d" % int(a_info["awaken_gain"]), "", 22, Color(0.6, 0.9, 1.0), Color.WHITE)
+	if int(a_info.get("chain", 0)) > 0:
+		_row(tr("FORECAST_CHAIN"), tr("FORECAST_CHAIN_VALUE") % [int(a_info["chain"]), int(a_info.get("chain_count", 0))], "", 22, UiStyle.GOOD, Color.WHITE)
 	if show_details and details.size() == 2:
 		for key: String in details[0]:
 			_row(tr(key), str(details[0][key]), str(details[1].get(key, "")), 22, UiStyle.TEXT_DIM, UiStyle.TEXT_DIM)

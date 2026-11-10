@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="AwakeningData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/awakening_data.gd" id="1_4bmj1"]
+[ext_resource type="Resource" path="res://game/data/skills/gambit_strike.tres" id="2_m35sr"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/skill_data.gd" id="3_fs406"]
+[ext_resource type="Resource" path="res://game/data/skills/vigil.tres" id="4_q254f"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/stat_block.gd" id="5_quiwk"]
+
+[sub_resource type="Resource" id="Resource_2h2by"]
+script = ExtResource("5_quiwk")
+values = Dictionary[StringName, int]({
+&"def": 2,
+&"skl": 3,
+&"spd": 3,
+&"str": 3
+})
+
+[resource]
+script = ExtResource("1_4bmj1")
+stat_modifiers = SubResource("Resource_2h2by")
+skills = Array[ExtResource("3_fs406")]([ExtResource("4_q254f")])
+signature = ExtResource("2_m35sr")
+color = Color(1, 0.82, 0.35, 1)
+id = &"crossroads_pact"
+display_name = "AWAKENING_CROSSROADS_PACT_NAME"

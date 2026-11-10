@@ -79,6 +79,8 @@ func check_resource(resource: Resource) -> void:
 		_check_unit(data as UnitData)
 	elif data is WeaponData:
 		_check_weapon_type_known((data as WeaponData).weapon_type, data)
+	elif data is AwakeningData:
+		_check_stat_block((data as AwakeningData).stat_modifiers, data, "stat_modifiers")
 	elif data is ConsumableData:
 		_check_stat_block((data as ConsumableData).permanent_boosts, data, "permanent_boosts")
 	elif data is TerrainData:

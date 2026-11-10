@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="SkillData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/skill_data.gd" id="1_4rguy"]
+
+[resource]
+script = ExtResource("1_4rguy")
+tags = Array[StringName]([&"signature"])
+params = {
+"crit": 20,
+"hit": 20,
+"might": 6
+}
+id = &"night_hex"
+display_name = "SKILL_NIGHT_HEX_NAME"
+description = "SKILL_NIGHT_HEX_DESC"

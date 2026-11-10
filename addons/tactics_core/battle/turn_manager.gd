@@ -32,6 +32,9 @@ class PhaseReport:
 static func start_battle(state: BattleState) -> PhaseReport:
 	state.turn = 1
 	state.phase_index = 0
+	if state.ruleset.awakening_rule != null:
+		for unit: UnitState in state.all_units():
+			state.ruleset.awakening_rule.on_unit_added(state, unit)
 	return begin_phase(state)
 
 
@@ -56,6 +59,10 @@ static func begin_phase(state: BattleState) -> PhaseReport:
 			unit.current_hp += amount
 			report.healed[unit.id] = amount
 	report.skill_effects = SkillRunner.phase_start(state, report.faction_id)
+	if state.ruleset.awakening_rule != null:
+		for unit: UnitState in state.units_of(report.faction_id):
+			if not report.spawned.has(unit.id):
+				state.ruleset.awakening_rule.on_phase_start(state, unit)
 	state.mark_changed()
 	return report
 

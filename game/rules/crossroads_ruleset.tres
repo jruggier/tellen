@@ -1,5 +1,6 @@
 [gd_resource type="Resource" script_class="Ruleset" format=3]
 
+[ext_resource type="Script" path="res://addons/tactics_core/awakening/cooldown_awakening_rule.gd" id="1_am3qx"]
 [ext_resource type="Script" path="res://addons/tactics_core/core/ruleset.gd" id="1_ruleset"]
 [ext_resource type="Script" path="res://game/rules/crossroads_combat_rules.gd" id="2_combat"]
 [ext_resource type="Script" path="res://game/rules/crossroads_growth_rules.gd" id="3_growth"]
@@ -42,6 +43,9 @@
 [ext_resource type="Resource" path="res://game/data/weapon_types/bow.tres" id="31_nmv7p"]
 [ext_resource type="Resource" path="res://game/data/terrain/doorway.tres" id="32_abuhv"]
 
+[sub_resource type="Resource" id="Resource_0pkgn"]
+script = ExtResource("1_am3qx")
+
 [sub_resource type="Resource" id="Resource_combat"]
 script = ExtResource("2_combat")
 
@@ -71,3 +75,4 @@ growth_rules = SubResource("Resource_growth")
 exp_rules = SubResource("Resource_exp")
 enemy_stat_rules = SubResource("Resource_enemy")
 proficiency_rules = SubResource("Resource_prof")
+awakening_rule = SubResource("Resource_0pkgn")

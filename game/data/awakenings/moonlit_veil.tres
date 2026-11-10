@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="AwakeningData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/awakening_data.gd" id="1_cob63"]
+[ext_resource type="Resource" path="res://game/data/skills/night_hex.tres" id="2_avemb"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/skill_data.gd" id="3_n2hlv"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/stat_block.gd" id="4_00e7i"]
+
+[sub_resource type="Resource" id="Resource_4npya"]
+script = ExtResource("4_00e7i")
+values = Dictionary[StringName, int]({
+&"dex": 2,
+&"mag": 4,
+&"res": 3
+})
+
+[resource]
+script = ExtResource("1_cob63")
+stat_modifiers = SubResource("Resource_4npya")
+signature = ExtResource("2_avemb")
+color = Color(0.7, 0.6, 1, 1)
+id = &"moonlit_veil"
+display_name = "AWAKENING_MOONLIT_VEIL_NAME"

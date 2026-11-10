@@ -30,6 +30,8 @@ static func spawn_due(state: BattleState) -> Array[StringName]:
 		unit.has_acted = true
 		if state.add_unit(unit):
 			spawned.append(unit.id)
+			if state.ruleset.awakening_rule != null:
+				state.ruleset.awakening_rule.on_unit_added(state, unit)
 	state.pending_arrivals = still_pending
 	return spawned
 

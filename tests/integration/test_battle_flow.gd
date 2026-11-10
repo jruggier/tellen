@@ -485,3 +485,27 @@ func test_pause_menu_end_turn_and_objective() -> void:
 	_choose(scene, &"end_turn")
 	await wait_process_frames(3)
 	assert_eq(scene.controller.state.turn, 2)
+
+
+func test_awaken_then_signature_attack() -> void:
+	var scene: BattleScene = _scene_with_adjacent_brigand()
+	var state: BattleState = scene.controller.state
+	var tellen: UnitState = state.get_unit(&"tellen")
+	scene.input.confirm()
+	scene.cursor.set_cell(Vector2i(3, 1))
+	scene.input.confirm()
+	await wait_process_frames(2)
+	assert_false(scene.menu.option_ids().has(&"signature"), "not awakened yet")
+	_choose(scene, &"awaken")
+	assert_true(tellen.awakened)
+	assert_eq(scene.input.state, PlayerInputController.State.ACTION_MENU, "free action: menu reopens")
+	scene.input.cancel()
+	assert_eq(scene.input.state, PlayerInputController.State.ACTION_MENU, "awakening locked in the move")
+	_choose(scene, &"signature")
+	assert_eq(scene.input.state, PlayerInputController.State.TARGETING)
+	state.rng = ScriptedRng.new([99, 99, 99, 99])
+	scene.input.confirm()
+	await wait_process_frames(2)
+	assert_true(tellen.signature_used)
+	assert_eq(scene.controller.action_log.entries().back()["type"], "signature_attack")
+	assert_eq(tellen.current_hp, tellen.max_hp(state.ruleset), "no counter")

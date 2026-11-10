@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="SkillData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/skill_data.gd" id="1_wf01c"]
+
+[resource]
+script = ExtResource("1_wf01c")
+tags = Array[StringName]([&"signature"])
+params = {
+"hit": 15,
+"might": 10,
+"no_counter": true
+}
+id = &"cleaver"
+display_name = "SKILL_CLEAVER_NAME"
+description = "SKILL_CLEAVER_DESC"

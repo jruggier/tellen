@@ -22,6 +22,8 @@ var _hp_ratio: float = 1.0
 var _acted: bool = false
 var _staggered: bool = false
 var _boss: bool = false
+var _awakened: bool = false
+var _awaken_color: Color = Color.WHITE
 var _flash: float = 0.0
 var _time: float = 0.0
 var _tween: Tween
@@ -44,6 +46,8 @@ func refresh(unit: UnitState, ruleset: Ruleset) -> void:
 	_acted = unit.has_acted
 	_staggered = unit.is_staggered()
 	_boss = unit.is_boss
+	_awakened = unit.awakened
+	_awaken_color = unit.awakening.color if unit.awakening != null else Color.WHITE
 	visible = unit.is_alive()
 	modulate.a = 1.0
 	queue_redraw()
@@ -91,7 +95,7 @@ func _process(delta: float) -> void:
 	if _flash > 0.0:
 		_flash = maxf(0.0, _flash - delta * 6.0)
 		queue_redraw()
-	elif _staggered:
+	elif _staggered or _awakened:
 		queue_redraw()
 
 
@@ -129,6 +133,9 @@ func _draw() -> void:
 		draw_rect(Rect2(rect.position, Vector2(rect.size.x, 2)), body.lightened(0.25))
 		draw_rect(rect, body.darkened(0.55), false, 1.0)
 		WorldText.draw_centered(self, rect.get_center() + Vector2(0, -0.5), _letter, 8.0, zoom, Color.WHITE, body.darkened(0.6))
+	if _awakened:
+		var glow: float = 0.6 + 0.4 * sin(_time * 4.0)
+		draw_rect(Rect2(Vector2(1, 0), Vector2(s - 2, s - 2)), Color(_awaken_color, glow), false, 1.0)
 	if _flash > 0.0:
 		draw_rect(Rect2(Vector2(2, 1), Vector2(s - 4, s - 4)), Color(1, 1, 1, _flash * 0.85))
 	if _staggered:

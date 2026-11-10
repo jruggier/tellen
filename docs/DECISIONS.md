@@ -58,6 +58,9 @@ From spec §18. Each is a ruleset flag or value, so changing one is a data edit,
 | 37 | Trigger regions fire when a unit stops in them; cancelling that move undoes the trigger | `MoveCommand`, `TriggerRules` | ☐ |
 | 38 | Canto applies after Attack, Heal or Use Item (not after Wait), once per phase, using the movement left this phase | `CantoMoveCommand` | ☐ |
 | 39 | Sample skill assignments: Second Wind → Tellen, Fleetfoot → Sable, Vigil → recruit Spearhand, Shield Wall → Bulwark class, Canto → Outrider/Vanguard | `game/data` | ☐ |
+| 40 | Awaken is a free action (the unit can still attack the same turn; its move is locked in), as in FE Engage | `AwakenCommand` | ☐ |
+| 41 | Action-charge rule: no phase-start charge on turn 1, so the meter really starts at 3 | `ActionChargeAwakeningRule` | ☐ |
+| 42 | Sample awakenings: Tellen "Crossroads Pact" (+3 Str/Spd/Skl, +2 Def, Vigil; Gambit Strike +8 might +30 hit, no counter), Sable "Moonlit Veil" (+4 Mag, +3 Res, +2 Dex; Night Hex +6 might +20 hit +20 crit), Gid "Iron Resolve" (+4 Str, +3 Def, +2 Bld; Cleaver +10 might +15 hit, no counter) | `game/data/awakenings` | ☐ |
 | 19 | 2RN: hit if the average of two 0–99 rolls is below the displayed hit. HYBRID: below 50 uses 1RN | `CrossroadsCombatRules.roll_hit` | ☐ |
 
 **Input bindings (M0)**
@@ -194,6 +197,9 @@ From spec §18. Each is a ruleset flag or value, so changing one is a data edit,
 - **Skills modify combatants where they are built** (`CombatContext.participant` → `SkillRunner.apply_to_participant`), including auras from allies near the (possibly hypothetical) cell. Forecast, resolver and AI therefore always agree.
 - **Spec hook names map as:** `modify_forecast` → `modify_participant` / `modify_ally_participant`; `grants_action` → `grants_canto` (signature attacks come from awakening data in M5.2); `on_strike_resolved` isn't needed by any sample skill yet and isn't implemented.
 - **Vantage is a participant flag** (`strikes_first`); when the defender has it, it counters before the attacker's first strike and doesn't counter again.
+- **Awakening lives in data + one ruleset slot.** `AwakeningData` (on `UnitData`) says what a unit gains; `Ruleset.awakening_rule` says how awakening is earned and how long it lasts. Swapping cooldown ↔ action charge is a single field in `crossroads_ruleset.tres`. A future `SigilData` can fill `UnitData.awakening` without code changes.
+- **Cooldown rule timing:** "lasts 3 turns" = the turn it starts plus the next two of the unit's turns; it ends at the start of the unit's 4th phase, then cooldown counts down at each of its phase starts.
+- **Signature attacks are `AttackCommand`s with a hook** (`_customize_attacker`) that adds the signature's `params` (might, hit, crit, damage, no_counter). Any new kind of special attack can subclass the same way.
 - **Awakening stat bonuses go through `UnitState.effective_stats()`**; max HP always comes from base stats, so awakening never changes current/max HP bookkeeping.
 
 ## GDScript gotchas (read before writing code)

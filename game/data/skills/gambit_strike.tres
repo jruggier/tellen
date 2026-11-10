@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="SkillData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/skill_data.gd" id="1_duv0h"]
+
+[resource]
+script = ExtResource("1_duv0h")
+tags = Array[StringName]([&"signature"])
+params = {
+"hit": 30,
+"might": 8,
+"no_counter": true
+}
+id = &"gambit_strike"
+display_name = "SKILL_GAMBIT_STRIKE_NAME"
+description = "SKILL_GAMBIT_STRIKE_DESC"

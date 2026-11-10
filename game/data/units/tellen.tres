@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="UnitData" format=3]
 
 [ext_resource type="Resource" path="res://game/data/characters/tellen.tres" id="1_43dsx"]
+[ext_resource type="Resource" path="res://game/data/awakenings/crossroads_pact.tres" id="1_smtud"]
 [ext_resource type="Resource" path="res://game/data/classes/sellsword.tres" id="2_1eaay"]
 [ext_resource type="Script" path="res://addons/tactics_core/data/class_data.gd" id="3_smtud"]
 [ext_resource type="Resource" path="res://game/data/classes/duelist.tres" id="4_jmd3d"]
@@ -52,5 +53,6 @@ proficiencies = Dictionary[StringName, int]({
 })
 class_tree = Array[ExtResource("3_smtud")]([ExtResource("2_1eaay"), ExtResource("4_jmd3d")])
 is_lord = true
+awakening = ExtResource("1_smtud")
 id = &"tellen"
 display_name = "UNIT_TELLEN_NAME"

@@ -25,7 +25,7 @@ signal end_turn_requested
 signal pause_option_chosen(option_id: StringName)
 
 enum State { IDLE, SELECTED, MOVING, ACTION_MENU, WEAPON_MENU, TARGETING, ITEM_MENU, ITEM_ACTIONS, TRADING, ANIMATING, LEVEL_UP, INSPECT, PAUSE_MENU, DISABLED, CANTO }
-enum TargetMode { ATTACK, HEAL, TRADE }
+enum TargetMode { ATTACK, HEAL, TRADE, SIGNATURE }
 
 var state: State = State.DISABLED
 ## Extra pause-menu entries ({id, text}) supplied by the battle flow.
@@ -344,6 +344,10 @@ func _open_action_menu() -> void:
 	sub_menu.close()
 	var battle: BattleState = controller.state
 	var options: Array[Dictionary] = []
+	if AwakenCommand.new(_selected.id).can_execute(battle):
+		options.append({"id": &"awaken", "text": tr("ACTION_AWAKEN")})
+	if SignatureAttackCommand.available(_selected) and not _slots_with_targets(TargetMode.SIGNATURE).is_empty():
+		options.append({"id": &"signature", "text": _selected.awakening.signature.get_display_name()})
 	if not _slots_with_targets(TargetMode.ATTACK).is_empty():
 		options.append({"id": &"attack", "text": tr("ACTION_ATTACK")})
 	if not _slots_with_targets(TargetMode.HEAL).is_empty():
@@ -382,8 +386,15 @@ func _on_menu_chosen(option_id: StringName) -> void:
 
 func _on_action(action: StringName) -> void:
 	match action:
-		&"attack", &"heal":
-			_target_mode = TargetMode.ATTACK if action == &"attack" else TargetMode.HEAL
+		&"awaken":
+			if controller.execute(AwakenCommand.new(_selected.id)):
+				_locked = true
+				presenter.popup_at_cell(_selected.cell, tr("POPUP_AWAKENED"), _selected.awakening.color, 6.0)
+				unit_views[_selected.id].flash()
+				_refresh_views()
+			_open_action_menu()
+		&"attack", &"heal", &"signature":
+			_target_mode = {&"attack": TargetMode.ATTACK, &"heal": TargetMode.HEAL, &"signature": TargetMode.SIGNATURE}[action]
 			_slot_choices = _slots_with_targets(_target_mode)
 			if _slot_choices.size() == 1:
 				_weapon_slot = _slot_choices[0]
@@ -413,7 +424,7 @@ func _on_action(action: StringName) -> void:
 ## Weapon (or staff) slots that have at least one target from the current cell.
 func _slots_with_targets(mode: TargetMode) -> Array[int]:
 	var result: Array[int] = []
-	var slots: Array[int] = _selected.attack_slot_indices() if mode == TargetMode.ATTACK else _selected.heal_slot_indices()
+	var slots: Array[int] = _selected.heal_slot_indices() if mode == TargetMode.HEAL else _selected.attack_slot_indices()
 	for slot: int in slots:
 		if not _targets_for(mode, slot).is_empty():
 			result.append(slot)
@@ -423,7 +434,7 @@ func _slots_with_targets(mode: TargetMode) -> Array[int]:
 func _targets_for(mode: TargetMode, slot: int) -> Array[UnitState]:
 	var battle: BattleState = controller.state
 	match mode:
-		TargetMode.ATTACK:
+		TargetMode.ATTACK, TargetMode.SIGNATURE:
 			return CombatContext.attack_targets(battle, _selected, _selected.cell, _selected.inventory[slot].weapon())
 		TargetMode.HEAL:
 			return CombatContext.heal_targets(battle, _selected, _selected.cell, _selected.inventory[slot].weapon())
@@ -436,7 +447,7 @@ func _open_slot_menu() -> void:
 	for slot: int in _slot_choices:
 		var weapon: WeaponData = _selected.inventory[slot].weapon()
 		options.append({"id": StringName(str(slot)), "text": weapon.get_display_name(), "detail": "%d-%d" % [weapon.range_min, weapon.range_max]})
-	menu.open(options, _menu_position(), tr("UI_WEAPON_MENU_TITLE") if _target_mode == TargetMode.ATTACK else tr("UI_STAFF_MENU_TITLE"))
+	menu.open(options, _menu_position(), tr("UI_STAFF_MENU_TITLE") if _target_mode == TargetMode.HEAL else tr("UI_WEAPON_MENU_TITLE"))
 	_set_state(State.WEAPON_MENU)
 
 
@@ -456,7 +467,7 @@ func _start_targeting(mode: TargetMode) -> void:
 	var cells: Dictionary[Vector2i, bool] = {}
 	for target: UnitState in _targets:
 		cells[target.cell] = true
-	if mode == TargetMode.ATTACK:
+	if mode == TargetMode.ATTACK or mode == TargetMode.SIGNATURE:
 		overlay.show_unit_ranges({}, cells)
 	else:
 		overlay.show_unit_ranges(cells, {})
@@ -485,16 +496,19 @@ func _show_target() -> void:
 	cursor.set_cell(target.cell)
 	var battle: BattleState = controller.state
 	match _target_mode:
-		TargetMode.ATTACK:
+		TargetMode.ATTACK, TargetMode.SIGNATURE:
 			var weapon: WeaponData = _selected.inventory[_weapon_slot].weapon()
-			var forecast: CombatForecast = CombatContext.forecast(battle, _selected, target, _selected.cell, weapon)
 			var a: CombatParticipant = CombatContext.participant(battle, _selected, _selected.cell, weapon, target, true)
+			if _target_mode == TargetMode.SIGNATURE:
+				SignatureAttackCommand.apply_signature(_selected, a)
 			var d: CombatParticipant = CombatContext.participant(battle, target, target.cell, target.equipped_weapon(), _selected, false)
 			var rules: CombatRules = battle.ruleset.combat_rules
+			var forecast: CombatForecast = CombatForecast.calculate(rules, a, d, BattleGrid.distance(_selected.cell, target.cell))
+			var awaken_gain: int = battle.ruleset.awakening_rule.forecast_gain(forecast) if battle.ruleset.awakening_rule != null and _selected.awakening != null else 0
 			var details: Array[Dictionary] = [rules.forecast_details(a, d), rules.forecast_details(d, a)]
 			var defender_weapon: WeaponData = target.equipped_weapon()
 			forecast_panel.show_forecast(forecast, {
-				"attacker": {"name": _selected.get_display_name(), "color": _faction_color(_selected), "weapon": weapon.get_display_name(), "terrain": battle.grid.terrain_at(_selected.cell)},
+				"attacker": {"name": _selected.get_display_name(), "color": _faction_color(_selected), "weapon": weapon.get_display_name(), "terrain": battle.grid.terrain_at(_selected.cell), "awaken_gain": awaken_gain},
 				"defender": {"name": target.get_display_name(), "color": _faction_color(target), "weapon": defender_weapon.get_display_name() if defender_weapon != null else tr("UI_UNARMED"), "terrain": battle.grid.terrain_at(target.cell)},
 			}, details, _show_details)
 		TargetMode.HEAL:
@@ -510,7 +524,7 @@ func _show_target() -> void:
 func _confirm_target() -> void:
 	var target: UnitState = _targets[_target_index]
 	match _target_mode:
-		TargetMode.ATTACK:
+		TargetMode.ATTACK, TargetMode.SIGNATURE:
 			_do_attack(target)
 		TargetMode.HEAL:
 			_do_heal(target)
@@ -532,7 +546,8 @@ func _do_attack(target: UnitState) -> void:
 	var ruleset: Ruleset = controller.state.ruleset
 	var attacker_cell: Vector2i = attacker.cell
 	var target_cell: Vector2i = target.cell
-	var command := AttackCommand.new(attacker.id, target.id, _weapon_slot)
+	var command: AttackCommand = SignatureAttackCommand.new(attacker.id, target.id, _weapon_slot) if _target_mode == TargetMode.SIGNATURE \
+		else AttackCommand.new(attacker.id, target.id, _weapon_slot)
 	if not controller.execute(command):
 		return
 	_end_targeting()

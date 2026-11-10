@@ -32,6 +32,10 @@ func _run_unit(unit: UnitState) -> void:
 	var state: BattleState = scene.controller.state
 	var started: int = Time.get_ticks_usec()
 	var plan: AIPlanner.Plan = AIPlanner.plan(state, unit)
+	if plan.action == AIPlanner.Action.ATTACK and scene.controller.execute(AwakenCommand.new(unit.id)):
+		scene.presenter.popup_at_cell(unit.cell, tr("POPUP_AWAKENED"), Color(0.6, 0.9, 1.0), 6.0)
+		scene.refresh_views()
+		plan = AIPlanner.plan(state, unit)
 	TacticsLog.debug("AI", "%s plans %s → %s (%s, score %.1f) in %.1f ms" % [unit.id, unit.cell, plan.destination,
 		AIPlanner.Action.keys()[plan.action], plan.score, (Time.get_ticks_usec() - started) / 1000.0])
 	scene.cursor.set_cell(unit.cell, false)

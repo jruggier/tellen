@@ -44,6 +44,8 @@ func execute(state: BattleState) -> void:
 		var tier: int = healer.class_data.tier if healer.class_data != null else 0
 		ProgressionService.award_exp(state, healer, state.ruleset.exp_rules.heal_exp(healer.level, tier), report)
 		ProgressionService.train_proficiency(state, healer, staff.weapon_type.id, report)
+	if state.ruleset.awakening_rule != null:
+		state.ruleset.awakening_rule.on_event(state, healer, AwakeningRule.EVENT_HEAL)
 	healer.has_moved = true
 	healer.has_acted = true
 	state.mark_changed()

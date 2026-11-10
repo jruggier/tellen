@@ -40,6 +40,10 @@ func show_unit(unit: UnitState, state: BattleState) -> void:
 		for skill: SkillData in skills:
 			names.append(skill.get_display_name())
 		_box.add_child(UiStyle.label("%s: %s" % [tr("UI_SKILLS"), ", ".join(names)], 22, UiStyle.TEXT_DIM))
+	if unit.awakening != null and state.ruleset.awakening_rule != null:
+		var status: String = state.ruleset.awakening_rule.status_text(state, unit)
+		if not status.is_empty():
+			_box.add_child(UiStyle.label("%s: %s" % [unit.awakening.get_display_name(), status], 22, unit.awakening.color))
 	if unit.is_staggered():
 		_box.add_child(UiStyle.label(tr("UI_STATUS_STAGGERED"), 24, UiStyle.WARN))
 	if unit.is_boss:

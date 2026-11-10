@@ -1,5 +1,6 @@
 [gd_resource type="Resource" script_class="UnitData" format=3]
 
+[ext_resource type="Resource" path="res://game/data/awakenings/iron_resolve.tres" id="1_jcoje"]
 [ext_resource type="Resource" path="res://game/data/characters/gid.tres" id="1_othqi"]
 [ext_resource type="Resource" path="res://game/data/classes/hatchetman.tres" id="2_jcoje"]
 [ext_resource type="Script" path="res://addons/tactics_core/data/class_data.gd" id="3_7wk6k"]
@@ -49,5 +50,6 @@ proficiencies = Dictionary[StringName, int]({
 &"axe": 1
 })
 class_tree = Array[ExtResource("3_7wk6k")]([ExtResource("2_jcoje"), ExtResource("4_voy8i")])
+awakening = ExtResource("1_jcoje")
 id = &"gid"
 display_name = "UNIT_GID_NAME"

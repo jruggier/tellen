@@ -36,6 +36,8 @@ extends Resource
 @export var exp_rules: ExpRules
 @export var enemy_stat_rules: EnemyStatRules
 @export var proficiency_rules: ProficiencyRules
+## Awakening rule (null = no awakening in this game).
+@export var awakening_rule: AwakeningRule
 
 @export_group("Progression")
 ## Highest unit level.
@@ -138,6 +140,8 @@ func validate() -> PackedStringArray:
 			problems.append("Ruleset '%s': %s is not set" % [ruleset_id, slot])
 		else:
 			problems.append_array(rules.call("validate"))
+	if awakening_rule != null:
+		problems.append_array(awakening_rule.validate())
 	_check_catalog(problems, "stats", stats)
 	_check_catalog(problems, "movement_types", movement_types)
 	_check_catalog(problems, "weapon_types", weapon_types)

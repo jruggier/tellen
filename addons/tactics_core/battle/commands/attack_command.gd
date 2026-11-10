@@ -53,6 +53,7 @@ func execute(state: BattleState) -> void:
 	attacker.equip_slot(slot_index)
 	var weapon: WeaponData = attacker.equipped_weapon()
 	var a: CombatParticipant = CombatContext.participant(state, attacker, attacker.cell, weapon, defender, true)
+	_customize_attacker(state, a)
 	var d: CombatParticipant = CombatContext.participant(state, defender, defender.cell, defender.equipped_weapon(), attacker, false)
 	result = CombatResolver.resolve(rules, a, d, BattleGrid.distance(attacker.cell, defender.cell), state.rng)
 
@@ -72,6 +73,14 @@ func execute(state: BattleState) -> void:
 	if result.attacker_defeated():
 		defeats.append(DefeatRules.apply(state, attacker, defender))
 
+	var awakening: AwakeningRule = state.ruleset.awakening_rule
+	if awakening != null:
+		if result.defender_staggered:
+			awakening.on_event(state, attacker, AwakeningRule.EVENT_STAGGER)
+		if not defender.is_alive() and attacker.is_alive():
+			awakening.on_event(state, attacker, AwakeningRule.EVENT_KILL)
+		if not attacker.is_alive() and defender.is_alive():
+			awakening.on_event(state, defender, AwakeningRule.EVENT_KILL)
 	skill_effects.append_array(SkillRunner.combat_end(state, attacker, defender, result, Strike.Role.ATTACKER))
 	skill_effects.append_array(SkillRunner.combat_end(state, defender, attacker, result, Strike.Role.DEFENDER))
 	_progress(state, attacker, defender, Strike.Role.ATTACKER, weapon)
@@ -79,6 +88,11 @@ func execute(state: BattleState) -> void:
 	attacker.has_moved = true
 	attacker.has_acted = true
 	state.mark_changed()
+
+
+## Hook for subclasses (signature attacks) to change the attacker's numbers.
+func _customize_attacker(_state: BattleState, _participant: CombatParticipant) -> void:
+	pass
 
 
 ## EXP and proficiency for [param unit] (if its faction earns them).
