@@ -133,6 +133,11 @@ From spec §18. Each is a ruleset flag or value, so changing one is a data edit,
 - **Fixed neighbor order (up, right, down, left)** so pathfinding ties always break the same way.
 - **Placeholder terrain art** comes from `tools/gen_prototype_terrain.py`; each tile has its own pattern so terrain is readable without color. Keep the atlas order stable, because tiles are referenced by atlas coordinate.
 - **Zone of control** (§7.4) is a ruleset flag (`zone_of_control`, default off) with a `zoc_tag` unit tag.
+- **The pathfinder takes occupancy as callables** (`can_pass`, `can_stop`, `must_stop`), so the grid module never references units or factions. `RangeCalculator` supplies the battle rules: allied factions are passable but not stoppable, non-allied units block, and zone of control ends movement next to a ZOC-tagged enemy.
+- **Path preview uses the cheapest path** (Dijkstra parents, fixed tie order), per §7.3. FE's "remember the path the cursor traced" behavior is not implemented; it can be added in the cursor layer later without touching the pathfinder.
+- **Attack ranges ignore terrain** (you can attack across water and walls), measured from every cell the unit can stop on, over all of its equippable attack weapons.
+- **Threat map caching** is keyed on `BattleState.version`, which every state change increments.
+- **Generic units are fully proficient** with their class's weapon types, so their equipped weapon is simply the first usable weapon in their inventory.
 - **`tools/run_tests.sh` runs `--import` first**, so newly added `class_name` scripts and assets are registered before tests load.
 
 ---

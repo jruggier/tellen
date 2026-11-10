@@ -81,7 +81,7 @@ It wraps the spec's command (`godot --headless --path . -s addons/gut/gut_cmdln.
 _Post-M1 change: the game is native 1920×1080 with 64 px cells (16 px art at 4×)._
 
 - [x] **M2.1** Prototype tileset with `terrain_id` custom data; `BattleGrid` reading `TileMapLayer`. — `tools/gen_prototype_terrain.py` → 9 placeholder tiles (pattern + color); `game/tilesets/prototype_terrain.tres`; terrain added to the ruleset catalog; `BattleGrid` (pure data). 143 tests.
-- [ ] **M2.2** Range calculator, path preview, threat map; tests.
+- [x] **M2.2** Range calculator, path preview, threat map; tests. — `Pathfinder` (bucket-queue Dijkstra), `MoveRange` (cheapest paths), `RangeCalculator` (ally pass-through, enemy blocking, ZOC flag, attack cells), cached `ThreatMap`; minimal `UnitState`/`BattleState`. 40×40 / 20-enemy threat map in ~8 ms. 159 tests.
 - [ ] **M2.3** Cursor, camera, placeholder unit sprites, select/move/cancel, `MoveCommand`.
 - [ ] **M2.4** Debug overlay showing terrain costs.
 - [ ] **M2.5** `test_arena.tscn` with every terrain type.
