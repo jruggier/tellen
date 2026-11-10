@@ -239,11 +239,32 @@ _Post-M1 change: the game is native 1920×1080 with 64 px cells (16 px art at 4�
 - [x] **M7.1** All `@tool` markers with gizmos and Inspector exports; `MapDefinition`. — `MapMarker` base (grid snap, editor gizmo, hidden in game); EnemyUnit/AllyUnit (selected = range preview, stat/proficiency overrides), PlayerSpawn (slots, forced unit), ReinforcementGroup (child unit markers), RegionMarker (MapEvent), SeizeTile/DefendTile/EscapeTile, VillageMarker/ChestMarker; `MapDefinition`; `BattleMap` accessors merge definition + markers + legacy lists; deployment; `UnitRoster` + test roster; `!flag` event conditions. 306 tests.
 - [x] **M7.2** Map template scene; "run current scene" test roster. — `game/maps/_template/map_template.tscn` (definition, 30×17 Terrain, Decoration, Markers groups with 4 spawn slots and an example enemy); F6 plays it with `game/data/units/test_roster.tres`. 308 tests.
 - [x] **M7.3** Map validator (editor + test). — `MapValidator`: terrain ids, markers off-grid/off-map/void/impassable/shared cells, factions, unarmed enemies, spawns and deploy count, blocked reinforcement tiles, unreachable objective and visit tiles, boss objective without a boss, dialogue parse errors, unknown dialogue ids, events naming missing units. Editor: `addons/tactics_core/debug/validate_map.gd` (File → Run with the map open). 317 tests.
-- [ ] **M7.4** `docs/LEVEL_DESIGN.md` and `docs/DATA_GUIDE.md`.
-- [x] **M7.5** `ch00_ruined_crossroads.tscn` and `ch01_the_bridge_deal.tscn` built only from template + markers. — ch00: Rout tutorial (forced Tellen/Sable/Gid; lessons on combat + forecast, Stagger, follow-ups, lances, a guarding boss; region/defeat/quote scenes). ch01: Seize the toll camp across one bridge; paying the toll keeps the guards asleep, walking away wakes them; armored gate captain + healer; loot chest (Stolen Crate, Steel Sword, Elixir) and a village; telegraphed turn-4 riders. Both validate cleanly. Objectives can carry a custom label. 320 tests.
-- [ ] **Checkpoint**
+- [x] **M7.4** `docs/LEVEL_DESIGN.md` and `docs/DATA_GUIDE.md`. — Step-by-step map building (template → terrain → markers → definition → validate → F6) with design rules; how to add stats, weapon types, weapons, items, classes, units, characters, skills, awakenings, terrain and AI profiles.
+- [x] **Checkpoint**
 
-## M8 — Rewind, campaign state, polish
+### M7 Checkpoint summary
+
+**Built**
+- **Markers**: PlayerSpawn, EnemyUnit, AllyUnit, ReinforcementGroup, RegionMarker, SeizeTile, DefendTile, EscapeTile, VillageMarker, ChestMarker. All snap to tiles, draw editor previews (unit markers show their range when selected) and are configured in the Inspector.
+- **MapDefinition**: name, factions, objectives, defeat conditions, turn limit, deployment (count, forced units), pre/post-battle scenes, events, music, notes.
+- **Map template** with the full marker structure; any map runs with F6 using the test roster.
+- **Map validator** (editor script + tests) for terrain, markers, units, reinforcements, objectives, dialogue and events.
+- **Guides**: `docs/LEVEL_DESIGN.md`, `docs/DATA_GUIDE.md`.
+- **Two chapters**, built only from the template and markers:
+  - **ch00 Ruined Crossroads**: a tutorial Rout map with Tellen, Sable and Gid; each encounter teaches one thing (forecast and Stagger, a slow thug for follow-ups, a lance raider, a guarding boss), with short in-character scenes as you reach them.
+  - **ch01 The Bridge Deal**: seize the toll camp across one bridge. The opening scene's choice matters (pay the toll and the bridge guards wait; walk away and they attack). Armored gate captain and a healer, a loot chest (Stolen Crate, Steel Sword, Elixir), a village, and telegraphed riders on turn 4.
+
+**How to try it**
+1. Open `game/maps/ch00_ruined_crossroads.tscn` → F6. Then `game/maps/ch01_the_bridge_deal.tscn` → F6 (try both answers in the intro).
+2. Open either map in the editor: select enemies to see their ranges; select the root to see the MapDefinition.
+3. Follow `docs/LEVEL_DESIGN.md` to make a small map from the template; run the validator; F6.
+
+**Known issues / not yet built**
+- ch00 → ch01 aren't linked yet; levels, items and flags don't carry over (M8 campaign state). Each map uses the test roster at level 1.
+- Marker gizmos are simple shapes and letters; range previews only show for unit markers.
+- Generic enemy names use their class name; there is no per-marker display name yet.
+
+**Decisions to confirm:** none new beyond the M7 notes in `DECISIONS.md`.## M8 — Rewind, campaign state, polish
 
 - [ ] **M8.1** `RewindService` + UI + tests.
 - [ ] **M8.2** `CampaignState` carried ch00 → ch01; save/load to `user://` as JSON.
