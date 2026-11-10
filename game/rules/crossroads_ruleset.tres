@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="Ruleset" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/core/ruleset.gd" id="1_ruleset"]
+
+[resource]
+script = ExtResource("1_ruleset")
+ruleset_id = &"crossroads"
+display_name = "Ruined Crossroads"
