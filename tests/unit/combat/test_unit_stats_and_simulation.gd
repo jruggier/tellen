@@ -72,6 +72,5 @@ func test_combat_lab_scene_builds() -> void:
 	add_child_autofree(lab)
 	await wait_process_frames(2)
 	lab.call("_simulate")
-	assert_eq(get_tree().root.content_scale_mode, Window.CONTENT_SCALE_MODE_DISABLED, "lab renders at native resolution")
+	assert_gt(lab.get_child_count(), 0, "lab built its UI")
 	lab.free()
-	assert_eq(get_tree().root.content_scale_mode, Window.CONTENT_SCALE_MODE_VIEWPORT, "scaling restored on exit")

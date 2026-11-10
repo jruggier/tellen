@@ -73,7 +73,7 @@ From spec §18. Each is a ruleset flag or value, so changing one is a data edit,
 - **`CLAUDE.md` imports `Tellen-Claude.md`** so the spec loads automatically each session; the spec keeps its filename. *(Jake)*
 - **Test framework: GUT 9.7.1**, the release for Godot 4.7 (`godot_4_7` branch). A `.gutconfig.json` adds subfolder scanning so the spec's test command finds `tests/unit/...`.
 - **Typed-GDScript enforcement:** `untyped_declaration` is an error. Godot's `directory_rules` excludes `res://addons` (third-party code we don't control) but re-includes `res://addons/tactics_core`. `game/` and `tests/` are covered by default.
-- **Pixel settings:** nearest-neighbour texture filter, 2D transforms snapped to pixels, font antialiasing off. 1920×1080 is exactly 8× the 240×135 base.
+- **Pixel settings:** nearest-neighbour texture filter, 2D transforms snapped to pixels, font antialiasing off. 1920×1080 is exactly 8× the 240×135 base. *(Superseded at the M1 checkpoint: native 1920×1080, font antialiasing back on.)*
 - **Autoload registration:** written into `project.godot` and also done by the plugin's `_enable_plugin`, so copying `tactics_core` into another project and enabling it is enough.
 - **Event payloads use ids, not Node references** (`unit_id: StringName`, cells as `Vector2i`). This keeps the model/view split (§2.4) and makes events loggable. Signals for combat results, level-ups and awakening are added in the milestone that creates their types (M1/M3/M5) rather than declared early with loose types.
 - **RNG streams are derived as `hash("<master_seed>:<stream>")`** and their 64-bit states are saved as strings, because JSON numbers are doubles and would corrupt them. A test round-trips through JSON.
@@ -86,7 +86,7 @@ From spec §18. Each is a ruleset flag or value, so changing one is a data edit,
 ### M0 Checkpoint (2026-11-10)
 
 - All §18 defaults and the M0 additions (input bindings, `debug_console` action, mouse confirm/cancel) confirmed by Jake.
-- UI font: **Inter** (SIL OFL). *(Jake)* Readability check: the whole game renders at 240×135, so text is drawn at that resolution too. Check Inter's legibility at small sizes in the Combat Lab (M1.5). If it's too soft or blocky, the options are: render UI text at full window resolution (switch stretch mode to `canvas_items`, which keeps sprites crisp but changes how pixel snapping works), or use larger text sizes.
+- UI font: **Inter** (SIL OFL). *(Jake)* *(Readability concern resolved at the M1 checkpoint by going native 1080p.)* Readability check: the whole game renders at 240×135, so text is drawn at that resolution too. Check Inter's legibility at small sizes in the Combat Lab (M1.5). If it's too soft or blocky, the options are: render UI text at full window resolution (switch stretch mode to `canvas_items`, which keeps sprites crisp but changes how pixel snapping works), or use larger text sizes.
 
 ### M1 (2026-11-10)
 
@@ -112,10 +112,18 @@ From spec §18. Each is a ruleset flag or value, so changing one is a data edit,
 - **Resolver details:** a brave weapon strikes twice in every attack turn, including follow-ups. Stagger is checked once after the attacker's first turn (any hit that the defender survives). Each strike rolls hit, then crit only on a hit. Damage is capped at the target's remaining HP, and a kill ends the combat.
 - **`Strike.Role`, not `Strike.Side`**: Godot has a built-in global `Side` enum that silently shadowed the name.
 - **`tools/run_tests.sh`** wraps the spec's test command because GUT reports "All tests passed" when a test file fails to parse (it skips the file). The wrapper fails the run on any script error.
-- **Combat Lab renders at native window resolution** (it turns off viewport scaling while open and restores it on exit), because a tuning tool with dozens of fields can't fit in 240×135. It is a debug tool: it refuses to run in release builds, and M8's export presets will exclude `game/scenes/combat_lab.tscn` and `addons/tactics_core/debug/`.
+- **Combat Lab renders at native window resolution** (it turns off viewport scaling while open and restores it on exit), because a tuning tool with dozens of fields can't fit in 240×135. *(Superseded: the game is now native 1080p, so no switch is needed.)* It is a debug tool: it refuses to run in release builds, and M8's export presets will exclude `game/scenes/combat_lab.tscn` and `addons/tactics_core/debug/`.
 - **Average stats at a level** (`UnitStats.average_at_level`): personal base + class base + round(combined growth × levels gained / 100), clamped to class caps; Build gets the class bonus, Mov comes from the class. Generic units use the enemy stat rules.
 - **`CombatRules.debug_details()`** exposes intermediate values (weight penalty, effective Spd/Skl, Skill lead, hit/avoid/crit totals) for the Lab and the M3 forecast "details" toggle, without the framework knowing game formulas.
 - **The weapon type id is also its proficiency id**; movement tactics (`ground`, `sky`, `heavy`) use the movement type id.
+
+### M1 Checkpoint (2026-11-10)
+
+- **Native 1920×1080 replaces the 240×135 base.** *(Jake)* Stretch mode `canvas_items` with `keep` aspect and fractional scaling, so smaller windows scale down smoothly. Text and UI render at full resolution with Inter (antialiased). Pixel art keeps nearest-neighbour filtering. Spec §1, §2a.6 and §14 updated.
+- **Map tiles: 16×16 source art at 4× = 64 px cells** (about 30×17 tiles on screen). *(Jake)* `Ruleset.tile_source_size` and `tile_display_scale`; `Ruleset.cell_size()` returns 64.
+- UI font sizes rescaled for 1080p: theme default 28 px.
+- The Combat Lab no longer switches scaling modes; it fits the 1080p canvas directly.
+- Defaults #14–24 still to confirm.
 
 ---
 

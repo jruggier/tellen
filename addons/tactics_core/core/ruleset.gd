@@ -41,6 +41,12 @@ extends Resource
 ## EXP needed per level.
 @export_range(1, 10000) var exp_per_level: int = 100
 
+@export_group("Grid")
+## Size in pixels of one map tile in the source art.
+@export_range(1, 256) var tile_source_size: int = 16
+## On-screen scale of map art (16 px tiles × 4 = 64 px cells at 1920×1080).
+@export_range(1, 16) var tile_display_scale: int = 4
+
 @export_group("Units")
 ## Inventory slots per unit.
 @export_range(1, 20) var inventory_size: int = 5
@@ -52,6 +58,11 @@ extends Resource
 @export var mov_stat: StringName = &"mov"
 ## Stat id holding Build (offsets weapon weight).
 @export var build_stat: StringName = &"bld"
+
+
+## On-screen size of one grid cell in pixels.
+func cell_size() -> int:
+	return tile_source_size * tile_display_scale
 
 
 ## The stat definition with [param stat_id], or null.

@@ -30,7 +30,7 @@ Jake (the designer) will check in on your work regularly. Work in small, verifia
 
 - **Engine:** Godot 4.6+ (latest stable at time of writing is 4.7.x). Use `TileMapLayer` (not the deprecated `TileMap`), typed GDScript, `@export` resources.
 - **Language:** GDScript only. Static typing everywhere (`var hp: int`, `func f(a: int) -> void`). Enable "untyped declaration" warnings as errors in project settings.
-- **Resolution:** base 240×135, integer scaling (`display/window/stretch/mode = viewport`, `scale_mode = integer`). Default window 1920×1080. Tile size 16×16 (configurable in ruleset/map). Maps larger than the screen scroll with a camera that follows the cursor.
+- **Resolution:** native 1920×1080 (`display/window/stretch/mode = canvas_items`, aspect `keep`), nearest-neighbour texture filtering so pixel art stays crisp. Source tiles are 16×16 drawn at 4× = 64 px cells (`Ruleset.tile_source_size` × `tile_display_scale`, configurable). Text and UI render at full resolution. Maps larger than the screen scroll with a camera that follows the cursor. *(Changed 2026-11-10 from a 240×135 integer-scaled base, per Jake.)*
 - **Testing:** GUT 9.x (Godot 4 branch) in `addons/gut`. If GUT does not support the installed engine version, use gdUnit4 and log it.
 - **No other third-party addons** (no Dialogic, no LimboAI). The framework must stay self-contained and reusable.
 - **Input:** keyboard, gamepad and mouse. Define actions in the Input Map: `confirm`, `cancel`, `menu`, `info`, `cursor_up/down/left/right`, `next_unit`, `prev_unit`, `toggle_threat`, `end_turn`, `speed_up`, `debug_overlay`.
@@ -68,7 +68,7 @@ Design rules:
 3. **Data is versioned and validated.** A `DataValidator` (run in tests and from the editor) checks every class, weapon, unit, skill and map for missing references, out-of-range numbers and broken links. Content errors must fail loudly in debug and degrade gracefully in release.
 4. **Localization-ready.** All player-facing strings go through `tr()` with keys (`UI_END_TURN`, `WEAPON_IRON_SWORD_NAME`). Dialogue files support a locale suffix (`ch01_intro.en.dlg`). Only English is written now, but nothing should need refactoring to add a language.
 5. **Settings persist** to `user://settings.cfg`: animation speed, text speed, volume (master/music/sfx), window mode, control remapping, colorblind-safe range overlays, forecast detail level.
-6. **Accessibility basics:** remappable controls, text speed, never rely on color alone (range overlays also use patterns/icons), readable fonts at 240×135.
+6. **Accessibility basics:** remappable controls, text speed, never rely on color alone (range overlays also use patterns/icons), readable fonts at 1920×1080 and when the window is scaled down.
 7. **Debug vs. release.** Debug overlay, console and Combat Lab are compiled in only when `OS.is_debug_build()` or a `debug` feature tag is set. No debug code paths in release builds.
 8. **Logging.** A small `Log` utility with levels; framework systems log warnings for recoverable content errors instead of crashing.
 9. **Performance budget:** 60 FPS on a 40×40 map with 40 units; enemy phase AI completes each unit's decision in under 50 ms. Profile at M4 and M8.
@@ -623,7 +623,7 @@ Pick two units (data or ad-hoc stats), weapons, terrain and levels; show the ful
 
 ---
 
-## 14. UI (prototype quality, readable at 240×135)
+## 14. UI (prototype quality, readable at 1920×1080)
 
 - Grid cursor with smooth snap; terrain info panel (name, avoid, def).
 - Unit info panel: name, class, level, HP bar, 8 stats + Mov + Bld, equipped weapon, inventory, skills, awakening meter/cooldown, Staggered status.
@@ -726,7 +726,7 @@ Permadeath, weapon durability, shops, convoy, overworld/hub, support conversatio
 - Remove Luck and Charisma.
 - "Finesse" → Build (§4.2, §5.1).
 - Weapon letter ranks → numbered proficiency (§6.4).
-- Keep the 240×135 resolution and the `/tools` sprite generators.
+- Keep the `/tools` sprite generators. (Resolution is now native 1920×1080; see §1.)
 
 ---
 

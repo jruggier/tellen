@@ -59,10 +59,11 @@ func test_scene_router_routes_and_params() -> void:
 
 
 func test_project_display_settings() -> void:
-	assert_eq(ProjectSettings.get_setting("display/window/size/viewport_width"), 240)
-	assert_eq(ProjectSettings.get_setting("display/window/size/viewport_height"), 135)
-	assert_eq(ProjectSettings.get_setting("display/window/stretch/mode"), "viewport")
-	assert_eq(ProjectSettings.get_setting("display/window/stretch/scale_mode"), "integer")
+	assert_eq(ProjectSettings.get_setting("display/window/size/viewport_width"), 1920)
+	assert_eq(ProjectSettings.get_setting("display/window/size/viewport_height"), 1080)
+	assert_eq(ProjectSettings.get_setting("display/window/stretch/mode"), "canvas_items")
+	assert_eq(ProjectSettings.get_setting("rendering/textures/canvas_textures/default_texture_filter"), 0, "nearest: crisp pixel art")
+	assert_eq(RulesetProvider.get_ruleset().cell_size(), 64, "16 px tiles at 4x")
 
 
 func test_input_actions_defined() -> void:

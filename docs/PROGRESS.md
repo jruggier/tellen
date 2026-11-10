@@ -69,7 +69,7 @@ It wraps the spec's command (`godot --headless --path . -s addons/gut/gut_cmdln.
 5. Validate content anytime: open `addons/tactics_core/debug/validate_data.gd` → File → Run.
 
 **Known issues**
-- At 240×135, Inter at small sizes (8 px) is legible but soft. Decide before M2/M3 UI work (see `DECISIONS.md` → M0 Checkpoint).
+- ~~At 240×135, Inter at small sizes is soft.~~ Resolved: the game is now native 1920×1080 (see `DECISIONS.md` → M1 Checkpoint).
 - In the Combat Lab, the "Staggered from previous combat" checkboxes draw without a visible box (clicking the text works). Cosmetic; debug tool only.
 - The Lab simulates the active ruleset as saved. Switching hit mode (1RN/2RN/hybrid) or growth mode means editing the ruleset `.tres`.
 - `CombatForecast.build(state, ...)` from battle state comes in M3, when battle state exists (see `DECISIONS.md`).
@@ -77,6 +77,8 @@ It wraps the spec's command (`godot --headless --path . -s addons/gut/gut_cmdln.
 **Decisions to confirm:** `DECISIONS.md` → "Added during M1" (#14–24).
 
 ## M2 — Grid and movement
+
+_Post-M1 change: the game is native 1920×1080 with 64 px cells (16 px art at 4×)._
 
 - [ ] **M2.1** Prototype tileset with `terrain_id` custom data; `BattleGrid` reading `TileMapLayer`.
 - [ ] **M2.2** Range calculator, path preview, threat map; tests.

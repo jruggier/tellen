@@ -8,11 +8,8 @@ extends Control
 ##
 ## Game-agnostic: it lists whatever stats, units, classes, weapons and
 ## terrain the active ruleset and data folders contain. Debug builds only.
-## The lab renders at native window resolution (not the game's low base
-## resolution) so its many fields stay readable; the previous scaling is
-## restored when it closes.
 
-const FONT_SIZE: int = 16
+const FONT_SIZE: int = 20
 
 var _ruleset: Ruleset
 var _units: Array[UnitData] = []
@@ -26,7 +23,6 @@ var _forecast_label: RichTextLabel
 var _sim_count: SpinBox
 var _sim_seed: SpinBox
 var _sim_label: RichTextLabel
-var _saved_scale_mode: Window.ContentScaleMode = Window.CONTENT_SCALE_MODE_DISABLED
 
 
 func _ready() -> void:
@@ -36,8 +32,6 @@ func _ready() -> void:
 		label.text = "The Combat Lab is only available in debug builds."
 		add_child(label)
 		return
-	_saved_scale_mode = get_tree().root.content_scale_mode
-	get_tree().root.content_scale_mode = Window.CONTENT_SCALE_MODE_DISABLED
 	_apply_theme()
 	_ruleset = RulesetProvider.get_ruleset()
 	if _ruleset == null:
@@ -58,11 +52,6 @@ func _default_attacker_index() -> int:
 		if _units[i].is_lord:
 			return i
 	return 0
-
-
-func _exit_tree() -> void:
-	if OS.is_debug_build():
-		get_tree().root.content_scale_mode = _saved_scale_mode
 
 
 # Content -------------------------------------------------------------------------
