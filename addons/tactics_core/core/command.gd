@@ -14,6 +14,17 @@ func get_type() -> StringName:
 	return &"command"
 
 
+## Id of the unit performing the command (empty for commands without one,
+## such as ending a phase). Used by rewind to find action boundaries.
+func actor_id() -> StringName:
+	var value: Variant = get(&"unit_id")
+	if value == null:
+		value = get(&"attacker_id")
+	if value == null:
+		value = get(&"healer_id")
+	return StringName(str(value)) if value != null else &""
+
+
 ## True if the command is legal in [param state].
 func can_execute(_state: BattleState) -> bool:
 	return false

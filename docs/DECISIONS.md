@@ -68,6 +68,7 @@ From spec §18. Each is a ruleset flag or value, so changing one is a data edit,
 | 47 | Dialogue controls: confirm next, X skip to the next choice, R backlog, C auto, hold Shift fast-forward | `DialoguePlayer` | ☐ |
 | 48 | Dialogue text speed 45 characters/second (settings in M8) | `BattleScene.dialogue_text_speed` | ☐ |
 | 49 | Nintendo controllers use A (right) = confirm, B (bottom) = cancel, detected automatically; Xbox/PlayStation keep bottom = confirm. Override with project setting `tactics_core/input/nintendo_layout` (0 auto, 1 always, 2 never) | `ControllerLayout` | ✅ 2026-11-10 (Jake) |
+| 50 | Ending the turn counts as a rewind point (so a bad enemy phase can be rewound) | `RewindService` | ☐ |
 | 19 | 2RN: hit if the average of two 0–99 rolls is below the displayed hit. HYBRID: below 50 uses 1RN | `CrossroadsCombatRules.roll_hit` | ☐ |
 
 **Input bindings (M0)**
@@ -229,6 +230,11 @@ From spec §18. Each is a ruleset flag or value, so changing one is a data edit,
 - **Deployment:** spawn slots fill in slot order. Forced units (slot-specific first, then the definition's list) go first, then the roster, up to `deploy_count` (0 = all slots). Without a campaign, the roster is `game/data/units/test_roster.tres` (project setting `tactics_core/maps/test_roster`).
 - **Escape tiles combine** into one Escape objective (count = the highest count on any escape tile).
 - **Event flags accept `!flag`** ("only while not set"), used for branching on story choices.
+
+### M8 (2026-11-10)
+
+- **Rewind points are taken before the first command of each player action** (move, or acting in place, or a free action) and before ending the turn, never during other factions' phases. A cancelled move drops its point. Each point is a full `BattleState.copy()` (RNG included) plus campaign flags and the map's objectives.
+- **Rewinding drops every later point** and spends one charge; charges are not restored by rewinding.
 
 ## GDScript gotchas (read before writing code)
 

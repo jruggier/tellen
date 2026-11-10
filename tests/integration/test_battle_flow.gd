@@ -617,3 +617,27 @@ func test_talk_flow_plays_dialogue_and_recruits() -> void:
 	assert_eq(state.get_unit(&"brigand_1").faction_id, &"player", "recruited")
 	assert_true(state.get_unit(&"tellen").has_acted)
 	assert_true(scene.flow.finished, "recruiting the only enemy completes Rout")
+
+
+func test_rewind_through_pause_menu() -> void:
+	var scene: BattleScene = _scene_with_adjacent_brigand()
+	var state: BattleState = scene.controller.state
+	scene.input.confirm()
+	scene.cursor.set_cell(Vector2i(1, 4))
+	scene.input.confirm()
+	await wait_process_frames(2)
+	_choose(scene, &"wait")
+	await wait_process_frames(1)
+	assert_eq(scene.controller.state.get_unit(&"tellen").cell, Vector2i(1, 4))
+	scene.input.open_pause_menu()
+	_choose(scene, &"rewind")
+	assert_eq(scene.input.state, PlayerInputController.State.CHOICE_MENU)
+	scene.input.confirm()
+	await wait_process_frames(1)
+	var tellen: UnitState = scene.controller.state.get_unit(&"tellen")
+	assert_eq(tellen.cell, Vector2i(1, 2), "back where it started")
+	assert_false(tellen.has_acted)
+	assert_eq(scene.unit_views[&"tellen"].position, Vector2(1, 2) * 16, "views rebuilt")
+	assert_eq(scene.rewind.charges_left, 2)
+	assert_eq(scene.input.state, PlayerInputController.State.IDLE)
+	assert_ne(scene.controller.state, state, "a restored copy, not the old object")

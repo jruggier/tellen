@@ -69,6 +69,8 @@ var objective_panel: ObjectivePanel
 var result_panel: ResultPanel
 var flow: BattleFlow
 var ai: AIController
+## Tellen's rewind (snapshots before each player action).
+var rewind: RewindService
 var dialogue_player: DialoguePlayer
 ## Every dialogue scene available to this battle.
 var dialogues: DialogueLibrary
@@ -126,6 +128,8 @@ func _ready() -> void:
 	_on_cursor_moved(start)
 	TacticsLog.info("BattleScene", "Battle '%s' started: %d units, seed %d, %s" % [controller.state.map_id, controller.state.all_units().size(), seed, difficulty])
 	TacticsEvents.battle_started.emit(controller.state.map_id)
+	rewind = RewindService.new(controller, ruleset.rewind_charges_per_map)
+	rewind.objectives_provider = func() -> Array[Objective]: return objectives.duplicate()
 	dialogue_player = DialoguePlayer.new()
 	dialogue_player.name = "DialoguePlayer"
 	dialogue_player.text_speed = dialogue_text_speed
@@ -269,7 +273,7 @@ func _build_input() -> void:
 	input.toast = toast
 	input.trade_panel = trade_panel
 	input.objectives = objectives
-	input.pause_options = [{"id": &"objective", "text": tr("UI_OBJECTIVE_TITLE")}]
+	input.pause_options_provider = _pause_options
 	input.pause_option_chosen.connect(_on_pause_option)
 	input.player_faction = _player_faction()
 	add_child(input)
@@ -328,9 +332,61 @@ func update_turn_label() -> void:
 	turn_label.text = "%s %d    %s%s" % [tr("UI_TURN"), state.turn, goal.describe(), ("  (%s)" % progress) if not progress.is_empty() else ""]
 
 
+func _pause_options() -> Array[Dictionary]:
+	var options: Array[Dictionary] = [{"id": &"objective", "text": tr("UI_OBJECTIVE_TITLE")}]
+	if rewind != null and rewind.charges_left > 0:
+		options.append({"id": &"rewind", "text": tr("UI_REWIND") % rewind.charges_left, "enabled": rewind.can_rewind()})
+	return options
+
+
 func _on_pause_option(option_id: StringName) -> void:
 	if option_id == &"objective":
 		objective_panel.show_objectives(controller.state, objectives, defeat_conditions)
+	elif option_id == &"rewind":
+		_open_rewind_menu()
+
+
+func _open_rewind_menu() -> void:
+	var options: Array[Dictionary] = []
+	for i: int in range(rewind.points.size() - 1, -1, -1):
+		var point: RewindService.Point = rewind.points[i]
+		options.append({"id": StringName(str(i)), "text": "%s %d" % [tr("UI_TURN"), point.turn], "detail": point.actor_name})
+	input.open_choice_menu(options, tr("UI_REWIND_TITLE") % rewind.charges_left, func(choice: StringName) -> void: perform_rewind(int(String(choice))))
+
+
+## Rewinds to snapshot [param index] and rebuilds the screen around it.
+func perform_rewind(index: int) -> void:
+	var point: RewindService.Point = rewind.rewind_to(index)
+	if point == null:
+		return
+	objectives.assign(point.objectives)
+	rebuild_unit_views()
+	overlay.show_warnings(ReinforcementRules.telegraphed_cells(controller.state))
+	update_turn_label()
+	_flash_rewind()
+	input.begin_player_phase()
+	toast.show_message(tr("UI_REWIND_DONE") % [point.turn, rewind.charges_left])
+
+
+## Recreates every unit view from the battle state.
+func rebuild_unit_views() -> void:
+	for view: UnitView in unit_views.values():
+		view.queue_free()
+	unit_views.clear()
+	for unit: UnitState in controller.state.all_units():
+		add_unit_view(unit)
+	refresh_views()
+
+
+func _flash_rewind() -> void:
+	var flash := ColorRect.new()
+	flash.color = Color(0.45, 0.7, 1.0, 0.55)
+	flash.set_anchors_preset(Control.PRESET_FULL_RECT)
+	flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hud.add_child(flash)
+	var tween: Tween = create_tween()
+	tween.tween_property(flash, "color:a", 0.0, 0.6)
+	tween.finished.connect(flash.queue_free)
 
 
 func _on_battle_finished(victory: bool) -> void:
@@ -381,8 +437,9 @@ func _update_hint() -> void:
 		PlayerInputController.State.DISABLED: "",
 		PlayerInputController.State.CANTO: "UI_HINT_CANTO",
 		PlayerInputController.State.CLASS_MENU: "UI_HINT_MENU",
+		PlayerInputController.State.CHOICE_MENU: "UI_HINT_MENU",
 	}
-	var key: String = keys[input.state]
+	var key: String = keys.get(input.state, "")
 	hint_label.text = tr(key) if not key.is_empty() else ""
 
 

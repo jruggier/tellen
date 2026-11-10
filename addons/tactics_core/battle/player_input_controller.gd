@@ -24,12 +24,12 @@ signal end_turn_requested
 ## The player picked a pause-menu entry other than End Turn.
 signal pause_option_chosen(option_id: StringName)
 
-enum State { IDLE, SELECTED, MOVING, ACTION_MENU, WEAPON_MENU, TARGETING, ITEM_MENU, ITEM_ACTIONS, TRADING, ANIMATING, LEVEL_UP, INSPECT, PAUSE_MENU, DISABLED, CANTO, CLASS_MENU }
+enum State { IDLE, SELECTED, MOVING, ACTION_MENU, WEAPON_MENU, TARGETING, ITEM_MENU, ITEM_ACTIONS, TRADING, ANIMATING, LEVEL_UP, INSPECT, PAUSE_MENU, DISABLED, CANTO, CLASS_MENU, CHOICE_MENU }
 enum TargetMode { ATTACK, HEAL, TRADE, SIGNATURE, TALK }
 
 var state: State = State.DISABLED
-## Extra pause-menu entries ({id, text}) supplied by the battle flow.
-var pause_options: Array[Dictionary] = []
+## Extra pause-menu entries ({id, text, enabled}), rebuilt each time the menu opens.
+var pause_options_provider: Callable = Callable()
 ## The map's objectives (for Seize / Escape actions).
 var objectives: Array[Objective] = []
 ## Awaited before every player attack (battle quotes): (attacker, defender).
@@ -70,6 +70,7 @@ var _item_slot: int = 0
 var _trade_partner: UnitState = null
 var _show_details: bool = false
 var _level_up_queue: Array[Dictionary] = []
+var _choice_callback: Callable = Callable()
 
 signal _level_up_closed
 
@@ -131,7 +132,7 @@ func _unhandled_input(event: InputEvent) -> void:
 ## (the map cursor moves itself in the other states).
 func move_selection(direction: Vector2i) -> void:
 	match state:
-		State.ACTION_MENU, State.WEAPON_MENU, State.ITEM_MENU, State.PAUSE_MENU, State.CLASS_MENU:
+		State.ACTION_MENU, State.WEAPON_MENU, State.ITEM_MENU, State.PAUSE_MENU, State.CLASS_MENU, State.CHOICE_MENU:
 			menu.move(direction.y if direction.y != 0 else direction.x)
 		State.ITEM_ACTIONS:
 			sub_menu.move(direction.y if direction.y != 0 else direction.x)
@@ -162,7 +163,7 @@ func confirm() -> void:
 				_move_to(cursor.cell)
 			elif other != null and other != _selected and other.faction_id == player_faction and other.is_ready() and not other.has_moved:
 				_select(other)
-		State.ACTION_MENU, State.WEAPON_MENU, State.ITEM_MENU, State.PAUSE_MENU, State.CLASS_MENU:
+		State.ACTION_MENU, State.WEAPON_MENU, State.ITEM_MENU, State.PAUSE_MENU, State.CLASS_MENU, State.CHOICE_MENU:
 			menu.accept()
 		State.ITEM_ACTIONS:
 			sub_menu.accept()
@@ -217,7 +218,7 @@ func cancel() -> void:
 			if not trade_panel.cancel_pick():
 				trade_panel.close()
 				_open_action_menu()
-		State.INSPECT, State.PAUSE_MENU:
+		State.INSPECT, State.PAUSE_MENU, State.CHOICE_MENU:
 			_deselect()
 		State.CANTO:
 			_end_turn_for_unit()
@@ -254,9 +255,18 @@ func resume() -> void:
 ## Opens the pause menu (End Turn plus [member pause_options]).
 func open_pause_menu() -> void:
 	var options: Array[Dictionary] = [{"id": &"end_turn", "text": tr("UI_END_TURN")}]
-	options.append_array(pause_options)
+	if pause_options_provider.is_valid():
+		options.append_array(pause_options_provider.call())
 	menu.open(options, Vector2(80, 300), tr("UI_PAUSE_TITLE"))
 	_set_state(State.PAUSE_MENU)
+
+
+## Shows a menu of [param options]; [param on_chosen] receives the chosen
+## id. Cancel returns to the map.
+func open_choice_menu(options: Array[Dictionary], title: String, on_chosen: Callable) -> void:
+	_choice_callback = on_chosen
+	menu.open(options, Vector2(80, 300), title)
+	_set_state(State.CHOICE_MENU)
 
 
 ## Expands the unit panel (map) or the forecast details (targeting).
@@ -392,6 +402,10 @@ func _open_action_menu() -> void:
 
 func _on_menu_chosen(option_id: StringName) -> void:
 	match state:
+		State.CHOICE_MENU:
+			_deselect()
+			if _choice_callback.is_valid():
+				_choice_callback.call(option_id)
 		State.PAUSE_MENU:
 			_deselect()
 			if option_id == &"end_turn":

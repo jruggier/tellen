@@ -70,6 +70,10 @@ extends Resource
 ## Chain strikes may defeat the defender.
 @export var chain_can_kill: bool = true
 
+@export_group("Rewind")
+## Times per map the player can rewind to an earlier action (Tellen's ability).
+@export_range(0, 99) var rewind_charges_per_map: int = 3
+
 @export_group("Units")
 ## Inventory slots per unit.
 @export_range(1, 20) var inventory_size: int = 5

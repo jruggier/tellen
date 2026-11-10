@@ -266,7 +266,7 @@ _Post-M1 change: the game is native 1920×1080 with 64 px cells (16 px art at 4�
 
 **Decisions to confirm:** none new beyond the M7 notes in `DECISIONS.md`.## M8 — Rewind, campaign state, polish
 
-- [ ] **M8.1** `RewindService` + UI + tests.
+- [x] **M8.1** `RewindService` + UI + tests. — Snapshots (state incl. RNG, campaign flags, objectives) before each player action and End Turn; rewind restores exactly, truncates the log, drops later points, uses a charge (ruleset `rewind_charges_per_map` = 3); pause menu → Rewind (N) → list of points; views rebuilt, blue flash. 327 tests.
 - [ ] **M8.2** `CampaignState` carried ch00 → ch01; save/load to `user://` as JSON.
 - [ ] **M8.3** Title screen → map flow; settings.
 - [ ] **M8.4** Bug pass; performance check (40×40 map, 30–40 units); export presets tested.

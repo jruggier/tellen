@@ -11,6 +11,8 @@ extends Node
 signal command_executed(command: Command)
 ## A command was undone.
 signal command_undone(command: Command)
+## A legal command is about to change the state (rewind snapshots hook here).
+signal before_command(command: Command)
 
 var state: BattleState
 var action_log := ActionLog.new()
@@ -58,6 +60,7 @@ func execute(command: Command) -> bool:
 	if not command.can_execute(state):
 		TacticsLog.warn("BattleController", "Rejected illegal command: %s" % command.to_dict())
 		return false
+	before_command.emit(command)
 	command.execute(state)
 	action_log.record(command, state)
 	if command.can_undo():
@@ -67,6 +70,15 @@ func execute(command: Command) -> bool:
 	command.emit_events(TacticsEvents)
 	command_executed.emit(command)
 	return true
+
+
+## Replaces the state wholesale (rewind) and resets caches and undo.
+func restore_state(snapshot: BattleState, log_size: int) -> void:
+	state = snapshot
+	action_log.truncate(log_size)
+	_undo_stack.clear()
+	threat_map.invalidate()
+	TacticsRng.set_rng(state.rng)
 
 
 ## True if the last command can be undone (e.g. a move before acting).

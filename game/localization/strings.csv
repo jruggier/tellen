@@ -228,3 +228,7 @@ ITEM_STOLEN_CRATE_DESC,The cargo the toll-men took. Proof of the deal.
 MAP_CH00_NAME,Ruined Crossroads
 MAP_CH01_NAME,The Bridge Deal
 OBJECTIVE_CH01_SEIZE,Seize the toll camp
+UI_REWIND,Rewind (%d)
+UI_REWIND_TITLE,Rewind to... (%d left)
+UI_REWIND_END_TURN,End turn
+UI_REWIND_DONE,Rewound to turn %d. %d rewinds left.

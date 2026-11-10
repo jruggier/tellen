@@ -20,6 +20,11 @@ func pop() -> void:
 		_entries.pop_back()
 
 
+## Drops every entry after the first [param new_size] (rewind).
+func truncate(new_size: int) -> void:
+	_entries.resize(clampi(new_size, 0, _entries.size()))
+
+
 func size() -> int:
 	return _entries.size()
 
