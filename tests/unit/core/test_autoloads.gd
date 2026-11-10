@@ -15,7 +15,7 @@ func test_default_ruleset_loaded() -> void:
 
 func test_set_ruleset_emits_event() -> void:
 	var previous: Ruleset = RulesetProvider.get_ruleset()
-	var other := Ruleset.new()
+	var other: Ruleset = previous.duplicate() as Ruleset
 	other.ruleset_id = &"test"
 	watch_signals(TacticsEvents)
 	RulesetProvider.set_ruleset(other)
@@ -26,7 +26,10 @@ func test_set_ruleset_emits_event() -> void:
 
 func test_invalid_ruleset_still_activates_with_warning() -> void:
 	var previous: Ruleset = RulesetProvider.get_ruleset()
-	RulesetProvider.set_ruleset(Ruleset.new())
+	var invalid: Ruleset = RulesetProvider.get_ruleset().duplicate() as Ruleset
+	invalid.ruleset_id = &""
+	RulesetProvider.set_ruleset(invalid)
+	assert_eq(RulesetProvider.get_ruleset(), invalid, "activated despite problems")
 	assert_push_warning_count(1)
 	RulesetProvider.set_ruleset(previous)
 

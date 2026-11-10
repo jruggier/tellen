@@ -604,7 +604,7 @@ Builds are set so weight doesn't apply.
 **Mid — Rogue (Lv 15) attacks Dark Mage (Lv 14)**
 - Rogue: HP 30, Str 11, Mag 2, Def 8, Res 5, Dex 14, Spd 17, Skl 13, Bld 6, Steel Knife.
 - Dark Mage: HP 27, Mag 12, Def 4, Res 10, Dex 10, Spd 9, Skl 8, Bld 6, Flux.
-- Expect: Rogue dmg 14, hit 96 (119 − 23), crit 12 (10 + 4 − (0 + 2)), follow-up lead 5 → 50% → 7 dmg; crit first hit = 42. Mage dmg 15, hit 58 (99 − 41), crit 0. Knife staggers tome.
+- Expect: Rogue dmg 14, hit 96 (119 − 23), crit 12 (10 + 4 − (0 + 2)), follow-up lead 5 → 50% → 7 dmg; crit first hit = 42. Mage dmg 15, hit 58 (99 − 41), crit 0. No Stagger: per §5.5 tome staggers knife, so the Rogue's knife does not stagger the Mage's tome (if the Mage initiates, it staggers the Rogue). *(Corrected 2026-11-10; this line originally said "Knife staggers tome".)*
 
 **Late — Swordmaster attacks General (heavy)**
 - Swordmaster: HP 48, Str 24, Def 16, Res 12, Dex 28, Spd 32, Skl 26, Bld 9, Killing Edge.

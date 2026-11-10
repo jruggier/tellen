@@ -20,3 +20,5 @@ Where out-of-scope features plug in later without rewriting core systems. Each s
 | Future feature | Extension point | Added in |
 | --- | --- | --- |
 | Save format changes | `SaveMigrator.register_step()` | M0 |
+| Skill/aura/support bonuses in combat | `CombatParticipant.modifiers` (hit, avoid, crit, crit_evade, might, damage, defense, resistance) | M1 |
+| A different game's formulas | Subclass `CombatRules` / `GrowthRules` / `ExpRules` / `EnemyStatRules`, point the ruleset at it | M1 |

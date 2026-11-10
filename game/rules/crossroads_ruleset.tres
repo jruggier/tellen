@@ -1,8 +1,33 @@
-[gd_resource type="Resource" script_class="Ruleset" format=3]
+[gd_resource type="Resource" script_class="Ruleset" load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://addons/tactics_core/core/ruleset.gd" id="1_ruleset"]
+[ext_resource type="Script" path="res://game/rules/crossroads_combat_rules.gd" id="2_combat"]
+[ext_resource type="Script" path="res://game/rules/crossroads_growth_rules.gd" id="3_growth"]
+[ext_resource type="Script" path="res://game/rules/crossroads_exp_rules.gd" id="4_exp"]
+[ext_resource type="Script" path="res://game/rules/crossroads_enemy_stat_rules.gd" id="5_enemy"]
+[ext_resource type="Script" path="res://addons/tactics_core/progression/proficiency_rules.gd" id="6_prof"]
+
+[sub_resource type="Resource" id="Resource_combat"]
+script = ExtResource("2_combat")
+
+[sub_resource type="Resource" id="Resource_growth"]
+script = ExtResource("3_growth")
+
+[sub_resource type="Resource" id="Resource_exp"]
+script = ExtResource("4_exp")
+
+[sub_resource type="Resource" id="Resource_enemy"]
+script = ExtResource("5_enemy")
+
+[sub_resource type="Resource" id="Resource_prof"]
+script = ExtResource("6_prof")
 
 [resource]
 script = ExtResource("1_ruleset")
 ruleset_id = &"crossroads"
 display_name = "Ruined Crossroads"
+combat_rules = SubResource("Resource_combat")
+growth_rules = SubResource("Resource_growth")
+exp_rules = SubResource("Resource_exp")
+enemy_stat_rules = SubResource("Resource_enemy")
+proficiency_rules = SubResource("Resource_prof")

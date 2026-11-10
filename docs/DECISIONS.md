@@ -29,6 +29,17 @@ From spec §18. Each is a ruleset flag or value, so changing one is a data edit,
 | 12 | Added a `debug_console` input action (F4) for the §14 debug console; §1's action list didn't include one | Input Map | ✅ 2026-11-10 |
 | 13 | Mouse left = `confirm`, mouse right = `cancel` | Input Map | ✅ 2026-11-10 |
 
+### Added during M1
+
+| # | Default | Where | Confirmed? |
+| --- | --- | --- | --- |
+| 14 | FIXED/HYBRID growth counters start at 0 (a 40% stat first rises at the 3rd level-up) | `CrossroadsGrowthRules.fixed_counter_start` | ☐ |
+| 15 | Enemy tier bonus levels: Beginner 0, Intermediate 5, Advanced 10, Master 15 | `CrossroadsEnemyStatRules.tier_bonus_levels` | ☐ |
+| 16 | Difficulty bonus levels: normal 0, hard 3, maddening 6 | `CrossroadsEnemyStatRules.difficulty_bonus_levels` | ☐ |
+| 17 | EXP tier level offset 0 (levels are one continuous track, so a level-20 Intermediate is simply level 20) | `CrossroadsExpRules.tier_level_offset` | ☐ |
+| 18 | Proficiency: levels 1–5 at 10/25/45/70/100 total points; gains per combat as §6.4 (Beginner +1 each, Intermediate+ +2 primary/+1 secondary) | `ProficiencyRules` | ☐ |
+| 19 | 2RN: hit if the average of two 0–99 rolls is below the displayed hit. HYBRID: below 50 uses 1RN | `CrossroadsCombatRules.roll_hit` | ☐ |
+
 **Input bindings (M0)**
 
 | Action | Keyboard | Gamepad | Mouse |
@@ -80,6 +91,11 @@ From spec §18. Each is a ruleset flag or value, so changing one is a data edit,
 - **Class tier is an integer** (0 = Beginner). Tier names come from game data, so another game can use a different number of tiers.
 - **`StatBlock` is a Resource** holding `Dictionary[StringName, int]`, so it can be edited inline in the Inspector and saved inside `.tres` files. Missing stats read as 0.
 - **All content shares a `TacticsData` base**: `id`, `display_name` / `description` as translation keys, and `validate()`, which the data validator will call.
+- **Second Stagger loop is Knife > Gauntlet > Tome > Knife** exactly as §5.5 states: knife staggers gauntlet, gauntlet staggers tome, tome staggers knife. The §13.2 mid fixture's "Knife staggers tome" was a typo, corrected in the spec. *(Jake)*
+- **Rules are sub-resources of the ruleset.** Each concrete rule class (`CrossroadsCombatRules`, ...) is a Resource whose exported properties are its tuning numbers, embedded in `crossroads_ruleset.tres`. Every §5–§6 constant is editable in the Inspector.
+- **Combat rules work on `CombatParticipant` snapshots** (stats, weapon, terrain, tags, Stagger flag, modifiers), not on battle state. The forecast and resolver build snapshots; rules stay pure and testable. Skill effects plug in through the `modifiers` dictionary (`hit`, `avoid`, `crit`, `crit_evade`, `might`, `damage`, `defense`, `resistance`).
+- **The framework provides FE-standard defaults** in the abstract `CombatRules` (counter eligibility, brave strikes, effectiveness by tag, follow-up damage floor). The game overrides only what differs.
+- **Proficiency rules are a concrete framework class** (`ProficiencyRules`): thresholds and per-tier gains are generic numbers, not game formulas.
 - **The weapon type id is also its proficiency id**; movement tactics (`ground`, `sky`, `heavy`) use the movement type id.
 
 ---
