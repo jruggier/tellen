@@ -104,6 +104,8 @@ func _init() -> void:
 	_backlog_text.add_theme_font_size_override("normal_font_size", 28)
 	_backlog.add_child(_backlog_text)
 	_root.add_child(_backlog)
+	_music.bus = GameSettings.MUSIC_BUS
+	_sfx.bus = GameSettings.SFX_BUS
 	add_child(_music)
 	add_child(_sfx)
 	visible = false
@@ -411,7 +413,7 @@ func _load_asset(setting: String, default_pattern: String, asset_id: String) -> 
 
 
 func _update_hint() -> void:
-	_hint.text = tr("DIALOGUE_HINT") + ("    " + tr("DIALOGUE_AUTO_ON") if auto_mode else "")
+	_hint.text = InputHints.fill(tr("DIALOGUE_HINT")) + ("    " + tr("DIALOGUE_AUTO_ON") if auto_mode else "")
 
 
 func _speed() -> float:

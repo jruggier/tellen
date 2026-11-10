@@ -9,12 +9,28 @@ extends Node2D
 @export var attack_color: Color = Color(1.0, 0.25, 0.25, 0.42)
 @export var threat_color: Color = Color(1.0, 0.55, 0.1, 0.85)
 
+## Colorblind-safe colors (Okabe-Ito blue, orange, reddish purple).
+const COLORBLIND_MOVE: Color = Color(0.0, 0.45, 0.7, 0.45)
+const COLORBLIND_ATTACK: Color = Color(0.9, 0.6, 0.0, 0.45)
+const COLORBLIND_THREAT: Color = Color(0.8, 0.47, 0.65, 0.9)
+
 var cell_size: int = 16
+var _default_colors: Array[Color] = []
 var _move: Dictionary[Vector2i, bool] = {}
 var _attack: Dictionary[Vector2i, bool] = {}
 var _threat: Dictionary[Vector2i, bool] = {}
 var _warnings: Array[Vector2i] = []
 var _time: float = 0.0
+
+
+## Switches between the exported colors and the colorblind-safe palette.
+func use_colorblind_palette(enabled: bool) -> void:
+	if _default_colors.is_empty():
+		_default_colors = [move_color, attack_color, threat_color]
+	move_color = COLORBLIND_MOVE if enabled else _default_colors[0]
+	attack_color = COLORBLIND_ATTACK if enabled else _default_colors[1]
+	threat_color = COLORBLIND_THREAT if enabled else _default_colors[2]
+	queue_redraw()
 
 
 ## Shows a unit's movement and attack cells (attack cells under movement

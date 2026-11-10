@@ -40,7 +40,6 @@ const DEFAULT_TEST_ROSTER: String = "res://game/data/units/test_roster.tres"
 ## Difficulty id for generic enemy stats (see the enemy stat rules).
 @export var difficulty: StringName = &"normal"
 ## Dialogue characters per second; 0 = instant.
-@export var dialogue_text_speed: float = 45.0
 
 ## Set by [BattleMap] when a map scene is run directly.
 var map_instance: BattleMap
@@ -63,6 +62,7 @@ var trade_panel: TradePanel
 var toast: Toast
 var presenter: CombatPresenter
 var hint_label: Label
+var settings_panel: SettingsPanel
 var turn_label: Label
 var banner: PhaseBanner
 var objective_panel: ObjectivePanel
@@ -143,7 +143,6 @@ func _ready() -> void:
 	rewind.objectives_provider = func() -> Array[Objective]: return objectives.duplicate()
 	dialogue_player = DialoguePlayer.new()
 	dialogue_player.name = "DialoguePlayer"
-	dialogue_player.text_speed = dialogue_text_speed
 	add_child(dialogue_player)
 	ai = AIController.new()
 	ai.name = "AIController"
@@ -157,6 +156,12 @@ func _ready() -> void:
 	ai.flow = flow
 	add_child(flow)
 	flow.battle_finished.connect(_on_battle_finished)
+	settings_panel = SettingsPanel.new()
+	settings_panel.name = "SettingsPanel"
+	hud.add_child(settings_panel)
+	settings_panel.closed.connect(input.resume)
+	apply_settings()
+	TacticsEvents.settings_changed.connect(apply_settings)
 	flow.start()
 
 
@@ -302,7 +307,7 @@ func add_unit_view(unit: UnitState) -> void:
 	view.name = String(unit.id)
 	view.cell_size = ruleset.tile_source_size
 	view.zoom = float(ruleset.tile_display_scale)
-	view.seconds_per_cell = move_seconds_per_cell
+	view.seconds_per_cell = move_seconds_per_cell * GameSettings.current().animation_scale()
 	var faction: FactionData = controller.state.get_faction(unit.faction_id)
 	view.setup(unit, faction.color if faction != null else Color.WHITE, ruleset)
 	units_layer.add_child(view)
@@ -347,7 +352,25 @@ func _pause_options() -> Array[Dictionary]:
 	var options: Array[Dictionary] = [{"id": &"objective", "text": tr("UI_OBJECTIVE_TITLE")}]
 	if rewind != null and rewind.charges_left > 0:
 		options.append({"id": &"rewind", "text": tr("UI_REWIND") % rewind.charges_left, "enabled": rewind.can_rewind()})
+	options.append({"id": &"settings", "text": tr("UI_PAUSE_SETTINGS")})
+	options.append({"id": &"title", "text": tr("UI_PAUSE_TITLE_SCREEN")})
 	return options
+
+
+## Pushes the player's settings into the presentation (animation speed,
+## text speed, overlay palette, forecast details).
+func apply_settings() -> void:
+	var settings: GameSettings = GameSettings.current()
+	var scale: float = settings.animation_scale()
+	presenter.seconds_per_strike = seconds_per_strike * scale
+	banner.seconds = phase_banner_seconds * maxf(scale, 0.35)
+	ai.seconds_between_units = ai_seconds_between_units * scale
+	for view: UnitView in unit_views.values():
+		view.seconds_per_cell = move_seconds_per_cell * scale
+	dialogue_player.text_speed = settings.text_speed
+	overlay.use_colorblind_palette(settings.colorblind_overlays)
+	input.show_details = settings.forecast_details
+	_update_hint()
 
 
 func _on_pause_option(option_id: StringName) -> void:
@@ -355,6 +378,14 @@ func _on_pause_option(option_id: StringName) -> void:
 		objective_panel.show_objectives(controller.state, objectives, defeat_conditions)
 	elif option_id == &"rewind":
 		_open_rewind_menu()
+	elif option_id == &"settings":
+		input.suspend()
+		settings_panel.open()
+	elif option_id == &"title":
+		var options: Array[Dictionary] = [{"id": &"yes", "text": tr("UI_TITLE_CONFIRM_QUIT")}, {"id": &"no", "text": tr("UI_TITLE_BACK")}]
+		input.open_choice_menu(options, tr("UI_TITLE_QUIT_WARNING"), func(choice: StringName) -> void:
+			if choice == &"yes":
+				CampaignFlow.go_to_title())
 
 
 func _open_rewind_menu() -> void:
@@ -471,7 +502,7 @@ func _update_hint() -> void:
 		PlayerInputController.State.CHOICE_MENU: "UI_HINT_MENU",
 	}
 	var key: String = keys.get(input.state, "")
-	hint_label.text = tr(key) if not key.is_empty() else ""
+	hint_label.text = InputHints.fill(tr(key)) if not key.is_empty() else ""
 
 
 func _player_faction() -> StringName:

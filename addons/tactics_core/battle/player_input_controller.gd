@@ -68,7 +68,8 @@ var _weapon_slot: int = 0
 var _slot_choices: Array[int] = []
 var _item_slot: int = 0
 var _trade_partner: UnitState = null
-var _show_details: bool = false
+## Forecast details shown (toggled with info; starts from the settings).
+var show_details: bool = false
 var _level_up_queue: Array[Dictionary] = []
 var _choice_callback: Callable = Callable()
 
@@ -272,7 +273,7 @@ func open_choice_menu(options: Array[Dictionary], title: String, on_chosen: Call
 ## Expands the unit panel (map) or the forecast details (targeting).
 func toggle_info() -> void:
 	if state == State.TARGETING:
-		_show_details = not _show_details
+		show_details = not show_details
 		_show_target()
 	else:
 		info_panel.expanded = not info_panel.expanded
@@ -563,7 +564,7 @@ func _show_target() -> void:
 			forecast_panel.show_forecast(forecast, {
 				"attacker": {"name": _selected.get_display_name(), "color": _faction_color(_selected), "weapon": weapon.get_display_name(), "terrain": battle.grid.terrain_at(_selected.cell), "awaken_gain": awaken_gain, "chain": chain.x, "chain_count": chain.y},
 				"defender": {"name": target.get_display_name(), "color": _faction_color(target), "weapon": defender_weapon.get_display_name() if defender_weapon != null else tr("UI_UNARMED"), "terrain": battle.grid.terrain_at(target.cell)},
-			}, details, _show_details)
+			}, details, show_details)
 		TargetMode.HEAL:
 			var staff: WeaponData = _selected.inventory[_weapon_slot].weapon()
 			var power: int = battle.ruleset.combat_rules.heal_amount(CombatContext.participant(battle, _selected, _selected.cell, staff))

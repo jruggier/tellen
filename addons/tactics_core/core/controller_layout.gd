@@ -22,11 +22,13 @@ const NINTENDO_NAMES: PackedStringArray = ["nintendo", "switch", "joy-con", "joy
 
 ## Layout currently applied.
 static var nintendo_active: bool = false
+## Player setting that takes precedence over the project setting (-1 = none).
+static var mode_override: int = -1
 
 
 ## Applies the layout chosen by the project setting and connected pads.
 static func refresh() -> void:
-	var mode: int = int(ProjectSettings.get_setting(SETTING_MODE, Mode.AUTO))
+	var mode: int = mode_override if mode_override >= 0 else int(ProjectSettings.get_setting(SETTING_MODE, Mode.AUTO))
 	match mode:
 		Mode.ALWAYS:
 			apply(true)

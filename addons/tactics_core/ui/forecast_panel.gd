@@ -57,7 +57,7 @@ func show_forecast(forecast: CombatForecast, sides: Dictionary, details: Array[D
 	if show_details and details.size() == 2:
 		for key: String in details[0]:
 			_row(tr(key), str(details[0][key]), str(details[1].get(key, "")), 22, UiStyle.TEXT_DIM, UiStyle.TEXT_DIM)
-	_footer.text = tr("FORECAST_FOOTER_DETAILS_ON") if show_details else tr("FORECAST_FOOTER_DETAILS_OFF")
+	_footer.text = InputHints.fill(tr("FORECAST_FOOTER_DETAILS_ON") if show_details else tr("FORECAST_FOOTER_DETAILS_OFF"))
 	if a.follow_up_cancelled_by_stagger or d.follow_up_cancelled_by_stagger:
 		_footer.text += "      " + tr("FORECAST_FOOTNOTE_STAGGER")
 	visible = true

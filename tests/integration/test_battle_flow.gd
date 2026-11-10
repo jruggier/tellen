@@ -5,6 +5,10 @@ extends GutTest
 const DATA: String = "res://game/data/"
 
 
+func before_all() -> void:
+	GameSettings.new().apply()  # defaults, not the player's settings file
+
+
 ## A 8x5 plains map with forest at (3,0) and water at (5,2).
 ## Player: Tellen (1,2), recruit spearhand (2,2). Enemy: brigand (6,2).
 func _make_map() -> BattleMap:
@@ -530,7 +534,7 @@ func _scene_with_events(events: Array[MapEvent]) -> BattleScene:
 	scene.seconds_per_strike = 0.0
 	scene.phase_banner_seconds = 0.0
 	scene.ai_seconds_between_units = 0.0
-	scene.dialogue_text_speed = 0.0
+	GameSettings.current().text_speed = 0.0
 	add_child_autofree(scene)
 	return scene
 

@@ -50,10 +50,13 @@ signal ruleset_changed(ruleset: Ruleset)
 ## A log line was emitted at WARN level or above (for in-game consoles).
 signal log_emitted(level: int, line: String)
 
+## The player's settings changed (see [GameSettings]).
+signal settings_changed
+
 
 func _ready() -> void:
 	TacticsLog.configure_from_project_settings()
-	ControllerLayout.refresh()
+	GameSettings.current()  # loads and applies the player's settings (incl. controller layout)
 	Input.joy_connection_changed.connect(_on_joy_connection_changed)
 
 

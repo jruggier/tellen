@@ -66,12 +66,17 @@ From spec §18. Each is a ruleset flag or value, so changing one is a data edit,
 | 45 | A unit with an empty class tree may change to any catalog class whose requirements it meets; `enemy_only` classes are never offered | `ClassChangeRules` | ☐ |
 | 46 | Class change keeps damage taken (current HP shifts with max HP) and swaps class base bonuses, Build bonus and Mov | `ClassChangeRules.apply` | ☐ |
 | 47 | Dialogue controls: confirm next, X skip to the next choice, R backlog, C auto, hold Shift fast-forward | `DialoguePlayer` | ☐ |
-| 48 | Dialogue text speed 45 characters/second (settings in M8) | `BattleScene.dialogue_text_speed` | ☐ |
+| 48 | Dialogue text speed 45 characters/second by default; Slow 25 / Normal 45 / Fast 80 / Instant in Settings | `GameSettings.text_speed` | ☐ |
 | 49 | Nintendo controllers use A (right) = confirm, B (bottom) = cancel, detected automatically; Xbox/PlayStation keep bottom = confirm. Override with project setting `tactics_core/input/nintendo_layout` (0 auto, 1 always, 2 never) | `ControllerLayout` | ✅ 2026-11-10 (Jake) |
 | 50 | Ending the turn counts as a rewind point (so a bad enemy phase can be rewound) | `RewindService` | ☐ |
 | 51 | One save slot; the game saves automatically at the start of every chapter, and a defeat retries the chapter from that save | `CampaignFlow`, `SaveSystem` | ☐ |
 | 52 | Units carry class, level, EXP, stats, inventory, proficiencies and skills between maps; HP refills; retreated units return | `UnitState.to_record` | ☐ |
 | 53 | Recruits join the roster when their chapter starts (ch01 brings the Spearhand, Acolyte and Hunter recruits) | `crossroads_campaign.tres` | ☐ |
+| 54 | Animation speed: Normal ×1, Fast ×0.5, Instant (no move/strike animation; phase banner kept at 35% so phases stay readable). Holding fast-forward still speeds up on top | `GameSettings.animation_scale` | ☐ |
+| 55 | Remapping covers keyboard keys (each action's main key; extra keys like Enter/Space stay). Picking a key already used by another action swaps the two. Gamepad confirm/cancel follow the Gamepad buttons setting | `GameSettings.remap_key` | ☐ |
+| 56 | Colorblind-safe ranges use Okabe-Ito colors (blue move, orange attack, purple threat); the patterns are always on | `RangeOverlay` | ☐ |
+| 57 | Default volumes 80%; settings apply at once and save when the panel closes | `GameSettings` | ☐ |
+| 58 | The pause menu offers Return to title (with a warning that progress on the map is lost) | `BattleScene` | ☐ |
 | 19 | 2RN: hit if the average of two 0–99 rolls is below the displayed hit. HYBRID: below 50 uses 1RN | `CrossroadsCombatRules.roll_hit` | ☐ |
 
 **Input bindings (M0)**
