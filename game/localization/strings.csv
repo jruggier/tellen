@@ -108,7 +108,58 @@ UI_TERRAIN_AVOID,Avoid
 UI_TERRAIN_DEF,Def
 UI_TERRAIN_RES,Res
 UI_TERRAIN_HEAL,Heal
-UI_HINT_IDLE,Confirm: select unit    Q / E: cycle units    T: enemy threat
+UI_HINT_IDLE,Confirm: select    R: unit details    Q / E: cycle units    T: enemy threat
 UI_HINT_SELECTED,Confirm: move here    Cancel: back
-UI_HINT_MOVED,Confirm: wait    Cancel: undo move
 UI_HINT_INSPECT,Cancel: close
+ACTION_ATTACK,Attack
+ACTION_HEAL,Heal
+ACTION_ITEMS,Items
+ACTION_TRADE,Trade
+ACTION_WAIT,Wait
+ITEM_ACTION_EQUIP,Equip
+ITEM_ACTION_USE,Use
+ITEM_ACTION_DISCARD,Discard
+UI_WEAPON_MENU_TITLE,Weapon
+UI_STAFF_MENU_TITLE,Staff
+UI_ITEMS_TITLE,Items
+UI_EQUIPPED,E
+FORECAST_HP,HP
+FORECAST_DAMAGE,Dmg
+FORECAST_HIT,Hit
+FORECAST_CRIT,Crit
+FORECAST_FOLLOW_UP,Follow-up
+FORECAST_TERRAIN,Terrain
+FORECAST_STAGGER_ON_HIT,STAGGER on hit
+FORECAST_STAGGERED,Staggered: no follow-up
+FORECAST_CANT_FOLLOW_UP,Staggered: no follow-up
+FORECAST_CANT_FOLLOW_UP_IF_HIT,No follow-up if hit
+FORECAST_FOOTER_DETAILS_OFF,R: details
+FORECAST_FOOTNOTE_STAGGER,* only if the attack misses
+FORECAST_FOOTER_DETAILS_ON,R: hide details
+FORECAST_SKILL_LEAD,Skill lead
+FORECAST_WEIGHT_PENALTY,Weight penalty
+FORECAST_ATTACK,Attack
+UI_EXP,EXP
+UI_LEVEL,Lv
+UI_UNARMED,Unarmed
+UI_STATUS_STAGGERED,STAGGERED: no follow-up next combat
+UI_BOSS,Boss
+UI_INVENTORY,Inventory
+UI_DROPS,drops
+UI_PROFICIENCY,Proficiency
+UI_LEVEL_UP,LEVEL UP
+UI_PRESS_CONFIRM,Confirm to continue
+UI_EXP_GAINED,+%d EXP
+UI_PROFICIENCY_UP,%s: %s proficiency %d
+UI_ITEM_RECEIVED,%s received %s
+UI_ITEM_LOST,%s was lost (inventory full)
+POPUP_CRIT,CRIT
+POPUP_STAGGER,STAGGER
+POPUP_MISS,MISS
+POPUP_FOLLOW_UP,follow-up
+UI_HINT_ACTION_MENU,Confirm: choose    Cancel: undo move
+UI_HINT_MENU,Confirm: choose    Cancel: back
+UI_HINT_TARGETING,Arrows: change target    R: details    Confirm: go    Cancel: back
+UI_HINT_TRADING,Confirm: pick / place item    Cancel: back
+UI_HINT_ANIMATING,Hold Shift: faster
+UI_HINT_LEVEL_UP,Confirm: continue

@@ -14,9 +14,11 @@
 [ext_resource type="Resource" path="res://game/data/units/recruit_hunter.tres" id="12_ehopt"]
 [ext_resource type="Resource" path="res://game/data/classes/brigand.tres" id="13_567n5"]
 [ext_resource type="Resource" path="res://game/data/weapons/iron_axe.tres" id="14_5m4n6"]
+[ext_resource type="Resource" path="res://game/data/items/elixir.tres" id="14_cb5v7"]
 [ext_resource type="Resource" path="res://game/data/weapons/hand_axe.tres" id="15_7klsv"]
 [ext_resource type="Resource" path="res://game/data/classes/hexcaller.tres" id="16_qabcp"]
 [ext_resource type="Resource" path="res://game/data/weapons/flux.tres" id="17_3l43i"]
+[ext_resource type="Resource" path="res://game/data/items/might_tonic.tres" id="18_8ao1c"]
 [ext_resource type="Resource" path="res://game/data/classes/wingrider.tres" id="18_uk6vt"]
 [ext_resource type="Resource" path="res://game/data/weapons/iron_lance.tres" id="19_eucsj"]
 [ext_resource type="Resource" path="res://game/data/classes/outrider.tres" id="20_iricr"]
@@ -27,6 +29,7 @@
 [ext_resource type="Resource" path="res://game/data/classes/duelist.tres" id="25_03pnw"]
 [ext_resource type="Resource" path="res://game/data/weapons/steel_sword.tres" id="26_6jif2"]
 [ext_resource type="TileSet" path="res://game/tilesets/prototype_terrain.tres" id="27_wagkr"]
+[ext_resource type="Resource" path="res://game/data/weapons/killing_edge.tres" id="28_cnaty"]
 
 [sub_resource type="Resource" id="Resource_wje1o"]
 script = ExtResource("5_8ao1c")
@@ -70,6 +73,7 @@ class_data = ExtResource("13_567n5")
 level = 2
 cell = Vector2i(11, 9)
 items = Array[ExtResource("6_cnaty")]([ExtResource("14_5m4n6")])
+drops = Array[ExtResource("6_cnaty")]([ExtResource("14_cb5v7")])
 
 [sub_resource type="Resource" id="Resource_8u3d0"]
 script = ExtResource("5_8ao1c")
@@ -84,6 +88,7 @@ class_data = ExtResource("16_qabcp")
 level = 3
 cell = Vector2i(17, 8)
 items = Array[ExtResource("6_cnaty")]([ExtResource("17_3l43i")])
+drops = Array[ExtResource("6_cnaty")]([ExtResource("18_8ao1c")])
 
 [sub_resource type="Resource" id="Resource_rvj21"]
 script = ExtResource("5_8ao1c")
@@ -119,6 +124,7 @@ class_data = ExtResource("25_03pnw")
 level = 6
 cell = Vector2i(29, 4)
 items = Array[ExtResource("6_cnaty")]([ExtResource("26_6jif2")])
+drops = Array[ExtResource("6_cnaty")]([ExtResource("28_cnaty")])
 is_boss = true
 
 [node name="TestArena" type="Node2D" unique_id=2026536839]

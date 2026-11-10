@@ -43,6 +43,10 @@ From spec §18. Each is a ruleset flag or value, so changing one is a data edit,
 | 22 | Class caps: Beginner HP 45, other stats 22; +15 HP / +8 others per tier; armored classes +4 Def, −4 Spd | `ClassData.caps` | ☐ |
 | 23 | Intermediate movement: Duelist 5, Warlock 5, Vanguard (mounted) 6 | `ClassData.mov` | ☐ |
 | 24 | Stat boosters: +7 HP, +2 to other stats, +1 Mov, +2 Build | `game/data/items/*.tres` | ☐ |
+| 25 | Stat boosters respect class caps (a capped stat doesn't rise) | `InventoryCommands.Use` | ☐ |
+| 26 | Dropped items are lost if the killer's inventory is full (no convoy yet) | `DefeatRules` | ☐ |
+| 27 | Player units gain EXP and proficiency when defending, as in FE | `AttackCommand` | ☐ |
+| 28 | Each combat in which a unit strikes trains its weapon type's proficiency, plus its movement tactic (ground/sky/heavy) if its class trains it | `ProgressionService.train_proficiency` | ☐ |
 | 19 | 2RN: hit if the average of two 0–99 rolls is below the displayed hit. HYBRID: below 50 uses 1RN | `CrossroadsCombatRules.roll_hit` | ☐ |
 
 **Input bindings (M0)**
@@ -149,6 +153,17 @@ From spec §18. Each is a ruleset flag or value, so changing one is a data edit,
 - **`tools/run_tests.sh` runs `--import` first**, so newly added `class_name` scripts and assets are registered before tests load.
 
 ---
+
+### M3 (2026-11-10)
+
+- **Inventory entries are `InventorySlot`s** (item, remaining uses, drop flag). Weapons have unlimited uses; consumables count down and vanish at 0. Placements list `drops`, which are appended as drop-flagged slots.
+- **Stagger is a per-unit counter** (`stagger_combats`): 1 under NEXT_COMBAT (decremented by the unit's next combat), effectively unlimited under REST_OF_PHASE. `BattleState.clear_staggers()` runs at every phase end (wired in M4).
+- **Factions decide who earns EXP** (`FactionData.gains_experience`, on for the player). Defeated units of human-controlled factions retreat; all others are simply defeated.
+- **Attacking equips the chosen weapon** (moves it to the top slot), as in FE. The weapon menu only appears when more than one weapon has a target.
+- **Free actions (equip, discard, trade) lock in the unit's move**, whether or not it moved, so it can't trade and then go somewhere else. It still has to act (attack, heal, use or wait).
+- **Healing needs an injured target**; a Vulnerary can't be used at full HP; HP boosters raise current HP too.
+- **One input owner:** `PlayerInputController` handles every battle key press and forwards directions to menus, targets or the trade screen, so menus and the map never fight over input. Menus still handle the mouse directly.
+- **Presentation never drives logic:** commands change the state instantly; `CombatPresenter` replays the recorded strikes. Animation durations come from `BattleScene` exports (0 = instant, used by tests).
 
 ## GDScript gotchas (read before writing code)
 

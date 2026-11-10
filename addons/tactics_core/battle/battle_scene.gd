@@ -11,7 +11,9 @@ extends Node
 ## ├── World (Node2D, source-pixel space)
 ## │   ├── <map>  ├── RangeOverlay  ├── PathArrow  ├── Units  └── GridCursor
 ## ├── BattleCamera
-## ├── HUD (CanvasLayer): TerrainPanel, hint line
+## ├── HUD (CanvasLayer): TerrainPanel, UnitInfoPanel, ForecastPanel, menus,
+## │   LevelUpPanel, TradePanel, Toast, hint line
+## ├── CombatPresenter
 ## ├── PlayerInputController
 ## └── (debug builds) DebugOverlay inside World, toggled with F3
 ## [/codeblock]
@@ -22,6 +24,8 @@ extends Node
 @export var battle_seed: int = 0
 ## Seconds per cell for unit movement; 0 = instant.
 @export var move_seconds_per_cell: float = 0.07
+## Seconds per combat strike; 0 = instant.
+@export var seconds_per_strike: float = 0.45
 
 ## Set by [BattleMap] when a map scene is run directly.
 var map_instance: BattleMap
@@ -35,6 +39,14 @@ var camera: BattleCamera
 var input: PlayerInputController
 var hud: CanvasLayer
 var terrain_panel: TerrainPanel
+var info_panel: UnitInfoPanel
+var forecast_panel: ForecastPanel
+var menu: MenuList
+var sub_menu: MenuList
+var level_panel: LevelUpPanel
+var trade_panel: TradePanel
+var toast: Toast
+var presenter: CombatPresenter
 var hint_label: Label
 var unit_views: Dictionary[StringName, UnitView] = {}
 ## Debug overlay (null in release builds).
@@ -129,6 +141,32 @@ func _build_hud() -> void:
 	terrain_panel.size_flags_vertical = Control.SIZE_SHRINK_END
 	terrain_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	margin.add_child(terrain_panel)
+	var top := HBoxContainer.new()
+	top.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	top.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	margin.add_child(top)
+	info_panel = UnitInfoPanel.new()
+	info_panel.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	top.add_child(info_panel)
+	var spacer := Control.new()
+	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	top.add_child(spacer)
+	forecast_panel = ForecastPanel.new()
+	forecast_panel.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	top.add_child(forecast_panel)
+	menu = MenuList.new()
+	menu.name = "Menu"
+	hud.add_child(menu)
+	sub_menu = MenuList.new()
+	sub_menu.name = "SubMenu"
+	hud.add_child(sub_menu)
+	trade_panel = TradePanel.new()
+	hud.add_child(trade_panel)
+	level_panel = LevelUpPanel.new()
+	hud.add_child(level_panel)
+	toast = Toast.new()
+	hud.add_child(toast)
 	hint_label = Label.new()
 	hint_label.size_flags_horizontal = Control.SIZE_SHRINK_END
 	hint_label.size_flags_vertical = Control.SIZE_SHRINK_END
@@ -139,6 +177,13 @@ func _build_hud() -> void:
 
 
 func _build_input() -> void:
+	presenter = CombatPresenter.new()
+	presenter.name = "CombatPresenter"
+	presenter.seconds_per_strike = seconds_per_strike
+	presenter.popup_parent = world
+	presenter.zoom = camera.zoom.x
+	presenter.cell_size = cursor.cell_size
+	add_child(presenter)
 	input = PlayerInputController.new()
 	input.name = "PlayerInputController"
 	input.controller = controller
@@ -147,6 +192,14 @@ func _build_input() -> void:
 	input.path_arrow = path_arrow
 	input.camera = camera
 	input.unit_views = unit_views
+	input.presenter = presenter
+	input.menu = menu
+	input.sub_menu = sub_menu
+	input.forecast_panel = forecast_panel
+	input.info_panel = info_panel
+	input.level_panel = level_panel
+	input.toast = toast
+	input.trade_panel = trade_panel
 	input.player_faction = _player_faction()
 	add_child(input)
 	input.state_changed.connect(func(_s: PlayerInputController.State) -> void: _update_hint())
@@ -163,7 +216,14 @@ func _update_hint() -> void:
 		PlayerInputController.State.IDLE: "UI_HINT_IDLE",
 		PlayerInputController.State.SELECTED: "UI_HINT_SELECTED",
 		PlayerInputController.State.MOVING: "",
-		PlayerInputController.State.MOVED: "UI_HINT_MOVED",
+		PlayerInputController.State.ACTION_MENU: "UI_HINT_ACTION_MENU",
+		PlayerInputController.State.WEAPON_MENU: "UI_HINT_MENU",
+		PlayerInputController.State.ITEM_MENU: "UI_HINT_MENU",
+		PlayerInputController.State.ITEM_ACTIONS: "UI_HINT_MENU",
+		PlayerInputController.State.TARGETING: "UI_HINT_TARGETING",
+		PlayerInputController.State.TRADING: "UI_HINT_TRADING",
+		PlayerInputController.State.ANIMATING: "UI_HINT_ANIMATING",
+		PlayerInputController.State.LEVEL_UP: "UI_HINT_LEVEL_UP",
 		PlayerInputController.State.INSPECT: "UI_HINT_INSPECT",
 	}
 	var key: String = keys[input.state]

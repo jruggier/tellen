@@ -245,6 +245,14 @@ func debug_details(attacker: CombatParticipant, defender: CombatParticipant) -> 
 	}
 
 
+func forecast_details(attacker: CombatParticipant, defender: CombatParticipant) -> Dictionary[String, String]:
+	return {
+		"FORECAST_SKILL_LEAD": "%+d" % skill_lead(attacker, defender),
+		"FORECAST_WEIGHT_PENALTY": str(-weight_penalty(attacker)) if weight_penalty(attacker) > 0 else "0",
+		"FORECAST_ATTACK": str(attack_power(attacker, defender)),
+	}
+
+
 func validate() -> PackedStringArray:
 	var problems := PackedStringArray()
 	for value_name: String in ["hit_skl_divisor", "avoid_dex_divisor", "crit_spd_divisor", "crit_evade_skl_divisor"]:

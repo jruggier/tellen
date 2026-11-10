@@ -113,14 +113,38 @@ _Post-M1 change: the game is native 1920×1080 with 64 px cells (16 px art at 4�
 
 ## M3 — Combat on the map
 
-- [ ] **M3.1** Action menu, attack targeting, full combat forecast panel (§14) with forecast = resolver tests.
-- [ ] **M3.2** `AttackCommand` → resolver → presentation replay (bump, numbers, popups, HP drain).
-- [ ] **M3.3** Stagger state + markers, follow-ups, crits, effectiveness, healing.
-- [ ] **M3.4** Retreat/defeat handling, EXP, level-up popup, proficiency gains.
-- [ ] **M3.5** Inventory: equip, use consumable, trade, enemy drops.
-- [ ] **Checkpoint**
+- [x] **M3.1** Action menu, attack targeting, full combat forecast panel (§14) with forecast = resolver tests. — `MenuList`, `ForecastPanel` (HP→after, damage ×brave, !effective, hit, crit, follow-up "+N (P%)", Stagger notes, terrain, R = details); `CombatForecast.build(state, …)`; 60-seed forecast-vs-attack test.
+- [x] **M3.2** `AttackCommand` → resolver → presentation replay. — `CombatPresenter`: bump, damage/MISS/CRIT/STAGGER/follow-up popups, flash, HP drain, defeat fade; hold Shift to fast-forward.
+- [x] **M3.3** Stagger state + markers, follow-ups, crits, effectiveness, healing. — Stagger counter on units (consumed by the next combat, cleared at phase end), spinning map marker + info panel note; `HealCommand` with heal preview.
+- [x] **M3.4** Retreat/defeat handling, EXP, level-up popup, proficiency gains. — `DefeatRules` (player units retreat), `ProgressionService` (EXP, multi-level-ups, caps, proficiency points → levels), `LevelUpPanel`, proficiency toasts, boss marker.
+- [x] **M3.5** Inventory: equip, use consumable, trade, enemy drops. — Inventory slots with uses; `InventoryCommands` (Use/Equip/Discard/Trade); items menu, two-column `TradePanel`; drops to the killer (lost if full). 203 tests.
+- [x] **Checkpoint**
 
-## M4 — Turn loop, AI, objectives
+### M3 Checkpoint summary
+
+**Built**
+- **Action menu** after moving (or confirming on the unit's own tile): Attack, Heal, Items, Trade, Wait, each listed only when usable.
+- **Attack targeting** with weapon choice (when more than one weapon has a target), arrows/mouse to switch targets, and the **combat forecast panel**: HP before → after if everything hits, damage (×2 brave, ! effective), hit, crit, follow-up "+N (P%)", STAGGER on hit / no follow-up notes, terrain. **R** toggles details (Skill lead, weight penalty, attack).
+- **Combat on the map**: bump, damage numbers, MISS / CRIT / STAGGER popups, HP drain, defeat fade; hold **Shift** to speed up.
+- **Stagger**: map marker (spinning ring) and unit-panel note; blocks follow-ups in the inflicted combat and the unit's next combat; cleared at phase end (the turn loop calls it in M4).
+- **Healing** with a preview; **items** (equip, use, discard); **trading** with adjacent allies; equip/trade/discard lock in the move.
+- **Progression**: EXP for player units (attacking and defending), level-ups with a stat panel, proficiency points and level-up toasts; player units retreat when defeated; enemy item drops go to whoever defeats them.
+- **Unit info panel** on hover (R expands it to full stats, inventory and proficiencies); boss marker.
+
+**How to try it** (`game/maps/test_arena.tscn`, F6)
+1. Select a unit, move next to an enemy, choose **Attack**: read the forecast, press **R** for details, confirm.
+2. Watch the Brigand get Staggered by a sword hit (marker on the map, note in its info panel).
+3. Enemies with drops: the first Brigand (Elixir), the Hexcaller (Might Tonic), the Duelist boss in the fortress (Killing Edge). Defeat them to receive the item.
+4. Use Gid (hand axe) to attack from 2 tiles away; trade between adjacent units; open **Items** to equip or use a Vulnerary.
+5. Hover any unit and press **R** for full stats.
+
+**Known issues / not yet built**
+- Enemies never act and there is no end turn yet (M4). Restart the scene (F6) once your units have acted.
+- Popups can overlap neighboring unit letters; info/forecast panels can cover units near the top corners.
+- Clicking the map while a menu is open accepts the highlighted option (mouse only).
+- No sound yet (old prototype SFX can be wired in later).
+
+**Decisions to confirm:** `DECISIONS.md` → "Added during M3" (#25–28).## M4 — Turn loop, AI, objectives
 
 - [ ] **M4.1** `TurnManager` phases, end turn, phase banners, per-phase cleanup.
 - [ ] **M4.2** AI controller, scorer and all §10 behaviors; AI debug scores.
