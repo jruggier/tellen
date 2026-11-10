@@ -101,6 +101,12 @@ func roll_hit(_rng: SeededRng, _hit: int) -> bool:
 	return false
 
 
+## Actual chance (0–100) that a strike with displayed [param hit] lands,
+## for AI expected-value math. Override when hit rolls are not 1RN.
+func true_hit_chance(hit: int) -> float:
+	return float(hit)
+
+
 ## Rolls a crit at displayed chance [param crit] using the combat stream.
 func roll_crit(rng: SeededRng, crit: int) -> bool:
 	return rng.roll_100(TacticsIds.STREAM_COMBAT) < crit

@@ -2,8 +2,8 @@
 
 Spec: `Tellen-Claude.md` (§15 milestones). One task at a time; each checked task has its code, typed GDScript, passing tests, and a one-line note.
 
-Run tests: `godot --headless --path . -s addons/gut/gut_cmdln.gd -gdir=res://tests -gexit`
-(`godot` = Godot 4.7.2. On Jake's Mac: `~/Downloads/Godot 3.app/Contents/MacOS/Godot`. `.gutconfig.json` makes GUT include subfolders.)
+Run tests: `tools/run_tests.sh` (set `GODOT=` to the Godot 4.7.2 binary; on Jake's Mac `~/Downloads/Godot 3.app/Contents/MacOS/Godot`).
+It wraps the spec's command (`godot --headless --path . -s addons/gut/gut_cmdln.gd -gdir=res://tests -gexit`) and also fails when a script doesn't parse, which plain GUT silently skips. `.gutconfig.json` makes GUT include subfolders.
 
 ---
 
@@ -47,7 +47,7 @@ Run tests: `godot --headless --path . -s addons/gut/gut_cmdln.gd -gdir=res://tes
 - [x] **M1.1** Framework data resources (§3 `data/`), `StatDefinition` / `StatBlock`. — `TacticsData` base (id, name/description keys, `validate()`) + StatDefinition, StatBlock, MovementType, WeaponType, TerrainData, ItemData, WeaponData, ConsumableData, SkillData, ClassData, CharacterData, UnitData, FactionData. 54 tests.
 - [x] **M1.2** `Ruleset` + abstract rules; Crossroads concrete rules implementing §5–§6. — Abstract CombatRules/GrowthRules/ExpRules/EnemyStatRules + ProficiencyRules; Crossroads implementations wired into the ruleset. All §13.2 formula values, follow-up edges, Stagger rules, true-hit modes, growth modes, EXP and enemy stats tested. 98 tests.
 - [x] **M1.3** Sample data: 8 stats, 4 movement types, 8 weapon types with stagger links, ~11 Beginner + 3 Intermediate classes, weapon table, terrain table, consumables, 6 sample units (Tellen, Sable, Gid + 3 generic), enemy classes. — 88 `.tres` files under `game/data/` + 103 strings; `DataValidator` (tests, debug startup, editor script). 109 tests.
-- [ ] **M1.4** `CombatForecast` + `CombatResolver` (headless), all §13.2 fixtures passing.
+- [x] **M1.4** `CombatForecast` + `CombatResolver` (headless), all §13.2 fixtures passing. — Fixtures pass against the shipped weapon data; scripted-roll tests cover the §5.7 sequence, Stagger timing, kills, brave; 2,000 seeded combats confirm forecast = resolver. 130 tests.
 - [ ] **M1.5** Combat Lab scene.
 - [ ] **Checkpoint** (Jake tunes numbers in Combat Lab)
 

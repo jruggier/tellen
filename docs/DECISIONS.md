@@ -107,6 +107,11 @@ From spec §18. Each is a ruleset flag or value, so changing one is a data edit,
 - **Generic enemy stat lines** are built from the §6.2 baseline unit plus per-class adjustments, so a level-1 generic is roughly the baseline unit flavored by class.
 - **Character ids are lowercase** (`tellen`). The dialogue parser (M6) will match speaker names like `TELLEN` case-insensitively.
 - **`DataValidator`** checks every content file against the ruleset: unknown stats, weapon/movement types missing from the catalog, unknown proficiency ids, slot limits, level cap, duplicate ids, and starting weapons the unit can't equip (class or proficiency). It runs in the tests, at startup in debug builds (logs loudly), and from the editor (`addons/tactics_core/debug/validate_data.gd`, File → Run).
+- **Forecast and resolver take two `CombatParticipant`s and a distance.** The §5.9 `CombatForecast.build(state, attacker, defender, attacker_tile)` becomes a thin wrapper in M3, once battle state exists; it builds participants and calls `CombatForecast.calculate()`. Both call the same `CombatRules` methods, and a test runs 2,000 seeded combats to confirm every strike matches the forecast.
+- **Forecast HP:** each side shows `hp_after_all_hits` (every strike lands, no crits; for the §14 panel) and `expected_damage_taken` (hit chance, crits, follow-ups; for the AI). If a hit would Stagger the defender, its follow-up is excluded from the all-hits prediction and flagged `follow_up_cancelled_by_stagger`. The awakening-charge field is added with awakening in M5.
+- **Resolver details:** a brave weapon strikes twice in every attack turn, including follow-ups. Stagger is checked once after the attacker's first turn (any hit that the defender survives). Each strike rolls hit, then crit only on a hit. Damage is capped at the target's remaining HP, and a kill ends the combat.
+- **`Strike.Role`, not `Strike.Side`**: Godot has a built-in global `Side` enum that silently shadowed the name.
+- **`tools/run_tests.sh`** wraps the spec's test command because GUT reports "All tests passed" when a test file fails to parse (it skips the file). The wrapper fails the run on any script error.
 - **The weapon type id is also its proficiency id**; movement tactics (`ground`, `sky`, `heavy`) use the movement type id.
 
 ---
