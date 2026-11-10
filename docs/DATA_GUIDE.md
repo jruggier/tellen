@@ -82,3 +82,7 @@ New kinds of behavior need a new hooks script (code); see `addons/tactics_core/s
 ## Adding an AI profile
 
 `game/data/ai_profiles/` → duplicate. **Behavior** (charge, hold, stationary, wake on approach, guard, coward, healer) and **Weights** (how much the AI values damage, kills, Stagger, priority targets, safety, terrain). Map-specific settings (guard tile, wake region) are usually set in a new profile on the unit marker itself.
+
+## The campaign: chapters, order and recruits
+
+`game/data/campaign/crossroads_campaign.tres` lists the chapters in play order. **Starting Units** are the army for a new game. Each entry in **Chapters** has a **Map Path** (the map scene), a **Display Name**, and **Joins**: units added to the army when that chapter starts. To add a chapter, build the map (see `LEVEL_DESIGN.md`), then add an entry here. Units keep their progress between chapters automatically; generic units (no unit data) don't carry over.

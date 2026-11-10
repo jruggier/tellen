@@ -831,6 +831,13 @@ func _on_trade_requested(left_slot: int, right_slot: int) -> void:
 
 # Display helpers ---------------------------------------------------------------------
 
+## Redraws the unit panel for the unit under the cursor (after outside
+## changes such as rewind or debug commands).
+func refresh_info() -> void:
+	if state in [State.IDLE, State.SELECTED, State.INSPECT]:
+		_show_unit_info(_info_unit())
+
+
 func _on_cursor_moved(cell: Vector2i) -> void:
 	if camera != null:
 		camera.follow(cursor.cell_center(cell))

@@ -63,6 +63,8 @@ var toast: Toast
 var presenter: CombatPresenter
 var hint_label: Label
 var settings_panel: SettingsPanel
+## Debug builds only (F4).
+var debug_console: DebugConsole
 var turn_label: Label
 var banner: PhaseBanner
 var objective_panel: ObjectivePanel
@@ -133,6 +135,10 @@ func _ready() -> void:
 		debug_overlay.zoom = float(ruleset.tile_display_scale)
 		debug_overlay.cell_size = ruleset.tile_source_size
 		world.add_child(debug_overlay)
+		debug_console = DebugConsole.new()
+		debug_console.name = "DebugConsole"
+		debug_console.battle = self
+		hud.add_child(debug_console)
 	var start: Vector2i = _first_player_cell()
 	cursor.set_cell(start, true)
 	camera.snap_to(cursor.cell_center(start))
@@ -338,6 +344,8 @@ func refresh_views() -> void:
 			view.refresh(unit, controller.state.ruleset)
 			if unit.is_alive():
 				view.place_at(unit.cell)
+	if input != null:
+		input.refresh_info()
 
 
 ## "Turn N · objective (progress)" at the bottom center.
@@ -375,6 +383,7 @@ func apply_settings() -> void:
 
 func _on_pause_option(option_id: StringName) -> void:
 	if option_id == &"objective":
+		input.suspend()
 		objective_panel.show_objectives(controller.state, objectives, defeat_conditions)
 	elif option_id == &"rewind":
 		_open_rewind_menu()
@@ -443,6 +452,7 @@ func _on_battle_finished(victory: bool) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if objective_panel.visible and (event.is_action_pressed(&"confirm") or event.is_action_pressed(&"cancel")):
 		objective_panel.close()
+		input.resume()
 		get_viewport().set_input_as_handled()
 	elif result_panel.visible and event.is_action_pressed(&"confirm") and not event.is_echo():
 		get_viewport().set_input_as_handled()

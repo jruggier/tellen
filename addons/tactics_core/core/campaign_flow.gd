@@ -43,6 +43,7 @@ static func continue_game() -> void:
 static func play_current_chapter(campaign: CampaignState, data: CampaignData) -> void:
 	var chapter: ChapterData = campaign.current_chapter(data)
 	if chapter == null:
+		SaveSystem.save(campaign, SLOT)  # remember the campaign is finished
 		go_to_title({"completed": true})
 		return
 	campaign.prepare_chapter(data)

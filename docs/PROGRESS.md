@@ -264,10 +264,39 @@ _Post-M1 change: the game is native 1920×1080 with 64 px cells (16 px art at 4�
 - Marker gizmos are simple shapes and letters; range previews only show for unit markers.
 - Generic enemy names use their class name; there is no per-marker display name yet.
 
-**Decisions to confirm:** none new beyond the M7 notes in `DECISIONS.md`.## M8 — Rewind, campaign state, polish
+**Decisions to confirm:** none new beyond the M7 notes in `DECISIONS.md`.
+
+## M8 — Rewind, campaign state, polish
 
 - [x] **M8.1** `RewindService` + UI + tests. — Snapshots (state incl. RNG, campaign flags, objectives) before each player action and End Turn; rewind restores exactly, truncates the log, drops later points, uses a charge (ruleset `rewind_charges_per_map` = 3); pause menu → Rewind (N) → list of points; views rebuilt, blue flash. 327 tests.
 - [x] **M8.2** `CampaignState` carried ch00 → ch01; save/load to `user://` as JSON. — `CampaignData`/`ChapterData` (`game/data/campaign/crossroads_campaign.tres`: start with Tellen, Sable, Gid; three recruits join at ch01); `UnitState.to_record()`/`apply_record()` (class, level, EXP, stats, inventory, proficiencies, skills; HP refills); `SaveSystem` (versioned JSON, temp-file write, corrupt saves refused); `CampaignFlow` (new game, continue, victory → next chapter, defeat → retry from the chapter's save). 335 tests.
 - [x] **M8.3** Title screen → map flow; settings. — `main.tscn` boots to `title.tscn` (`TitleScreen`: Continue, New Game with overwrite check, Settings, Quit; "campaign complete" message). `GameSettings` (`user://settings.cfg`): animation speed Normal/Fast/Instant, text speed, master/music/sfx volume (buses created on demand), window mode, gamepad layout, colorblind-safe ranges, forecast details default, keyboard remapping (swap on conflict, reset). `SettingsPanel` from the title and the pause menu (plus Return to title). Hint lines follow remapped keys (`InputHints`). 346 tests.
-- [ ] **M8.4** Bug pass; performance check (40×40 map, 30–40 units); export presets tested.
-- [ ] **Checkpoint**
+- [x] **M8.4** Bug pass; performance check (40×40 map, 30–40 units); export presets tested. — Fixes: confirm on the Objective panel also reached the map (input now pauses), the dialogue typewriter crashed if the scene changed mid-line, unit panel didn't refresh after outside changes, finishing the campaign wasn't saved. Added the §14 debug console (F4, debug builds). Performance: 40×40, 30 units, threat on: 8.5 ms/frame (117 fps, p95 11.4 ms); 15-unit enemy phase 288 ms (~19 ms per unit). `export_presets.cfg` for Windows, macOS, Linux (includes `*.dlg`; excludes tests, GUT, MCP, tools, docs, Combat Lab); `.pck` export verified by running New Game from it. 348 tests.
+- [x] **Checkpoint**
+
+### M8 Checkpoint summary
+
+**Built**
+- **Rewind** (Tellen's ability): pause menu → Rewind (3 charges per map) → pick any earlier player action or turn end; the battle returns exactly to that moment, RNG included.
+- **Campaign**: New Game starts ch00 with Tellen, Sable and Gid. Winning carries every unit's class, level, EXP, stats, items, proficiencies and skills into ch01 (HP refills; retreated units come back), where the three recruits join. Story flags carry too, so the ch01 toll choice is remembered. Finishing ch01 returns to the title with a "campaign complete" message.
+- **Saving**: one autosave slot, written at the start of every chapter (`user://saves/slot_1.json`, versioned JSON, crash-safe write). Losing a map retries it from that save; Continue on the title screen resumes there.
+- **Title screen**: Continue, New Game (asks before replacing a save), Settings, Quit. The game now starts here (`main.tscn` boots straight to `title.tscn`).
+- **Settings** (title screen or pause menu, saved to `user://settings.cfg`): animation speed (Normal / Fast / Instant), text speed, master / music / sound volume, windowed or fullscreen, gamepad buttons (Automatic / Nintendo / Xbox-PlayStation), colorblind-safe range colors, forecast details on by default, and keyboard remapping (Controls page). On-screen hints show the keys you picked.
+- **Pause menu**: adds Settings and Return to title.
+- **Debug console** (F4, debug builds only): `kill`, `heal all`, `level`, `give`, `win`, `lose`, `seed`, `awaken`, `units`.
+- **Exports**: presets for Windows, macOS and Linux.
+
+**How to try it**
+1. Press **F5** (Run Project): title screen → New Game → play ch00. (F4 → `win` skips a map.) Check that ch01 starts with your levels, then lose it on purpose and see it retry.
+2. Quit, run again → **Continue** resumes at the chapter start.
+3. Pause (C) → **Settings**: try Instant animations, colorblind ranges, rebind a key on the Controls page and watch the hint line change.
+4. Maps still run alone with F6 using the test roster, as before.
+
+**Known issues / not yet built**
+- **Export templates for Godot 4.7.2 aren't installed**, so the Windows/macOS/Linux builds can't be produced yet: Editor → *Manage Export Templates* → Download and Install, then Project → Export. The game data was verified by exporting and running a `.pck`. The macOS preset is ad-hoc signed (no notarization); Windows has no icon yet.
+- One save slot; no mid-map saves (a quit mid-map restarts that map).
+- Remapping is keyboard-only; gamepad buttons follow the layout setting.
+- No music or sound assets yet, so the volume settings have nothing to play (the buses are wired).
+- Carried over from earlier: AI doesn't use items, enemy-phase level-ups wait for confirm, placeholder class letters collide.
+
+**Decisions to confirm:** `DECISIONS.md` #51–58.

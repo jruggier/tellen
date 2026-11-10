@@ -169,9 +169,18 @@ func check_end() -> bool:
 	var outcome: ObjectiveRules.Outcome = ObjectiveRules.evaluate(scene.controller.state, scene.objectives, scene.defeat_conditions)
 	if outcome == ObjectiveRules.Outcome.ONGOING:
 		return false
+	_finish(outcome == ObjectiveRules.Outcome.VICTORY)
+	return true
+
+
+## Ends the battle now regardless of objectives (debug console).
+func force_end(victory: bool) -> void:
+	if not finished:
+		_finish(victory)
+
+
+func _finish(victory: bool) -> void:
 	finished = true
 	scene.input.disable()
-	var victory: bool = outcome == ObjectiveRules.Outcome.VICTORY
 	TacticsEvents.battle_ended.emit(scene.controller.state.map_id, victory)
 	battle_finished.emit(victory)
-	return true

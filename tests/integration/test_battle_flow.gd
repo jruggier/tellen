@@ -645,3 +645,37 @@ func test_rewind_through_pause_menu() -> void:
 	assert_eq(scene.rewind.charges_left, 2)
 	assert_eq(scene.input.state, PlayerInputController.State.IDLE)
 	assert_ne(scene.controller.state, state, "a restored copy, not the old object")
+
+
+func test_debug_console_commands() -> void:
+	var scene: BattleScene = _scene_with_adjacent_brigand()
+	await wait_process_frames(2)
+	var console: DebugConsole = scene.debug_console
+	assert_not_null(console, "debug builds get a console")
+	var state: BattleState = scene.controller.state
+	var tellen: UnitState = state.get_unit(&"tellen")
+	tellen.current_hp = 1
+	console.run("heal all")
+	assert_eq(tellen.current_hp, tellen.max_hp(state.ruleset))
+	var level: int = tellen.level
+	console.run("level tellen 2")
+	assert_eq(tellen.level, level + 2)
+	var items: int = tellen.inventory.size()
+	assert_string_contains(console.run("give tellen vulnerary"), "Gave")
+	assert_eq(tellen.inventory.size(), items + 1)
+	assert_string_contains(console.run("give tellen nothing_here"), "No item")
+	assert_string_contains(console.run("kill nobody"), "No unit")
+	console.run("seed 1234")
+	assert_eq(state.rng.get_master_seed(), 1234)
+	var reply: String = console.run("kill brigand_1")
+	assert_false(state.get_unit(&"brigand_1").is_alive(), reply)
+	assert_true(scene.flow.finished, "killing the last enemy wins the rout")
+	assert_eq(ObjectiveRules.evaluate(state, scene.objectives, scene.defeat_conditions), ObjectiveRules.Outcome.VICTORY)
+
+
+func test_debug_console_lose() -> void:
+	var scene: BattleScene = _scene_with_adjacent_brigand()
+	await wait_process_frames(2)
+	scene.debug_console.run("lose")
+	assert_true(scene.flow.finished)
+	assert_false(scene._last_victory if scene.result_panel.visible else false)
