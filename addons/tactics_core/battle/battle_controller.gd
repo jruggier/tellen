@@ -20,25 +20,25 @@ var _undo_stack: Array[Command] = []
 
 ## Builds the battle state from [param map] with [param ruleset] on
 ## difficulty [param difficulty]. Turn 1 starts with [method start].
-func setup(map: BattleMap, ruleset: Ruleset, master_seed: int, difficulty: StringName = &"normal") -> void:
+func setup(map: BattleMap, ruleset: Ruleset, master_seed: int, difficulty: StringName = &"normal", roster: Array[UnitData] = []) -> void:
 	var layer: TileMapLayer = map.get_terrain_layer()
 	var grid: BattleGrid = BattleGrid.from_tile_map_layer(layer, ruleset) if layer != null else BattleGrid.new()
 	state = BattleState.new(ruleset, grid)
-	state.map_id = map.map_id
-	state.factions = map.factions.duplicate()
+	state.map_id = map.get_map_id()
+	state.factions = map.get_factions()
 	state.difficulty_id = difficulty
 	state.rng = SeededRng.new(master_seed)
 	TacticsRng.set_rng(state.rng)
-	for placement: UnitPlacement in map.placements:
+	for placement: UnitPlacement in map.get_placements(roster):
 		var unit: UnitState = UnitFactory.from_placement(state, placement)
 		if unit == null:
 			continue
 		if state.grid.move_cost(placement.cell, unit.movement_type_id()) < 1:
 			TacticsLog.warn("BattleController", "'%s' is placed on impassable terrain at %s" % [unit.id, placement.cell])
 		state.add_unit(unit)
-	ReinforcementRules.queue(state, map.reinforcements)
+	ReinforcementRules.queue(state, map.get_reinforcements())
 	state.trigger_regions = map.trigger_regions.duplicate()
-	state.map_events = map.events.duplicate()
+	state.map_events = map.get_events()
 	for event: MapEvent in state.map_events:
 		if event != null:
 			for problem: String in event.validate():

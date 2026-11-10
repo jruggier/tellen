@@ -220,6 +220,16 @@ From spec §18. Each is a ruleset flag or value, so changing one is a data edit,
 - **Battle quotes play before the attack command executes** (for player and AI attacks), so the state is unchanged while characters talk.
 - **Talk and Visit end the unit's action.** Recruiting by Talk moves the listener to the talker's faction (it can't act until the next player phase).
 
+### M7 (2026-11-10)
+
+- **Maps = `BattleMap` + `MapDefinition` + markers.** The definition holds everything not tied to a tile; markers hold everything that is. `BattleMap.get_*()` merges both with the older plain lists, so the M2–M6 test arena keeps working unchanged.
+- **Markers are plain `@tool` `Node2D` scripts with `class_name`,** so they appear in Add Child Node without plugin registration. They snap to the grid on every move, draw gizmos only in the editor, and hide at runtime.
+- **Range preview for unit markers** builds a throwaway battle state from the map's terrain in the editor; it uses the editor selection via `Engine.get_singleton("EditorInterface")`, so the script still compiles in exported builds.
+- **Reinforcement groups own their unit markers** (children on the arrival tiles); unit markers inside a group never spawn at map start.
+- **Deployment:** spawn slots fill in slot order. Forced units (slot-specific first, then the definition's list) go first, then the roster, up to `deploy_count` (0 = all slots). Without a campaign, the roster is `game/data/units/test_roster.tres` (project setting `tactics_core/maps/test_roster`).
+- **Escape tiles combine** into one Escape objective (count = the highest count on any escape tile).
+- **Event flags accept `!flag`** ("only while not set"), used for branching on story choices.
+
 ## GDScript gotchas (read before writing code)
 
 - **Ternaries drop typed-array types.** `x if cond else [] as Array[Vector2i]` produces an untyped `Array` at runtime and fails when passed to a typed parameter. Use if/else and a typed local.

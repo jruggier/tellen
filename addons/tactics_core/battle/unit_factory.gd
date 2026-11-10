@@ -27,6 +27,10 @@ static func from_placement(state: BattleState, placement: UnitPlacement, faction
 		unit = UnitState.generic(unit_id, placement.class_data, placement.level, state.ruleset, faction, placement.cell,
 			placement.items, state.difficulty_id, placement.drops)
 	unit.is_boss = placement.is_boss
+	if placement.stat_overrides != null:
+		for stat_id: StringName in placement.stat_overrides.values:
+			unit.stats.set_value(stat_id, placement.stat_overrides.get_value(stat_id))
+		unit.current_hp = unit.max_hp(state.ruleset)
 	for proficiency_id: StringName in placement.proficiency_overrides:
 		var level: int = placement.proficiency_overrides[proficiency_id]
 		unit.proficiencies[proficiency_id] = level

@@ -35,7 +35,8 @@ enum Trigger {
 @export var trigger: Trigger = Trigger.MAP_START
 ## Fire only once.
 @export var once: bool = true
-## Fire only while this flag is set (empty = always).
+## Fire only while this flag is set; "!flag" = only while it is not set
+## (empty = always).
 @export var required_flag: String = ""
 
 @export_group("Trigger settings")

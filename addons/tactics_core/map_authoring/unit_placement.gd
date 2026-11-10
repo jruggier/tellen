@@ -21,6 +21,8 @@ extends Resource
 @export var is_boss: bool = false
 ## AI behavior for non-player units (empty = charge).
 @export var ai_profile: AIProfile
+## Stats that replace the generated ones (e.g. a deliberately slow tutorial enemy).
+@export var stat_overrides: StatBlock
 ## Proficiency levels that replace the unit's own (test rosters, story beats).
 @export var proficiency_overrides: Dictionary[StringName, int] = {}
 ## Units with the same group wake together (AGGRO_REGION).

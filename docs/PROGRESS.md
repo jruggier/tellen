@@ -236,7 +236,7 @@ _Post-M1 change: the game is native 1920×1080 with 64 px cells (16 px art at 4�
 - Map validation of dialogue ids used by events comes with the map validator (M7).
 - The talk/recruit choice in the arena doesn't change anything except a map flag (sample content).## M7 — Level authoring
 
-- [ ] **M7.1** All `@tool` markers with gizmos and Inspector exports; `MapDefinition`.
+- [x] **M7.1** All `@tool` markers with gizmos and Inspector exports; `MapDefinition`. — `MapMarker` base (grid snap, editor gizmo, hidden in game); EnemyUnit/AllyUnit (selected = range preview, stat/proficiency overrides), PlayerSpawn (slots, forced unit), ReinforcementGroup (child unit markers), RegionMarker (MapEvent), SeizeTile/DefendTile/EscapeTile, VillageMarker/ChestMarker; `MapDefinition`; `BattleMap` accessors merge definition + markers + legacy lists; deployment; `UnitRoster` + test roster; `!flag` event conditions. 306 tests.
 - [ ] **M7.2** Map template scene; "run current scene" test roster.
 - [ ] **M7.3** Map validator (editor + test).
 - [ ] **M7.4** `docs/LEVEL_DESIGN.md` and `docs/DATA_GUIDE.md`.

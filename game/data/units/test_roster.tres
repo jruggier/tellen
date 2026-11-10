@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="UnitRoster" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/unit_roster.gd" id="1_1ds8u"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/unit_data.gd" id="2_1v1xl"]
+[ext_resource type="Resource" path="res://game/data/units/tellen.tres" id="3_r0yxs"]
+[ext_resource type="Resource" path="res://game/data/units/sable.tres" id="4_3tqq8"]
+[ext_resource type="Resource" path="res://game/data/units/gid.tres" id="5_wclr4"]
+[ext_resource type="Resource" path="res://game/data/units/recruit_spearhand.tres" id="6_qasmb"]
+[ext_resource type="Resource" path="res://game/data/units/recruit_acolyte.tres" id="7_a7mf0"]
+[ext_resource type="Resource" path="res://game/data/units/recruit_hunter.tres" id="8_83k7w"]
+
+[resource]
+script = ExtResource("1_1ds8u")
+units = Array[ExtResource("2_1v1xl")]([ExtResource("3_r0yxs"), ExtResource("4_3tqq8"), ExtResource("5_wclr4"), ExtResource("6_qasmb"), ExtResource("7_a7mf0"), ExtResource("8_83k7w")])
+id = &"test_roster"
+display_name = "Test roster"

@@ -32,7 +32,11 @@ static func matching(state: BattleState, events: Array[MapEvent], trigger: MapEv
 static func available(state: BattleState, event: MapEvent) -> bool:
 	if event.once and state.flags.get(_fired_key(event), false):
 		return false
-	return event.required_flag.is_empty() or DialogueRunner.is_truthy(get_flag(state, event.required_flag))
+	if event.required_flag.is_empty():
+		return true
+	if event.required_flag.begins_with("!"):
+		return not DialogueRunner.is_truthy(get_flag(state, event.required_flag.trim_prefix("!")))
+	return DialogueRunner.is_truthy(get_flag(state, event.required_flag))
 
 
 ## Fires [param event]: marks it, applies its actions. [param context] as in [method matching].

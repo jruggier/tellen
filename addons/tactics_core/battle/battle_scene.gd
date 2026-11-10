@@ -21,6 +21,10 @@ extends Node
 ## └── (debug builds) DebugOverlay inside World, toggled with F3
 ## [/codeblock]
 
+## Project setting: roster used when a map is played without a campaign.
+const SETTING_TEST_ROSTER: String = "tactics_core/maps/test_roster"
+const DEFAULT_TEST_ROSTER: String = "res://game/data/units/test_roster.tres"
+
 ## The map to play when not hosted by a running BattleMap.
 @export var map_scene: PackedScene
 ## RNG seed for the battle; 0 picks a random seed.
@@ -70,6 +74,9 @@ var dialogue_player: DialoguePlayer
 var dialogues: DialogueLibrary
 ## Campaign state carried between maps (M8); a fresh one when unset.
 var campaign: CampaignState
+## Units the player may deploy (empty = the test roster, see
+## [constant SETTING_TEST_ROSTER]).
+var roster: Array[UnitData] = []
 ## The map's objectives and defeat conditions (empty = defaults).
 var objectives: Array[Objective] = []
 var defeat_conditions: Array[DefeatCondition] = []
@@ -92,15 +99,17 @@ func _ready() -> void:
 	controller = BattleController.new()
 	controller.name = "BattleController"
 	add_child(controller)
-	controller.setup(map_instance, ruleset, seed, difficulty)
+	if roster.is_empty():
+		roster = _test_roster()
+	controller.setup(map_instance, ruleset, seed, difficulty, roster)
+	objectives = map_instance.get_objectives()
+	defeat_conditions = map_instance.get_defeat_conditions()
 	if campaign == null:
 		campaign = CampaignState.new()
 	controller.state.campaign = campaign
 	dialogues = DialogueLibrary.load_project()
 	for problem: String in dialogues.errors:
 		TacticsLog.warn("Dialogue", problem)
-	objectives = map_instance.objectives.duplicate()
-	defeat_conditions = map_instance.defeat_conditions.duplicate()
 	_build_world(ruleset)
 	_build_hud()
 	_build_input()
@@ -283,6 +292,14 @@ func add_unit_view(unit: UnitState) -> void:
 	view.setup(unit, faction.color if faction != null else Color.WHITE, ruleset)
 	units_layer.add_child(view)
 	unit_views[unit.id] = view
+
+
+func _test_roster() -> Array[UnitData]:
+	var path: String = str(ProjectSettings.get_setting(SETTING_TEST_ROSTER, DEFAULT_TEST_ROSTER))
+	if not ResourceLoader.exists(path):
+		return []
+	var test: UnitRoster = load(path) as UnitRoster
+	return test.units.duplicate() if test != null else []
 
 
 ## Re-creates [param unit]'s view (e.g. after it changes faction).
