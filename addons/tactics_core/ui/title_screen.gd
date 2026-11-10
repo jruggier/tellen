@@ -16,6 +16,7 @@ var settings_panel := SettingsPanel.new()
 var _message := UiStyle.label("", 28, UiStyle.GOOD)
 var _confirming_new: bool = false
 var _heading := VBoxContainer.new()
+var _repeat := DirectionRepeat.new()
 
 
 func _ready() -> void:
@@ -64,6 +65,8 @@ func _open_main_menu() -> void:
 
 func _open_menu(options: Array[Dictionary], heading: String) -> void:
 	menu.open(options, Vector2.ZERO, heading)
+	_repeat = DirectionRepeat.for_menus()
+	_repeat.reset()
 	_center_menu.call_deferred()
 
 
@@ -97,13 +100,18 @@ func _on_chosen(option_id: StringName) -> void:
 			get_tree().quit()
 
 
+func _process(delta: float) -> void:
+	if menu.visible:
+		var step: Vector2i = _repeat.poll(delta)
+		if step.y != 0:
+			menu.move(step.y)
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if not menu.visible:
 		return
-	if event.is_action_pressed(&"cursor_up", true):
-		menu.move(-1)
-	elif event.is_action_pressed(&"cursor_down", true):
-		menu.move(1)
+	if DirectionRepeat.is_direction_event(event):
+		pass  # polled in _process
 	elif event.is_action_pressed(&"confirm") and not event.is_echo():
 		menu.accept()
 	elif event.is_action_pressed(&"cancel") and not event.is_echo() and _confirming_new:

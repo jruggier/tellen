@@ -291,3 +291,7 @@ ACTION_SPEED_UP,Fast-forward (hold)
 UI_TITLE_CONFIRM_QUIT,Quit to the title screen
 UI_TITLE_QUIT_WARNING,Progress on this map since its start will be lost.
 SETTINGS_HINT_CONTROLS,Confirm: change key    Cancel: back    (gamepad buttons follow the Gamepad buttons setting)
+SETTINGS_MENU_SCROLL,Menu scrolling (hold)
+SETTINGS_SCROLL_SLOW,Slow
+SETTINGS_SCROLL_NORMAL,Normal
+SETTINGS_SCROLL_FAST,Fast

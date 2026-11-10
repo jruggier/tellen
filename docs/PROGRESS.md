@@ -308,3 +308,4 @@ _Post-M1 change: the game is native 1920Ã—1080 with 64 px cells (16 px art at 4Ã
 - [x] Dialogue voice blips while text types, pitched per character (`CharacterData.voice`, `voice_pitch`).
 - [x] EXP bar after gains (`ExpPanel`): fills with rising ticks, chimes and wraps on level-up; level-up panel reveals each stat gain with a chime.
 - [x] HP bars (`StatBar`): unit panel (HP + EXP), forecast (predicted loss/heal pulses), combat HUD with both sides' bars draining in step with strikes. 357 tests.
+- [x] Menu hold-to-scroll (`DirectionRepeat`): one step per press, repeat only after a 0.5 s hold, at 10 steps/s; ignores keyboard auto-repeat and analog-stick event floods; Menu scrolling speed in Settings. 361 tests.

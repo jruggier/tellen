@@ -20,15 +20,16 @@ signal cell_changed(cell: Vector2i)
 var bounds: Rect2i = Rect2i(0, 0, 1, 1)
 ## Size of one cell in world pixels.
 var cell_size: int = 16
-## When false the cursor ignores input (e.g. during animations).
-var input_enabled: bool = true
+## When false the cursor ignores input (e.g. during animations). Directions
+## held while it was off don't move it until released.
+var input_enabled: bool = true:
+	set(value):
+		if value and not input_enabled:
+			_repeat.reset()
+		input_enabled = value
 var cell: Vector2i = Vector2i.ZERO
 
-const _ACTIONS: Dictionary[StringName, Vector2i] = {
-	&"cursor_up": Vector2i.UP, &"cursor_down": Vector2i.DOWN,
-	&"cursor_left": Vector2i.LEFT, &"cursor_right": Vector2i.RIGHT,
-}
-var _held: Dictionary[StringName, float] = {}
+var _repeat := DirectionRepeat.new(0.22, 0.06)
 var _time: float = 0.0
 
 
@@ -58,23 +59,11 @@ func _process(delta: float) -> void:
 
 
 func _poll_directions(delta: float) -> void:
-	for action: StringName in _ACTIONS:
-		if not InputMap.has_action(action):
-			continue
-		if Input.is_action_pressed(action):
-			if not _held.has(action):
-				_held[action] = 0.0
-				_step_to(cell + _ACTIONS[action])
-			else:
-				var before: float = _held[action]
-				_held[action] = before + delta
-				if _held[action] >= repeat_delay:
-					var steps_before: int = floori(maxf(0.0, before - repeat_delay) / repeat_interval)
-					var steps_now: int = floori((_held[action] - repeat_delay) / repeat_interval)
-					if steps_now > steps_before or before < repeat_delay:
-						_step_to(cell + _ACTIONS[action])
-		else:
-			_held.erase(action)
+	_repeat.delay = repeat_delay
+	_repeat.interval = repeat_interval
+	var step: Vector2i = _repeat.poll(delta)
+	if step != Vector2i.ZERO:
+		_step_to(cell + step)
 
 
 func _unhandled_input(event: InputEvent) -> void:

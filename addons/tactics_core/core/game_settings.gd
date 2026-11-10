@@ -12,6 +12,9 @@ extends RefCounted
 
 enum AnimationSpeed { NORMAL, FAST, INSTANT }
 enum WindowMode { WINDOWED, FULLSCREEN }
+## How menus scroll while a direction is held: [delay before repeating, seconds per step].
+enum MenuScroll { SLOW, NORMAL, FAST }
+const MENU_SCROLL_TIMES: Array[Vector2] = [Vector2(0.75, 0.16), Vector2(0.5, 0.1), Vector2(0.35, 0.07)]
 
 const PATH: String = "user://settings.cfg"
 ## Settings file version (for future migrations).
@@ -39,6 +42,8 @@ var window_mode: WindowMode = WindowMode.WINDOWED
 var controller_layout: int = ControllerLayout.Mode.AUTO
 ## Range overlays use a colorblind-safe palette (patterns are always on).
 var colorblind_overlays: bool = false
+## Menu hold-to-scroll speed.
+var menu_scroll: MenuScroll = MenuScroll.NORMAL
 ## The combat forecast opens with details shown.
 var forecast_details: bool = false
 ## Action → physical keycode replacing that action's primary key.
@@ -69,6 +74,7 @@ static func load_from(path: String) -> GameSettings:
 	settings.animation_speed = clampi(int(file.get_value("game", "animation_speed", 0)), 0, AnimationSpeed.size() - 1) as AnimationSpeed
 	settings.text_speed = maxf(0.0, float(file.get_value("game", "text_speed", 45.0)))
 	settings.forecast_details = bool(file.get_value("game", "forecast_details", false))
+	settings.menu_scroll = clampi(int(file.get_value("controls", "menu_scroll", MenuScroll.NORMAL)), 0, MenuScroll.size() - 1) as MenuScroll
 	settings.master_volume = clampi(int(file.get_value("audio", "master", 80)), 0, 100)
 	settings.music_volume = clampi(int(file.get_value("audio", "music", 80)), 0, 100)
 	settings.sfx_volume = clampi(int(file.get_value("audio", "sfx", 80)), 0, 100)
@@ -97,6 +103,7 @@ func save(path: String = PATH) -> Error:
 	file.set_value("display", "window_mode", int(window_mode))
 	file.set_value("display", "colorblind_overlays", colorblind_overlays)
 	file.set_value("controls", "controller_layout", controller_layout)
+	file.set_value("controls", "menu_scroll", int(menu_scroll))
 	var remaps: Dictionary = {}
 	for action: StringName in key_remaps:
 		remaps[String(action)] = key_remaps[action]
@@ -119,6 +126,16 @@ func apply() -> void:
 	var tree: SceneTree = Engine.get_main_loop() as SceneTree
 	if tree != null and tree.root.has_node(^"TacticsEvents"):
 		tree.root.get_node(^"TacticsEvents").emit_signal(&"settings_changed")
+
+
+## Seconds a direction is held in a menu before it starts repeating.
+func menu_repeat_delay() -> float:
+	return MENU_SCROLL_TIMES[menu_scroll].x
+
+
+## Seconds between menu steps while a direction stays held.
+func menu_repeat_interval() -> float:
+	return MENU_SCROLL_TIMES[menu_scroll].y
 
 
 ## Multiplier for presentation timings: 1 normal, 0.5 fast, 0 instant.

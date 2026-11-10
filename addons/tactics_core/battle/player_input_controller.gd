@@ -117,18 +117,29 @@ func _unhandled_input(event: InputEvent) -> void:
 		cycle_unit(1)
 	elif event.is_action_pressed(&"prev_unit") and not event.is_echo():
 		cycle_unit(-1)
-	elif event.is_action_pressed(&"cursor_up", true):
-		move_selection(Vector2i.UP)
-	elif event.is_action_pressed(&"cursor_down", true):
-		move_selection(Vector2i.DOWN)
-	elif event.is_action_pressed(&"cursor_left", true):
-		move_selection(Vector2i.LEFT)
-	elif event.is_action_pressed(&"cursor_right", true):
-		move_selection(Vector2i.RIGHT)
+	elif DirectionRepeat.is_direction_event(event):
+		handled = state in _NAV_STATES  # menus poll directions in _process; the map cursor reads them itself
 	else:
 		handled = false
 	if handled:
 		get_viewport().set_input_as_handled()
+
+
+## States where directions move a menu selection, target or trade slot.
+const _NAV_STATES: Array[State] = [State.ACTION_MENU, State.WEAPON_MENU, State.ITEM_MENU, State.PAUSE_MENU, State.CLASS_MENU,
+	State.CHOICE_MENU, State.ITEM_ACTIONS, State.TARGETING, State.TRADING]
+
+var _menu_repeat := DirectionRepeat.new()
+
+
+func _process(delta: float) -> void:
+	if not state in _NAV_STATES:
+		return
+	var step: Vector2i = _menu_repeat.poll(delta)
+	if step.y != 0:
+		move_selection(Vector2i(0, step.y))
+	elif step.x != 0:
+		move_selection(Vector2i(step.x, 0))
 
 
 ## Directional input while a menu, target list or trade screen is open
@@ -921,6 +932,10 @@ func _proficiency_name(proficiency_id: StringName) -> String:
 
 
 func _set_state(new_state: State) -> void:
+	if new_state != state and new_state in _NAV_STATES:
+		# A fresh menu: honor the player's scroll speed, ignore directions still held.
+		_menu_repeat = DirectionRepeat.for_menus()
+		_menu_repeat.reset()
 	state = new_state
 	cursor.input_enabled = new_state in [State.IDLE, State.SELECTED, State.INSPECT, State.CANTO]
 	state_changed.emit(new_state)

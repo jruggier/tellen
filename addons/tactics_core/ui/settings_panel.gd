@@ -20,6 +20,7 @@ var selected: int = 0
 var listening_action: StringName = &""
 
 var _page: int = PAGE_GENERAL
+var _repeat := DirectionRepeat.new()
 var _rows: Array[Dictionary] = []
 var _row_nodes: Array[PanelContainer] = []
 var _title := UiStyle.label("", 34, UiStyle.PANEL_BORDER)
@@ -48,6 +49,8 @@ func open(target: GameSettings = null) -> void:
 	selected = 0
 	listening_action = &""
 	visible = true
+	_repeat = DirectionRepeat.new(settings.menu_repeat_delay(), settings.menu_repeat_interval())
+	_repeat.reset()
 	_rebuild()
 
 
@@ -88,6 +91,10 @@ func activate(direction: int) -> void:
 			settings.window_mode = posmod(settings.window_mode + _step(direction), GameSettings.WindowMode.size()) as GameSettings.WindowMode
 		&"controller_layout":
 			settings.controller_layout = posmod(settings.controller_layout + _step(direction), 3)
+		&"menu_scroll":
+			settings.menu_scroll = posmod(settings.menu_scroll + _step(direction), GameSettings.MenuScroll.size()) as GameSettings.MenuScroll
+			_repeat = DirectionRepeat.new(settings.menu_repeat_delay(), settings.menu_repeat_interval())
+			_repeat.reset()
 		&"colorblind_overlays":
 			settings.colorblind_overlays = not settings.colorblind_overlays
 		&"forecast_details":
@@ -141,14 +148,8 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventMouse:
 		return  # rows handle the mouse themselves
 	var handled: bool = true
-	if event.is_action_pressed(&"cursor_up", true):
-		_move(-1)
-	elif event.is_action_pressed(&"cursor_down", true):
-		_move(1)
-	elif event.is_action_pressed(&"cursor_left", true):
-		activate(-1)
-	elif event.is_action_pressed(&"cursor_right", true):
-		activate(1)
+	if DirectionRepeat.is_direction_event(event):
+		pass  # directions are polled in _process (hold-to-repeat)
 	elif event.is_action_pressed(&"confirm") and not event.is_echo():
 		activate(0)
 	elif event.is_action_pressed(&"cancel") and not event.is_echo():
@@ -157,6 +158,16 @@ func _input(event: InputEvent) -> void:
 		handled = event.is_action_type()
 	if handled:
 		get_viewport().set_input_as_handled()
+
+
+func _process(delta: float) -> void:
+	if not visible or listening_action != &"":
+		return
+	var step: Vector2i = _repeat.poll(delta)
+	if step.y != 0:
+		_move(step.y)
+	elif step.x != 0:
+		activate(step.x)
 
 
 func _back() -> void:
@@ -202,7 +213,7 @@ func _rebuild() -> void:
 	_rows.clear()
 	if _page == PAGE_GENERAL:
 		_title.text = tr("SETTINGS_TITLE")
-		for row_id: StringName in [&"animation_speed", &"text_speed", &"master_volume", &"music_volume", &"sfx_volume", &"window_mode", &"controller_layout", &"colorblind_overlays", &"forecast_details", &"controls", &"back"]:
+		for row_id: StringName in [&"animation_speed", &"text_speed", &"master_volume", &"music_volume", &"sfx_volume", &"window_mode", &"controller_layout", &"menu_scroll", &"colorblind_overlays", &"forecast_details", &"controls", &"back"]:
 			_rows.append({"id": row_id, "label": "SETTINGS_" + String(row_id).to_upper()})
 	else:
 		_title.text = tr("SETTINGS_CONTROLS")
@@ -268,6 +279,8 @@ func _value_text(row_id: StringName) -> String:
 			return tr(["SETTINGS_WINDOWED", "SETTINGS_FULLSCREEN"][settings.window_mode])
 		&"controller_layout":
 			return tr(["SETTINGS_PAD_AUTO", "SETTINGS_PAD_NINTENDO", "SETTINGS_PAD_STANDARD"][settings.controller_layout])
+		&"menu_scroll":
+			return tr(["SETTINGS_SCROLL_SLOW", "SETTINGS_SCROLL_NORMAL", "SETTINGS_SCROLL_FAST"][settings.menu_scroll])
 		&"colorblind_overlays", &"forecast_details":
 			return tr("SETTINGS_ON") if bool(settings.get(row_id)) else tr("SETTINGS_OFF")
 		&"controls", &"back", &"reset_keys":

@@ -53,6 +53,8 @@ var _type_tween: Tween
 var _skip_requested: bool = false
 ## Presentation-only randomness (voice pitch wobble); never the battle RNG.
 var _blip_rng := RandomNumberGenerator.new()
+var _repeat := DirectionRepeat.new()
+var _choices_were_visible: bool = false
 var _chosen: int = -1
 var _warned_assets: Dictionary[String, bool] = {}
 
@@ -213,6 +215,19 @@ func choose_option(index: int) -> void:
 		_choice_made.emit()
 
 
+func _process(delta: float) -> void:
+	if not _choices.visible:
+		_choices_were_visible = false
+		return
+	if not _choices_were_visible:
+		_choices_were_visible = true
+		_repeat = DirectionRepeat.for_menus()
+		_repeat.reset()
+	var step: Vector2i = _repeat.poll(delta)
+	if step.y != 0:
+		_choices.move(step.y)
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if not playing:
 		return
@@ -225,10 +240,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		toggle_backlog()
 	elif event.is_action_pressed(&"menu") and not event.is_echo():
 		toggle_auto()
-	elif _choices.visible and event.is_action_pressed(&"cursor_up", true):
-		_choices.move(-1)
-	elif _choices.visible and event.is_action_pressed(&"cursor_down", true):
-		_choices.move(1)
+	elif DirectionRepeat.is_direction_event(event):
+		pass  # choices are polled in _process (hold-to-repeat)
 	else:
 		handled = event is InputEventKey or event is InputEventJoypadButton
 	if handled:
