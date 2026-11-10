@@ -72,6 +72,16 @@ From spec §18. Each is a ruleset flag or value, so changing one is a data edit,
 - All §18 defaults and the M0 additions (input bindings, `debug_console` action, mouse confirm/cancel) confirmed by Jake.
 - UI font: **Inter** (SIL OFL). *(Jake)* Readability check: the whole game renders at 240×135, so text is drawn at that resolution too. Check Inter's legibility at small sizes in the Combat Lab (M1.5). If it's too soft or blocky, the options are: render UI text at full window resolution (switch stretch mode to `canvas_items`, which keeps sprites crisp but changes how pixel snapping works), or use larger text sizes.
 
+### M1 (2026-11-10)
+
+- **Stagger links are weapon type ids** (`WeaponType.staggers: Array[StringName]`), not `Array[WeaponType]` as §5.5 suggests. The loops are circular (sword → axe → lance → sword), and circular references between resource files don't load reliably in Godot. Ids resolve through the ruleset.
+- **Bows' Stagger exemption is a `WeaponType.stagger_exempt` flag**, and heavy units' immunity is a `MovementType.stagger_immune` flag. The framework never checks for "bow" or "heavy" by name.
+- **Classes have two stat sets.** `base_stats` / `growth_modifiers` are the small bonuses added to a named unit's personal stats (§4.4). `generic_base_stats` / `generic_growths` are full stat lines for generating generic enemies (§6.6), whose formula uses the class's base and growth as complete values.
+- **Class tier is an integer** (0 = Beginner). Tier names come from game data, so another game can use a different number of tiers.
+- **`StatBlock` is a Resource** holding `Dictionary[StringName, int]`, so it can be edited inline in the Inspector and saved inside `.tres` files. Missing stats read as 0.
+- **All content shares a `TacticsData` base**: `id`, `display_name` / `description` as translation keys, and `validate()`, which the data validator will call.
+- **The weapon type id is also its proficiency id**; movement tactics (`ground`, `sky`, `heavy`) use the movement type id.
+
 ---
 
 ## Prior prototype audit (M0.4)
