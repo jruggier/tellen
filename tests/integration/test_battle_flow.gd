@@ -246,3 +246,18 @@ func test_path_preview_follows_cursor() -> void:
 	assert_eq(scene.path_arrow._path.back(), Vector2i(4, 2))
 	scene.cursor.set_cell(Vector2i(7, 4))
 	assert_eq(scene.path_arrow._path.size(), 0, "no arrow to unreachable cells")
+
+
+func test_debug_overlay_toggles_and_tracks_movement_type() -> void:
+	var scene: BattleScene = _make_scene()
+	await wait_process_frames(1)
+	var debug: DebugOverlay = scene.debug_overlay
+	assert_not_null(debug, "present in debug builds")
+	assert_false(debug.visible)
+	debug.toggle()
+	assert_true(debug.visible)
+	assert_eq(debug.get_movement_type_id(), &"foot", "cursor starts on Tellen (foot)")
+	scene.cursor.set_cell(Vector2i(0, 0))
+	assert_eq(debug.get_movement_type_id(), &"foot", "empty cell: first movement type")
+	debug.toggle()
+	assert_false(debug.visible)

@@ -12,7 +12,8 @@ extends Node
 ## │   ├── <map>  ├── RangeOverlay  ├── PathArrow  ├── Units  └── GridCursor
 ## ├── BattleCamera
 ## ├── HUD (CanvasLayer): TerrainPanel, hint line
-## └── PlayerInputController
+## ├── PlayerInputController
+## └── (debug builds) DebugOverlay inside World, toggled with F3
 ## [/codeblock]
 
 ## The map to play when not hosted by a running BattleMap.
@@ -36,6 +37,8 @@ var hud: CanvasLayer
 var terrain_panel: TerrainPanel
 var hint_label: Label
 var unit_views: Dictionary[StringName, UnitView] = {}
+## Debug overlay (null in release builds).
+var debug_overlay: DebugOverlay
 
 
 func _ready() -> void:
@@ -56,6 +59,13 @@ func _ready() -> void:
 	_build_world(ruleset)
 	_build_hud()
 	_build_input()
+	if OS.is_debug_build():
+		debug_overlay = DebugOverlay.new()
+		debug_overlay.name = "DebugOverlay"
+		debug_overlay.battle = self
+		debug_overlay.zoom = float(ruleset.tile_display_scale)
+		debug_overlay.cell_size = ruleset.tile_source_size
+		world.add_child(debug_overlay)
 	var start: Vector2i = _first_player_cell()
 	cursor.set_cell(start, true)
 	camera.snap_to(cursor.cell_center(start))
