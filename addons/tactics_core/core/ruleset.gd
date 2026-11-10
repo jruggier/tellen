@@ -25,6 +25,8 @@ extends Resource
 @export var movement_types: Array[MovementType] = []
 ## Every weapon type (resolves Stagger links by id).
 @export var weapon_types: Array[WeaponType] = []
+## Every terrain type (map tiles reference them by id).
+@export var terrains: Array[TerrainData] = []
 ## Translation keys for class tier names, index = tier.
 @export var tier_names: Array[String] = []
 
@@ -46,6 +48,13 @@ extends Resource
 @export_range(1, 256) var tile_source_size: int = 16
 ## On-screen scale of map art (16 px tiles × 4 = 64 px cells at 1920×1080).
 @export_range(1, 16) var tile_display_scale: int = 4
+## TileSet custom data layer holding each tile's terrain id.
+@export var terrain_id_layer: String = "terrain_id"
+## Optional rule (§7.4): units must stop when entering a tile adjacent to an
+## enemy that has [member zoc_tag].
+@export var zone_of_control: bool = false
+## Unit tag that exerts zone of control.
+@export var zoc_tag: StringName = &"zoc"
 
 @export_group("Units")
 ## Inventory slots per unit.
@@ -90,6 +99,14 @@ func get_weapon_type(type_id: StringName) -> WeaponType:
 	return null
 
 
+## The terrain with [param terrain_id], or null.
+func get_terrain(terrain_id: StringName) -> TerrainData:
+	for terrain: TerrainData in terrains:
+		if terrain != null and terrain.id == terrain_id:
+			return terrain
+	return null
+
+
 ## The movement type with [param type_id], or null.
 func get_movement_type(type_id: StringName) -> MovementType:
 	for movement_type: MovementType in movement_types:
@@ -124,6 +141,7 @@ func validate() -> PackedStringArray:
 	_check_catalog(problems, "stats", stats)
 	_check_catalog(problems, "movement_types", movement_types)
 	_check_catalog(problems, "weapon_types", weapon_types)
+	_check_catalog(problems, "terrains", terrains)
 	for stat_id: StringName in [hp_stat, mov_stat, build_stat]:
 		if not stats.is_empty() and get_stat(stat_id) == null:
 			problems.append("Ruleset '%s': stat '%s' is not in the stats catalog" % [ruleset_id, stat_id])

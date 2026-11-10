@@ -23,14 +23,24 @@
 [ext_resource type="Resource" path="res://game/data/stats/mov.tres" id="21_uem6r"]
 [ext_resource type="Resource" path="res://game/data/stats/bld.tres" id="22_ybsoq"]
 [ext_resource type="Script" path="res://addons/tactics_core/data/weapon_type.gd" id="23_d3lrv"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/terrain_data.gd" id="23_oxjnm"]
+[ext_resource type="Resource" path="res://game/data/terrain/plains.tres" id="24_am3qx"]
 [ext_resource type="Resource" path="res://game/data/weapon_types/sword.tres" id="24_vuniu"]
+[ext_resource type="Resource" path="res://game/data/terrain/road.tres" id="25_0pkgn"]
 [ext_resource type="Resource" path="res://game/data/weapon_types/axe.tres" id="25_e0gqp"]
 [ext_resource type="Resource" path="res://game/data/weapon_types/lance.tres" id="26_abuhv"]
+[ext_resource type="Resource" path="res://game/data/terrain/forest.tres" id="26_x3q1j"]
 [ext_resource type="Resource" path="res://game/data/weapon_types/knife.tres" id="27_f66s0"]
+[ext_resource type="Resource" path="res://game/data/terrain/ruins.tres" id="27_uem6r"]
 [ext_resource type="Resource" path="res://game/data/weapon_types/gauntlet.tres" id="28_uk85j"]
+[ext_resource type="Resource" path="res://game/data/terrain/hill.tres" id="28_ybsoq"]
+[ext_resource type="Resource" path="res://game/data/terrain/fort.tres" id="29_d3lrv"]
 [ext_resource type="Resource" path="res://game/data/weapon_types/dark.tres" id="29_ifd0h"]
 [ext_resource type="Resource" path="res://game/data/weapon_types/white.tres" id="30_m3ou8"]
+[ext_resource type="Resource" path="res://game/data/terrain/water.tres" id="30_vuniu"]
+[ext_resource type="Resource" path="res://game/data/terrain/wall.tres" id="31_e0gqp"]
 [ext_resource type="Resource" path="res://game/data/weapon_types/bow.tres" id="31_nmv7p"]
+[ext_resource type="Resource" path="res://game/data/terrain/doorway.tres" id="32_abuhv"]
 
 [sub_resource type="Resource" id="Resource_combat"]
 script = ExtResource("2_combat")
@@ -54,6 +64,7 @@ display_name = "Ruined Crossroads"
 stats = Array[ExtResource("12_esmhr")]([ExtResource("13_a6tr5"), ExtResource("14_h235j"), ExtResource("15_g3wxf"), ExtResource("16_8gtp7"), ExtResource("17_oxjnm"), ExtResource("18_am3qx"), ExtResource("19_0pkgn"), ExtResource("20_x3q1j"), ExtResource("21_uem6r"), ExtResource("22_ybsoq")])
 movement_types = Array[ExtResource("5_qgk10")]([ExtResource("6_nrpmm"), ExtResource("7_tvdn4"), ExtResource("8_0i0sy"), ExtResource("9_oobps")])
 weapon_types = Array[ExtResource("23_d3lrv")]([ExtResource("24_vuniu"), ExtResource("25_e0gqp"), ExtResource("26_abuhv"), ExtResource("27_f66s0"), ExtResource("28_uk85j"), ExtResource("29_ifd0h"), ExtResource("30_m3ou8"), ExtResource("31_nmv7p")])
+terrains = Array[ExtResource("23_oxjnm")]([ExtResource("24_am3qx"), ExtResource("25_0pkgn"), ExtResource("26_x3q1j"), ExtResource("27_uem6r"), ExtResource("28_ybsoq"), ExtResource("29_d3lrv"), ExtResource("30_vuniu"), ExtResource("31_e0gqp"), ExtResource("32_abuhv")])
 tier_names = Array[String](["TIER_BEGINNER_NAME", "TIER_INTERMEDIATE_NAME", "TIER_ADVANCED_NAME", "TIER_MASTER_NAME"])
 combat_rules = SubResource("Resource_combat")
 growth_rules = SubResource("Resource_growth")

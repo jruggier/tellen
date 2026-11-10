@@ -1,0 +1,29 @@
+[gd_resource type="TileSet" format=3]
+
+[ext_resource type="Texture2D" path="res://game/tilesets/prototype_terrain.png" id="1_bco5c"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_edmas"]
+texture = ExtResource("1_bco5c")
+0:0/0 = 0
+0:0/0/custom_data_0 = "plains"
+1:0/0 = 0
+1:0/0/custom_data_0 = "road"
+2:0/0 = 0
+2:0/0/custom_data_0 = "forest"
+3:0/0 = 0
+3:0/0/custom_data_0 = "ruins"
+4:0/0 = 0
+4:0/0/custom_data_0 = "hill"
+5:0/0 = 0
+5:0/0/custom_data_0 = "fort"
+6:0/0 = 0
+6:0/0/custom_data_0 = "water"
+7:0/0 = 0
+7:0/0/custom_data_0 = "wall"
+8:0/0 = 0
+8:0/0/custom_data_0 = "doorway"
+
+[resource]
+custom_data_layer_0/name = "terrain_id"
+custom_data_layer_0/type = 4
+sources/0 = SubResource("TileSetAtlasSource_edmas")

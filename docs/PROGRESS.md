@@ -80,7 +80,7 @@ It wraps the spec's command (`godot --headless --path . -s addons/gut/gut_cmdln.
 
 _Post-M1 change: the game is native 1920×1080 with 64 px cells (16 px art at 4×)._
 
-- [ ] **M2.1** Prototype tileset with `terrain_id` custom data; `BattleGrid` reading `TileMapLayer`.
+- [x] **M2.1** Prototype tileset with `terrain_id` custom data; `BattleGrid` reading `TileMapLayer`. — `tools/gen_prototype_terrain.py` → 9 placeholder tiles (pattern + color); `game/tilesets/prototype_terrain.tres`; terrain added to the ruleset catalog; `BattleGrid` (pure data). 143 tests.
 - [ ] **M2.2** Range calculator, path preview, threat map; tests.
 - [ ] **M2.3** Cursor, camera, placeholder unit sprites, select/move/cancel, `MoveCommand`.
 - [ ] **M2.4** Debug overlay showing terrain costs.

@@ -125,6 +125,16 @@ From spec §18. Each is a ruleset flag or value, so changing one is a data edit,
 - The Combat Lab no longer switches scaling modes; it fits the 1080p canvas directly.
 - Defaults #14–24 still to confirm.
 
+### M2 (2026-11-10)
+
+- **World space is in source pixels** (16 px per cell); the battle camera zooms by `Ruleset.tile_display_scale` (4). Units, overlays and the cursor all live in the same 16 px space, and pixel art stays crisp through nearest filtering.
+- **Terrain is part of the ruleset catalog** (`Ruleset.terrains`), and `BattleGrid` resolves each tile's `terrain_id` custom data through it. The custom data layer name is `Ruleset.terrain_id_layer` (default `terrain_id`).
+- **Void and unknown cells are impassable for everyone.** Unknown terrain ids are logged as one warning per id (content error, degrade gracefully).
+- **Fixed neighbor order (up, right, down, left)** so pathfinding ties always break the same way.
+- **Placeholder terrain art** comes from `tools/gen_prototype_terrain.py`; each tile has its own pattern so terrain is readable without color. Keep the atlas order stable, because tiles are referenced by atlas coordinate.
+- **Zone of control** (§7.4) is a ruleset flag (`zone_of_control`, default off) with a `zoc_tag` unit tag.
+- **`tools/run_tests.sh` runs `--import` first**, so newly added `class_name` scripts and assets are registered before tests load.
+
 ---
 
 ## Prior prototype audit (M0.4)

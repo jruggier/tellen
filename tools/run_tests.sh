@@ -8,7 +8,10 @@ set -uo pipefail
 cd "$(dirname "$0")/.."
 GODOT_BIN="${GODOT:-godot}"
 LOG="$(mktemp)"
-"$GODOT_BIN" --headless --path . -s addons/gut/gut_cmdln.gd -gdir=res://tests -gexit 2>&1 | tee "$LOG"
+# Refresh imports and the global class cache so new class_name scripts and
+# new assets are known before tests load them.
+"$GODOT_BIN" --headless --path . --import > "$LOG" 2>&1
+"$GODOT_BIN" --headless --path . -s addons/gut/gut_cmdln.gd -gdir=res://tests -gexit 2>&1 | tee -a "$LOG"
 STATUS=${PIPESTATUS[0]}
 if grep -qE "SCRIPT ERROR|Parse Error|Failed to load script" "$LOG"; then
 	echo ""
