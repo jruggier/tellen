@@ -1,0 +1,67 @@
+# Chapter 1: The Bridge Deal. The opening scene is the spec §11.2 example.
+
+=== ch01_intro ===
+@bg bridge_dusk
+@music tension_low
+@sfx gulls
+@show TELLEN left smirk
+@show SABLE right neutral
+
+TELLEN (smirk): Gentlemen. You look like men who appreciate a fair price.
+SABLE (annoyed): He says that to everyone.
+@item stolen_crate
+GID: That crate's ours.
+@hide_item
+
+@choice
+- "Name your price." -> pay
+- "Walk away." -> walk
+
+@label pay
+@set paid_toll = true
+TELLEN: Consider it an investment.
+@goto end
+
+@label walk
+@if paid_toll -> end
+TELLEN (neutral): Another time, then.
+
+@label end
+@end
+
+=== ch01_ambush ===
+@show GID center angry
+GID (angry): Walked away, did we? Now the toll-men are coming across.
+SABLE: Hold the riverbank. Let them come to us.
+@end
+
+=== ch01_camp_chest ===
+@show TELLEN center happy
+@item stolen_crate
+TELLEN (happy): Our crate. And whatever else they stole on top of it.
+@hide_item
+@end
+
+=== ch01_village ===
+@show SABLE center neutral
+FERRYMAN: You're the ones taking on the toll-men? Take these. And don't tell them where you got them.
+@end
+
+=== ch01_reinforcements ===
+@show SABLE center surprised
+SABLE (surprised): Riders on the north road. They're sending more.
+@end
+
+=== ch01_captain ===
+@show TELLEN left neutral
+@show CAPTAIN right angry
+CAPTAIN (angry): Nobody crosses without paying.
+TELLEN (smirk): We crossed. Now we're collecting.
+@end
+
+=== ch01_outro ===
+@show TELLEN left smirk
+@show GID right happy
+GID (happy): Gate's ours. Crate's ours.
+TELLEN (smirk): And the toll is ours, too. I told you. A fair price.
+@end

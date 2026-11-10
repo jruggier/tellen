@@ -10,7 +10,7 @@ func is_complete(state: BattleState) -> bool:
 	return state.turn > turns
 
 
-func describe() -> String:
+func default_description() -> String:
 	return tr("OBJECTIVE_SURVIVE") % turns
 
 

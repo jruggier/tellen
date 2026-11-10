@@ -223,3 +223,8 @@ ACTION_TALK,Talk
 ACTION_VISIT,Visit
 UI_ITEM_OBTAINED,Obtained %s
 ACTION_OPEN,Open
+ITEM_STOLEN_CRATE_NAME,Stolen Crate
+ITEM_STOLEN_CRATE_DESC,The cargo the toll-men took. Proof of the deal.
+MAP_CH00_NAME,Ruined Crossroads
+MAP_CH01_NAME,The Bridge Deal
+OBJECTIVE_CH01_SEIZE,Seize the toll camp

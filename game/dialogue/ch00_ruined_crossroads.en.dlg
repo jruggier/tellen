@@ -1,0 +1,57 @@
+# Chapter 0: Ruined Crossroads (tutorial).
+# Teaches: moving, attacking and the forecast, Stagger, follow-ups, ending the turn.
+
+=== ch00_intro ===
+@bg crossroads_ruins
+@music dawn_road
+@show TELLEN left smirk
+@show SABLE right neutral
+TELLEN (smirk): Old crossroads, old ruins, new bandits. Some things never change.
+SABLE: They're between us and the bridge. We go through or we go around.
+TELLEN: Around costs a day. Through costs... whatever they're carrying.
+@show GID center angry
+GID (angry): Through. Obviously.
+SABLE: Then listen. Pick one of us, look at the blue tiles. That's how far we can walk.
+SABLE: Red is where we can hit from there. Forests and ruins slow you down, but they're harder to hit you in.
+TELLEN (smirk): And when everyone's moved, the turn passes to them. Simple.
+@end
+
+=== ch00_first_blood ===
+@show TELLEN left neutral
+@show SABLE right neutral
+SABLE: Before you swing, read the numbers. Damage, Hit, Crit. Both sides.
+SABLE: That axe-man is slow with it. A sword catches an axe off balance.
+TELLEN (smirk): Land a hit with a sword and he's Staggered. No second swing from him, this fight or the next.
+SABLE: Swords beat axes. Axes beat lances. Lances beat swords. Learn it.
+@end
+
+=== ch00_follow_up ===
+@show TELLEN left happy
+@show SABLE right neutral
+TELLEN (happy): One down.
+SABLE: The big one by the ruins is clumsy. If you're far more skilful than your enemy, you get a second strike.
+SABLE: Five points of Skill ahead and you follow up at half damage. Every point past that adds more.
+TELLEN: So the forecast's "follow-up" line is me being better than him. I like this forecast.
+@end
+
+=== ch00_lance_warning ===
+@show GID center surprised
+GID (surprised): Spear! Careful, Tellen. That one Staggers swords.
+SABLE: Let Gid's axe take him. Axes beat lances.
+@end
+
+=== ch00_boss ===
+@show TELLEN left smirk
+@show CHIEF right angry
+CHIEF (angry): This crossroads charges a toll. Today it's everything you own.
+TELLEN (smirk): Funny. I was about to say the same to you.
+@end
+
+=== ch00_outro ===
+@show TELLEN left happy
+@show SABLE right neutral
+@show GID center happy
+GID (happy): That's the crossroads clear.
+SABLE: And the bridge ahead. Someone's been moving stolen cargo over it.
+TELLEN (smirk): Stolen cargo? Then someone's about to get a very fair price.
+@end

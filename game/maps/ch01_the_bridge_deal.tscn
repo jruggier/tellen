@@ -1,0 +1,254 @@
+[gd_scene format=4]
+
+[ext_resource type="Script" path="res://addons/tactics_core/map_authoring/battle_map.gd" id="1_6l410"]
+[ext_resource type="Script" path="res://addons/tactics_core/battle/objectives/defeat_condition.gd" id="2_b24gt"]
+[ext_resource type="Script" path="res://addons/tactics_core/battle/events/map_event.gd" id="3_cmas7"]
+[ext_resource type="Script" path="res://addons/tactics_core/battle/objectives/objective.gd" id="4_ppwge"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/item_data.gd" id="5_xerbu"]
+[ext_resource type="Script" path="res://addons/tactics_core/map_authoring/unit_placement.gd" id="6_hhrxs"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/faction_data.gd" id="7_f0caf"]
+[ext_resource type="Resource" path="res://game/data/factions/player.tres" id="8_xqj0y"]
+[ext_resource type="Resource" path="res://game/data/factions/enemy.tres" id="9_uwumk"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/unit_data.gd" id="10_hq3rc"]
+[ext_resource type="Script" path="res://addons/tactics_core/map_authoring/map_definition.gd" id="11_m1p14"]
+[ext_resource type="TileSet" path="res://game/tilesets/prototype_terrain.tres" id="12_mplj1"]
+[ext_resource type="Script" path="res://addons/tactics_core/map_authoring/markers/player_spawn.gd" id="13_spudy"]
+[ext_resource type="Resource" path="res://game/data/units/tellen.tres" id="14_w8voh"]
+[ext_resource type="Script" path="res://addons/tactics_core/map_authoring/markers/enemy_unit.gd" id="15_qc763"]
+[ext_resource type="Resource" path="res://game/data/classes/brigand.tres" id="16_kuuqc"]
+[ext_resource type="Resource" path="res://game/data/weapons/iron_axe.tres" id="17_kfuqd"]
+[ext_resource type="Script" path="res://addons/tactics_core/ai/ai_profile.gd" id="18_7d5ry"]
+[ext_resource type="Resource" path="res://game/data/classes/spearhand.tres" id="19_e7rpr"]
+[ext_resource type="Resource" path="res://game/data/weapons/iron_lance.tres" id="20_8fiex"]
+[ext_resource type="Resource" path="res://game/data/classes/hunter.tres" id="21_kskpr"]
+[ext_resource type="Resource" path="res://game/data/weapons/iron_bow.tres" id="22_k1hx2"]
+[ext_resource type="Resource" path="res://game/data/classes/outrider.tres" id="23_tyovj"]
+[ext_resource type="Resource" path="res://game/data/weapons/javelin.tres" id="24_h1dmy"]
+[ext_resource type="Resource" path="res://game/data/ai_profiles/charge.tres" id="25_aplxr"]
+[ext_resource type="Resource" path="res://game/data/classes/bulwark.tres" id="26_vjdc3"]
+[ext_resource type="Resource" path="res://game/data/ai_profiles/stationary.tres" id="27_2nnn1"]
+[ext_resource type="Resource" path="res://game/data/classes/acolyte.tres" id="28_fxxu6"]
+[ext_resource type="Resource" path="res://game/data/weapons/mend.tres" id="29_jkixu"]
+[ext_resource type="Resource" path="res://game/data/weapons/light.tres" id="30_224n2"]
+[ext_resource type="Resource" path="res://game/data/ai_profiles/healer.tres" id="31_c1r13"]
+[ext_resource type="Resource" path="res://game/data/ai_profiles/hold.tres" id="32_0jshj"]
+[ext_resource type="Script" path="res://addons/tactics_core/map_authoring/markers/reinforcement_group.gd" id="33_a5bqo"]
+[ext_resource type="Script" path="res://addons/tactics_core/map_authoring/markers/seize_tile.gd" id="34_v4phf"]
+[ext_resource type="Script" path="res://addons/tactics_core/map_authoring/markers/chest_marker.gd" id="35_b7lve"]
+[ext_resource type="Resource" path="res://game/data/items/stolen_crate.tres" id="36_nujrq"]
+[ext_resource type="Resource" path="res://game/data/weapons/steel_sword.tres" id="37_i4oby"]
+[ext_resource type="Resource" path="res://game/data/items/elixir.tres" id="38_barfx"]
+[ext_resource type="Script" path="res://addons/tactics_core/map_authoring/markers/village_marker.gd" id="39_4wwh2"]
+[ext_resource type="Resource" path="res://game/data/items/vulnerary.tres" id="40_ree0t"]
+[ext_resource type="Resource" path="res://game/data/items/might_tonic.tres" id="41_67bfd"]
+
+[sub_resource type="Resource" id="Resource_4xpol"]
+script = ExtResource("3_cmas7")
+id = &"ambush"
+trigger = 2
+required_flag = "!paid_toll"
+dialogue_id = &"ch01_ambush"
+wake_groups = Array[StringName]([&"toll"])
+
+[sub_resource type="Resource" id="Resource_r17by"]
+script = ExtResource("3_cmas7")
+id = &"captain_quote"
+trigger = 5
+unit_id = &"gate_captain"
+dialogue_id = &"ch01_captain"
+
+[sub_resource type="Resource" id="Resource_eeo3r"]
+script = ExtResource("3_cmas7")
+id = &"riders"
+trigger = 8
+turn = 4
+dialogue_id = &"ch01_reinforcements"
+
+[sub_resource type="Resource" id="Resource_fcmv0"]
+script = ExtResource("11_m1p14")
+map_id = &"ch01_the_bridge_deal"
+display_name = "MAP_CH01_NAME"
+chapter_id = &"ch01"
+factions = Array[ExtResource("7_f0caf")]([ExtResource("8_xqj0y"), ExtResource("9_uwumk")])
+deploy_count = 5
+pre_battle_dialogue = &"ch01_intro"
+post_battle_dialogue = &"ch01_outro"
+events = Array[ExtResource("3_cmas7")]([SubResource("Resource_4xpol"), SubResource("Resource_r17by"), SubResource("Resource_eeo3r")])
+music = &"tension_low"
+recommended_level = 3
+notes = "Seize the toll camp's fort. One bridge (choke point). Paying the toll keeps the bridge guards asleep until you approach; walking away wakes them on turn 1. Armored gate captain (immune to Stagger) holds the doorway; a healer behind him. Loot chest in the camp. Telegraphed reinforcements turn 4 from the north road."
+
+[sub_resource type="Resource" id="Resource_ksfj4"]
+script = ExtResource("18_7d5ry")
+behavior = 3
+trigger_region = Rect2i(10, 5, 7, 7)
+
+[sub_resource type="Resource" id="Resource_o5de6"]
+script = ExtResource("18_7d5ry")
+behavior = 4
+guard_cell = Vector2i(19, 4)
+guard_radius = 2
+
+[node name="Ch01TheBridgeDeal" type="Node2D" unique_id=368055200]
+script = ExtResource("1_6l410")
+definition = SubResource("Resource_fcmv0")
+
+[node name="Terrain" type="TileMapLayer" parent="." unique_id=1781650048]
+tile_map_data = PackedByteArray("AAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAACAAAAAAAAAAAAAAADAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAFAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAHAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAJAAAAAAAAAAAAAAAKAAAAAAAAAAAAAAALAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAANAAAAAAAAAAAAAAAOAAAAAAAGAAAAAAAPAAAAAAAGAAAAAAAQAAAAAAAAAAAAAAARAAAAAAAAAAAAAAASAAAAAAAAAAAAAAATAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAAVAAAAAAAAAAAAAAAWAAAAAAAAAAAAAAAXAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAAZAAAAAAAAAAAAAAAaAAAAAAAAAAAAAAAbAAAAAAAAAAAAAAAcAAAAAAABAAAAAAAdAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAABAAEAAAAAAAAAAAACAAEAAAAAAAAAAAADAAEAAAAAAAAAAAAEAAEAAAAAAAAAAAAFAAEAAAAAAAAAAAAGAAEAAAAAAAAAAAAHAAEAAAAAAAAAAAAIAAEAAAAAAAAAAAAJAAEAAAAAAAAAAAAKAAEAAAAAAAAAAAALAAEAAAAAAAAAAAAMAAEAAAAAAAAAAAANAAEAAAAAAAAAAAAOAAEAAAAGAAAAAAAPAAEAAAAGAAAAAAAQAAEAAAAAAAAAAAARAAEAAAAAAAAAAAASAAEAAAAAAAAAAAATAAEAAAAAAAAAAAAUAAEAAAAAAAAAAAAVAAEAAAAAAAAAAAAWAAEAAAAAAAAAAAAXAAEAAAAAAAAAAAAYAAEAAAAAAAAAAAAZAAEAAAAAAAAAAAAaAAEAAAAAAAAAAAAbAAEAAAAAAAAAAAAcAAEAAAABAAAAAAAdAAEAAAAAAAAAAAAAAAIAAAAAAAAAAAABAAIAAAAAAAAAAAACAAIAAAACAAAAAAADAAIAAAACAAAAAAAEAAIAAAACAAAAAAAFAAIAAAAAAAAAAAAGAAIAAAAAAAAAAAAHAAIAAAAAAAAAAAAIAAIAAAAAAAAAAAAJAAIAAAAAAAAAAAAKAAIAAAAAAAAAAAALAAIAAAAAAAAAAAAMAAIAAAAAAAAAAAANAAIAAAAAAAAAAAAOAAIAAAAGAAAAAAAPAAIAAAAGAAAAAAAQAAIAAAAAAAAAAAARAAIAAAAAAAAAAAASAAIAAAAEAAAAAAATAAIAAAAEAAAAAAAUAAIAAAAAAAAAAAAVAAIAAAAAAAAAAAAWAAIAAAAAAAAAAAAXAAIAAAAAAAAAAAAYAAIAAAAAAAAAAAAZAAIAAAAAAAAAAAAaAAIAAAAAAAAAAAAbAAIAAAAAAAAAAAAcAAIAAAABAAAAAAAdAAIAAAAAAAAAAAAAAAMAAAAAAAAAAAABAAMAAAAAAAAAAAACAAMAAAACAAAAAAADAAMAAAACAAAAAAAEAAMAAAACAAAAAAAFAAMAAAAAAAAAAAAGAAMAAAAAAAAAAAAHAAMAAAAAAAAAAAAIAAMAAAAAAAAAAAAJAAMAAAAEAAAAAAAKAAMAAAAEAAAAAAALAAMAAAAAAAAAAAAMAAMAAAAAAAAAAAANAAMAAAAAAAAAAAAOAAMAAAAGAAAAAAAPAAMAAAAGAAAAAAAQAAMAAAAAAAAAAAARAAMAAAAAAAAAAAASAAMAAAAEAAAAAAATAAMAAAAEAAAAAAAUAAMAAAAAAAAAAAAVAAMAAAAAAAAAAAAWAAMAAAAAAAAAAAAXAAMAAAAAAAAAAAAYAAMAAAAAAAAAAAAZAAMAAAAAAAAAAAAaAAMAAAAAAAAAAAAbAAMAAAAAAAAAAAAcAAMAAAABAAAAAAAdAAMAAAAAAAAAAAAAAAQAAAAAAAAAAAABAAQAAAAAAAAAAAACAAQAAAACAAAAAAADAAQAAAACAAAAAAAEAAQAAAACAAAAAAAFAAQAAAAAAAAAAAAGAAQAAAAAAAAAAAAHAAQAAAAAAAAAAAAIAAQAAAAAAAAAAAAJAAQAAAAEAAAAAAAKAAQAAAAEAAAAAAALAAQAAAAAAAAAAAAMAAQAAAAAAAAAAAANAAQAAAAAAAAAAAAOAAQAAAAGAAAAAAAPAAQAAAAGAAAAAAAQAAQAAAAAAAAAAAARAAQAAAAAAAAAAAASAAQAAAAAAAAAAAATAAQAAAAAAAAAAAAUAAQAAAAAAAAAAAAVAAQAAAAHAAAAAAAWAAQAAAAHAAAAAAAXAAQAAAAHAAAAAAAYAAQAAAAHAAAAAAAZAAQAAAAHAAAAAAAaAAQAAAAHAAAAAAAbAAQAAAAHAAAAAAAcAAQAAAAHAAAAAAAdAAQAAAAAAAAAAAAAAAUAAAAAAAAAAAABAAUAAAAAAAAAAAACAAUAAAAAAAAAAAADAAUAAAAAAAAAAAAEAAUAAAAAAAAAAAAFAAUAAAAAAAAAAAAGAAUAAAAAAAAAAAAHAAUAAAAAAAAAAAAIAAUAAAAAAAAAAAAJAAUAAAAAAAAAAAAKAAUAAAAAAAAAAAALAAUAAAAAAAAAAAAMAAUAAAAAAAAAAAANAAUAAAAAAAAAAAAOAAUAAAAGAAAAAAAPAAUAAAAGAAAAAAAQAAUAAAAAAAAAAAARAAUAAAAAAAAAAAASAAUAAAAAAAAAAAATAAUAAAAAAAAAAAAUAAUAAAAAAAAAAAAVAAUAAAAHAAAAAAAWAAUAAAAAAAAAAAAXAAUAAAADAAAAAAAYAAUAAAAAAAAAAAAZAAUAAAAAAAAAAAAaAAUAAAAAAAAAAAAbAAUAAAAAAAAAAAAcAAUAAAAHAAAAAAAdAAUAAAAAAAAAAAAAAAYAAAAAAAAAAAABAAYAAAAAAAAAAAACAAYAAAAAAAAAAAADAAYAAAAAAAAAAAAEAAYAAAAAAAAAAAAFAAYAAAAAAAAAAAAGAAYAAAAAAAAAAAAHAAYAAAAAAAAAAAAIAAYAAAAAAAAAAAAJAAYAAAAAAAAAAAAKAAYAAAAAAAAAAAALAAYAAAAAAAAAAAAMAAYAAAAAAAAAAAANAAYAAAAAAAAAAAAOAAYAAAAGAAAAAAAPAAYAAAAGAAAAAAAQAAYAAAAAAAAAAAARAAYAAAAAAAAAAAASAAYAAAAAAAAAAAATAAYAAAAAAAAAAAAUAAYAAAAAAAAAAAAVAAYAAAAHAAAAAAAWAAYAAAAAAAAAAAAXAAYAAAADAAAAAAAYAAYAAAAAAAAAAAAZAAYAAAAAAAAAAAAaAAYAAAAAAAAAAAAbAAYAAAAAAAAAAAAcAAYAAAAHAAAAAAAdAAYAAAAAAAAAAAAAAAcAAAAAAAAAAAABAAcAAAAAAAAAAAACAAcAAAAAAAAAAAADAAcAAAAAAAAAAAAEAAcAAAAAAAAAAAAFAAcAAAAAAAAAAAAGAAcAAAAAAAAAAAAHAAcAAAAAAAAAAAAIAAcAAAAAAAAAAAAJAAcAAAAAAAAAAAAKAAcAAAAAAAAAAAALAAcAAAAAAAAAAAAMAAcAAAAAAAAAAAANAAcAAAAAAAAAAAAOAAcAAAAGAAAAAAAPAAcAAAAGAAAAAAAQAAcAAAAAAAAAAAARAAcAAAAAAAAAAAASAAcAAAAAAAAAAAATAAcAAAAAAAAAAAAUAAcAAAAAAAAAAAAVAAcAAAAHAAAAAAAWAAcAAAAAAAAAAAAXAAcAAAAAAAAAAAAYAAcAAAAAAAAAAAAZAAcAAAAAAAAAAAAaAAcAAAAAAAAAAAAbAAcAAAAAAAAAAAAcAAcAAAAHAAAAAAAdAAcAAAAAAAAAAAAAAAgAAAABAAAAAAABAAgAAAABAAAAAAACAAgAAAABAAAAAAADAAgAAAABAAAAAAAEAAgAAAABAAAAAAAFAAgAAAABAAAAAAAGAAgAAAABAAAAAAAHAAgAAAABAAAAAAAIAAgAAAABAAAAAAAJAAgAAAABAAAAAAAKAAgAAAABAAAAAAALAAgAAAABAAAAAAAMAAgAAAABAAAAAAANAAgAAAABAAAAAAAOAAgAAAABAAAAAAAPAAgAAAABAAAAAAAQAAgAAAABAAAAAAARAAgAAAABAAAAAAASAAgAAAABAAAAAAATAAgAAAABAAAAAAAUAAgAAAABAAAAAAAVAAgAAAAIAAAAAAAWAAgAAAAAAAAAAAAXAAgAAAAAAAAAAAAYAAgAAAAAAAAAAAAZAAgAAAAAAAAAAAAaAAgAAAAFAAAAAAAbAAgAAAAAAAAAAAAcAAgAAAAHAAAAAAAdAAgAAAAAAAAAAAAAAAkAAAAAAAAAAAABAAkAAAAAAAAAAAACAAkAAAAAAAAAAAADAAkAAAAAAAAAAAAEAAkAAAAAAAAAAAAFAAkAAAAAAAAAAAAGAAkAAAAAAAAAAAAHAAkAAAAAAAAAAAAIAAkAAAAAAAAAAAAJAAkAAAAAAAAAAAAKAAkAAAAAAAAAAAALAAkAAAAAAAAAAAAMAAkAAAAAAAAAAAANAAkAAAAAAAAAAAAOAAkAAAAGAAAAAAAPAAkAAAAGAAAAAAAQAAkAAAAAAAAAAAARAAkAAAAAAAAAAAASAAkAAAAAAAAAAAATAAkAAAAAAAAAAAAUAAkAAAAAAAAAAAAVAAkAAAAHAAAAAAAWAAkAAAAAAAAAAAAXAAkAAAAAAAAAAAAYAAkAAAAAAAAAAAAZAAkAAAAAAAAAAAAaAAkAAAAAAAAAAAAbAAkAAAAAAAAAAAAcAAkAAAAHAAAAAAAdAAkAAAAAAAAAAAAAAAoAAAAAAAAAAAABAAoAAAAAAAAAAAACAAoAAAAAAAAAAAADAAoAAAAAAAAAAAAEAAoAAAAAAAAAAAAFAAoAAAAAAAAAAAAGAAoAAAAAAAAAAAAHAAoAAAAAAAAAAAAIAAoAAAAAAAAAAAAJAAoAAAAAAAAAAAAKAAoAAAAAAAAAAAALAAoAAAAAAAAAAAAMAAoAAAAAAAAAAAANAAoAAAAAAAAAAAAOAAoAAAAGAAAAAAAPAAoAAAAGAAAAAAAQAAoAAAAAAAAAAAARAAoAAAAAAAAAAAASAAoAAAAAAAAAAAATAAoAAAAAAAAAAAAUAAoAAAAAAAAAAAAVAAoAAAAHAAAAAAAWAAoAAAAAAAAAAAAXAAoAAAAAAAAAAAAYAAoAAAAAAAAAAAAZAAoAAAAAAAAAAAAaAAoAAAAAAAAAAAAbAAoAAAAAAAAAAAAcAAoAAAAHAAAAAAAdAAoAAAAAAAAAAAAAAAsAAAAAAAAAAAABAAsAAAAAAAAAAAACAAsAAAAAAAAAAAADAAsAAAAAAAAAAAAEAAsAAAAAAAAAAAAFAAsAAAAAAAAAAAAGAAsAAAAAAAAAAAAHAAsAAAAAAAAAAAAIAAsAAAAAAAAAAAAJAAsAAAAAAAAAAAAKAAsAAAAAAAAAAAALAAsAAAAAAAAAAAAMAAsAAAAAAAAAAAANAAsAAAAAAAAAAAAOAAsAAAAGAAAAAAAPAAsAAAAGAAAAAAAQAAsAAAAAAAAAAAARAAsAAAAAAAAAAAASAAsAAAAAAAAAAAATAAsAAAAAAAAAAAAUAAsAAAAAAAAAAAAVAAsAAAAHAAAAAAAWAAsAAAAAAAAAAAAXAAsAAAAAAAAAAAAYAAsAAAADAAAAAAAZAAsAAAADAAAAAAAaAAsAAAAAAAAAAAAbAAsAAAAAAAAAAAAcAAsAAAAHAAAAAAAdAAsAAAAAAAAAAAAAAAwAAAAAAAAAAAABAAwAAAAAAAAAAAACAAwAAAAAAAAAAAADAAwAAAAAAAAAAAAEAAwAAAAAAAAAAAAFAAwAAAAAAAAAAAAGAAwAAAACAAAAAAAHAAwAAAACAAAAAAAIAAwAAAAAAAAAAAAJAAwAAAAAAAAAAAAKAAwAAAAAAAAAAAALAAwAAAAAAAAAAAAMAAwAAAAAAAAAAAANAAwAAAAAAAAAAAAOAAwAAAAGAAAAAAAPAAwAAAAGAAAAAAAQAAwAAAAAAAAAAAARAAwAAAACAAAAAAASAAwAAAACAAAAAAATAAwAAAACAAAAAAAUAAwAAAAAAAAAAAAVAAwAAAAHAAAAAAAWAAwAAAAHAAAAAAAXAAwAAAAHAAAAAAAYAAwAAAAHAAAAAAAZAAwAAAAHAAAAAAAaAAwAAAAHAAAAAAAbAAwAAAAHAAAAAAAcAAwAAAAHAAAAAAAdAAwAAAAAAAAAAAAAAA0AAAAAAAAAAAABAA0AAAAAAAAAAAACAA0AAAAAAAAAAAADAA0AAAAAAAAAAAAEAA0AAAAAAAAAAAAFAA0AAAAAAAAAAAAGAA0AAAACAAAAAAAHAA0AAAACAAAAAAAIAA0AAAAAAAAAAAAJAA0AAAAAAAAAAAAKAA0AAAAAAAAAAAALAA0AAAAAAAAAAAAMAA0AAAAAAAAAAAANAA0AAAAAAAAAAAAOAA0AAAAGAAAAAAAPAA0AAAAGAAAAAAAQAA0AAAAAAAAAAAARAA0AAAACAAAAAAASAA0AAAACAAAAAAATAA0AAAACAAAAAAAUAA0AAAAAAAAAAAAVAA0AAAAAAAAAAAAWAA0AAAAAAAAAAAAXAA0AAAAAAAAAAAAYAA0AAAAAAAAAAAAZAA0AAAAAAAAAAAAaAA0AAAAAAAAAAAAbAA0AAAAAAAAAAAAcAA0AAAAAAAAAAAAdAA0AAAAAAAAAAAAAAA4AAAAAAAAAAAABAA4AAAAAAAAAAAACAA4AAAAAAAAAAAADAA4AAAAAAAAAAAAEAA4AAAAAAAAAAAAFAA4AAAAAAAAAAAAGAA4AAAACAAAAAAAHAA4AAAACAAAAAAAIAA4AAAAAAAAAAAAJAA4AAAAAAAAAAAAKAA4AAAAAAAAAAAALAA4AAAAAAAAAAAAMAA4AAAAAAAAAAAANAA4AAAAAAAAAAAAOAA4AAAAGAAAAAAAPAA4AAAAGAAAAAAAQAA4AAAAAAAAAAAARAA4AAAACAAAAAAASAA4AAAACAAAAAAATAA4AAAACAAAAAAAUAA4AAAAAAAAAAAAVAA4AAAAAAAAAAAAWAA4AAAAAAAAAAAAXAA4AAAAAAAAAAAAYAA4AAAAAAAAAAAAZAA4AAAAAAAAAAAAaAA4AAAAAAAAAAAAbAA4AAAAAAAAAAAAcAA4AAAAAAAAAAAAdAA4AAAAAAAAAAAAAAA8AAAAAAAAAAAABAA8AAAAAAAAAAAACAA8AAAAAAAAAAAADAA8AAAAAAAAAAAAEAA8AAAAAAAAAAAAFAA8AAAAAAAAAAAAGAA8AAAAAAAAAAAAHAA8AAAAAAAAAAAAIAA8AAAAAAAAAAAAJAA8AAAAAAAAAAAAKAA8AAAAAAAAAAAALAA8AAAAAAAAAAAAMAA8AAAAAAAAAAAANAA8AAAAAAAAAAAAOAA8AAAAGAAAAAAAPAA8AAAAGAAAAAAAQAA8AAAAAAAAAAAARAA8AAAAAAAAAAAASAA8AAAAAAAAAAAATAA8AAAAAAAAAAAAUAA8AAAAAAAAAAAAVAA8AAAAAAAAAAAAWAA8AAAAAAAAAAAAXAA8AAAAAAAAAAAAYAA8AAAAAAAAAAAAZAA8AAAAAAAAAAAAaAA8AAAAAAAAAAAAbAA8AAAAAAAAAAAAcAA8AAAAAAAAAAAAdAA8AAAAAAAAAAAAAABAAAAAAAAAAAAABABAAAAAAAAAAAAACABAAAAAAAAAAAAADABAAAAAAAAAAAAAEABAAAAAAAAAAAAAFABAAAAAAAAAAAAAGABAAAAAAAAAAAAAHABAAAAAAAAAAAAAIABAAAAAAAAAAAAAJABAAAAAAAAAAAAAKABAAAAAAAAAAAAALABAAAAAAAAAAAAAMABAAAAAAAAAAAAANABAAAAAAAAAAAAAOABAAAAAGAAAAAAAPABAAAAAGAAAAAAAQABAAAAAAAAAAAAARABAAAAAAAAAAAAASABAAAAAAAAAAAAATABAAAAAAAAAAAAAUABAAAAAAAAAAAAAVABAAAAAAAAAAAAAWABAAAAAAAAAAAAAXABAAAAAAAAAAAAAYABAAAAAAAAAAAAAZABAAAAAAAAAAAAAaABAAAAAAAAAAAAAbABAAAAAAAAAAAAAcABAAAAAAAAAAAAAdABAAAAAAAAAAAAA=")
+tile_set = ExtResource("12_mplj1")
+
+[node name="Decoration" type="TileMapLayer" parent="." unique_id=1000591841]
+tile_set = ExtResource("12_mplj1")
+
+[node name="Markers" type="Node2D" parent="." unique_id=1357275434]
+
+[node name="PlayerSlots" type="Node2D" parent="Markers" unique_id=1231496736]
+
+[node name="Slot1" type="Node2D" parent="Markers/PlayerSlots" unique_id=248390042]
+position = Vector2(48, 128)
+script = ExtResource("13_spudy")
+forced_unit = ExtResource("14_w8voh")
+
+[node name="Slot2" type="Node2D" parent="Markers/PlayerSlots" unique_id=1225594021]
+position = Vector2(48, 112)
+script = ExtResource("13_spudy")
+slot = 1
+
+[node name="Slot3" type="Node2D" parent="Markers/PlayerSlots" unique_id=318418738]
+position = Vector2(32, 128)
+script = ExtResource("13_spudy")
+slot = 2
+
+[node name="Slot4" type="Node2D" parent="Markers/PlayerSlots" unique_id=1207573568]
+position = Vector2(48, 144)
+script = ExtResource("13_spudy")
+slot = 3
+
+[node name="Slot5" type="Node2D" parent="Markers/PlayerSlots" unique_id=575224260]
+position = Vector2(32, 160)
+script = ExtResource("13_spudy")
+slot = 4
+
+[node name="Slot6" type="Node2D" parent="Markers/PlayerSlots" unique_id=613123963]
+position = Vector2(48, 176)
+script = ExtResource("13_spudy")
+slot = 5
+
+[node name="Enemies" type="Node2D" parent="Markers" unique_id=1721333997]
+
+[node name="TollGuard" type="Node2D" parent="Markers/Enemies" unique_id=199852421]
+position = Vector2(272, 112)
+script = ExtResource("15_qc763")
+class_data = ExtResource("16_kuuqc")
+level = 2
+items = Array[ExtResource("5_xerbu")]([ExtResource("17_kfuqd")])
+ai_profile = SubResource("Resource_ksfj4")
+ai_group = &"toll"
+unit_id = &"toll_guard"
+
+[node name="TollPike" type="Node2D" parent="Markers/Enemies" unique_id=1045010836]
+position = Vector2(272, 144)
+script = ExtResource("15_qc763")
+class_data = ExtResource("19_e7rpr")
+level = 2
+items = Array[ExtResource("5_xerbu")]([ExtResource("20_8fiex")])
+ai_profile = SubResource("Resource_ksfj4")
+ai_group = &"toll"
+unit_id = &"toll_pike"
+
+[node name="BridgeArcher" type="Node2D" parent="Markers/Enemies" unique_id=1393347506]
+position = Vector2(304, 64)
+script = ExtResource("15_qc763")
+class_data = ExtResource("21_kskpr")
+level = 2
+items = Array[ExtResource("5_xerbu")]([ExtResource("22_k1hx2")])
+ai_profile = SubResource("Resource_o5de6")
+unit_id = &"bridge_archer"
+
+[node name="RoadRider" type="Node2D" parent="Markers/Enemies" unique_id=1190600959]
+position = Vector2(304, 208)
+script = ExtResource("15_qc763")
+class_data = ExtResource("23_tyovj")
+level = 3
+items = Array[ExtResource("5_xerbu")]([ExtResource("24_h1dmy")])
+ai_profile = ExtResource("25_aplxr")
+unit_id = &"road_rider"
+
+[node name="GateCaptain" type="Node2D" parent="Markers/Enemies" unique_id=1098801671]
+position = Vector2(336, 128)
+script = ExtResource("15_qc763")
+class_data = ExtResource("26_vjdc3")
+level = 4
+items = Array[ExtResource("5_xerbu")]([ExtResource("20_8fiex")])
+is_boss = true
+ai_profile = ExtResource("27_2nnn1")
+unit_id = &"gate_captain"
+
+[node name="CampMender" type="Node2D" parent="Markers/Enemies" unique_id=281974359]
+position = Vector2(400, 112)
+script = ExtResource("15_qc763")
+class_data = ExtResource("28_fxxu6")
+level = 3
+items = Array[ExtResource("5_xerbu")]([ExtResource("29_jkixu"), ExtResource("30_224n2")])
+ai_profile = ExtResource("31_c1r13")
+unit_id = &"camp_mender"
+
+[node name="CampBrute" type="Node2D" parent="Markers/Enemies" unique_id=1134093019]
+position = Vector2(384, 144)
+script = ExtResource("15_qc763")
+class_data = ExtResource("16_kuuqc")
+level = 3
+items = Array[ExtResource("5_xerbu")]([ExtResource("17_kfuqd")])
+ai_profile = ExtResource("32_0jshj")
+unit_id = &"camp_brute"
+
+[node name="Allies" type="Node2D" parent="Markers" unique_id=897038428]
+
+[node name="Reinforcements" type="Node2D" parent="Markers" unique_id=174578178]
+
+[node name="NorthRoadRiders" type="Node2D" parent="Markers/Reinforcements" unique_id=1525379239]
+position = Vector2(448, 16)
+script = ExtResource("33_a5bqo")
+turn = 4
+
+[node name="NorthRiderA" type="Node2D" parent="Markers/Reinforcements/NorthRoadRiders" unique_id=1241164468]
+script = ExtResource("15_qc763")
+class_data = ExtResource("16_kuuqc")
+level = 3
+items = Array[ExtResource("5_xerbu")]([ExtResource("17_kfuqd")])
+ai_profile = ExtResource("25_aplxr")
+unit_id = &"north_rider_a"
+
+[node name="NorthRiderB" type="Node2D" parent="Markers/Reinforcements/NorthRoadRiders" unique_id=283130023]
+position = Vector2(-16, 16)
+script = ExtResource("15_qc763")
+class_data = ExtResource("16_kuuqc")
+level = 3
+items = Array[ExtResource("5_xerbu")]([ExtResource("17_kfuqd")])
+ai_profile = ExtResource("25_aplxr")
+unit_id = &"north_rider_b"
+
+[node name="Objectives" type="Node2D" parent="Markers" unique_id=1621014462]
+
+[node name="CampFort" type="Node2D" parent="Markers/Objectives" unique_id=70484975]
+position = Vector2(416, 128)
+script = ExtResource("34_v4phf")
+label = "OBJECTIVE_CH01_SEIZE"
+
+[node name="Regions" type="Node2D" parent="Markers" unique_id=1494599689]
+
+[node name="EventTiles" type="Node2D" parent="Markers" unique_id=1519686128]
+
+[node name="CampChest" type="Node2D" parent="Markers/EventTiles" unique_id=340283924]
+position = Vector2(432, 80)
+script = ExtResource("35_b7lve")
+dialogue_id = &"ch01_camp_chest"
+give_items = Array[ExtResource("5_xerbu")]([ExtResource("36_nujrq"), ExtResource("37_i4oby"), ExtResource("38_barfx")])
+event_id = &"camp_chest"
+
+[node name="FerryVillage" type="Node2D" parent="Markers/EventTiles" unique_id=2092258761]
+position = Vector2(64, 224)
+script = ExtResource("39_4wwh2")
+dialogue_id = &"ch01_village"
+give_items = Array[ExtResource("5_xerbu")]([ExtResource("40_ree0t"), ExtResource("41_67bfd")])
+event_id = &"ferry_village"

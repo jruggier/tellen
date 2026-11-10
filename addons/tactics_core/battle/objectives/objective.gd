@@ -19,8 +19,19 @@ func is_failed(_state: BattleState) -> bool:
 	return false
 
 
-## Player-facing description (localized).
+## Optional translation key that replaces the generic description
+## (e.g. "Seize the toll camp" instead of "Seize the tile at 26 / 8").
+@export var label: String = ""
+
+
+## Player-facing description (localized): [member label] if set, else the
+## generic text from [method default_description].
 func describe() -> String:
+	return tr(label) if not label.is_empty() else default_description()
+
+
+## Generic description for this objective type.
+func default_description() -> String:
 	return ""
 
 

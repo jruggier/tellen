@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Script" path="res://addons/tactics_core/data/item_data.gd" id="1_yvjux"]
+
+[resource]
+script = ExtResource("1_yvjux")
+tags = Array[StringName]([&"key"])
+id = &"stolen_crate"
+display_name = "ITEM_STOLEN_CRATE_NAME"
+description = "ITEM_STOLEN_CRATE_DESC"

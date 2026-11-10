@@ -1,0 +1,183 @@
+[gd_scene format=4]
+
+[ext_resource type="Script" path="res://addons/tactics_core/map_authoring/battle_map.gd" id="1_bjcmt"]
+[ext_resource type="Script" path="res://addons/tactics_core/battle/objectives/defeat_condition.gd" id="2_k8n17"]
+[ext_resource type="Script" path="res://addons/tactics_core/battle/events/map_event.gd" id="3_rakm0"]
+[ext_resource type="Script" path="res://addons/tactics_core/battle/objectives/objective.gd" id="4_3nuya"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/item_data.gd" id="5_jq0jp"]
+[ext_resource type="Script" path="res://addons/tactics_core/map_authoring/unit_placement.gd" id="6_ikp8p"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/faction_data.gd" id="7_1giah"]
+[ext_resource type="Resource" path="res://game/data/factions/player.tres" id="8_58a57"]
+[ext_resource type="Resource" path="res://game/data/factions/enemy.tres" id="9_h1s0x"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/unit_data.gd" id="10_7tyer"]
+[ext_resource type="Script" path="res://addons/tactics_core/map_authoring/map_definition.gd" id="11_wd4ee"]
+[ext_resource type="TileSet" path="res://game/tilesets/prototype_terrain.tres" id="12_1h14k"]
+[ext_resource type="Script" path="res://addons/tactics_core/map_authoring/markers/player_spawn.gd" id="13_n8iie"]
+[ext_resource type="Resource" path="res://game/data/units/tellen.tres" id="14_sgud2"]
+[ext_resource type="Resource" path="res://game/data/units/sable.tres" id="15_p24th"]
+[ext_resource type="Resource" path="res://game/data/units/gid.tres" id="16_1x7ff"]
+[ext_resource type="Script" path="res://addons/tactics_core/map_authoring/markers/enemy_unit.gd" id="17_jks1n"]
+[ext_resource type="Resource" path="res://game/data/classes/brigand.tres" id="18_uphgc"]
+[ext_resource type="Resource" path="res://game/data/weapons/iron_axe.tres" id="19_cuqnd"]
+[ext_resource type="Resource" path="res://game/data/ai_profiles/hold.tres" id="20_0melt"]
+[ext_resource type="Script" path="res://addons/tactics_core/data/stat_block.gd" id="21_bkljk"]
+[ext_resource type="Resource" path="res://game/data/classes/spearhand.tres" id="22_2d2ft"]
+[ext_resource type="Resource" path="res://game/data/weapons/iron_lance.tres" id="23_p80rj"]
+[ext_resource type="Resource" path="res://game/data/classes/hatchetman.tres" id="24_hya5i"]
+[ext_resource type="Resource" path="res://game/data/weapons/hand_axe.tres" id="25_pwi05"]
+[ext_resource type="Resource" path="res://game/data/items/vulnerary.tres" id="26_2k32a"]
+[ext_resource type="Script" path="res://addons/tactics_core/ai/ai_profile.gd" id="27_5fy1h"]
+[ext_resource type="Script" path="res://addons/tactics_core/map_authoring/markers/region_marker.gd" id="28_2hk4k"]
+
+[sub_resource type="Resource" id="Resource_fmnca"]
+script = ExtResource("3_rakm0")
+id = &"follow_up_tip"
+trigger = 4
+unit_id = &"first_brigand"
+dialogue_id = &"ch00_follow_up"
+
+[sub_resource type="Resource" id="Resource_4gtg8"]
+script = ExtResource("3_rakm0")
+id = &"chief_quote"
+trigger = 5
+unit_id = &"bandit_chief"
+dialogue_id = &"ch00_boss"
+
+[sub_resource type="Resource" id="Resource_ha02n"]
+script = ExtResource("11_wd4ee")
+map_id = &"ch00_ruined_crossroads"
+display_name = "MAP_CH00_NAME"
+chapter_id = &"ch00"
+factions = Array[ExtResource("7_1giah")]([ExtResource("8_58a57"), ExtResource("9_h1s0x")])
+deploy_count = 3
+pre_battle_dialogue = &"ch00_intro"
+post_battle_dialogue = &"ch00_outro"
+events = Array[ExtResource("3_rakm0")]([SubResource("Resource_fmnca"), SubResource("Resource_4gtg8")])
+music = &"dawn_road"
+notes = "Tutorial. One mechanic at a time: move, attack + forecast, Stagger (sword > axe), follow-ups (slow thug, Skill 1), lances stagger swords, a boss that guards the crossroads. Rout."
+
+[sub_resource type="Resource" id="Resource_n5xwp"]
+script = ExtResource("21_bkljk")
+values = Dictionary[StringName, int]({
+&"skl": 1,
+&"spd": 2
+})
+
+[sub_resource type="Resource" id="Resource_44u2e"]
+script = ExtResource("27_5fy1h")
+behavior = 4
+guard_cell = Vector2i(20, 7)
+guard_radius = 2
+
+[sub_resource type="Resource" id="Resource_t8bfd"]
+script = ExtResource("3_rakm0")
+id = &"first_blood"
+trigger = 3
+dialogue_id = &"ch00_first_blood"
+
+[sub_resource type="Resource" id="Resource_pp6u7"]
+script = ExtResource("3_rakm0")
+id = &"lance_warning"
+trigger = 3
+dialogue_id = &"ch00_lance_warning"
+
+[node name="Ch00RuinedCrossroads" type="Node2D" unique_id=368055200]
+script = ExtResource("1_bjcmt")
+definition = SubResource("Resource_ha02n")
+
+[node name="Terrain" type="TileMapLayer" parent="." unique_id=1781650048]
+tile_map_data = PackedByteArray("AAAAAAAAAAACAAAAAAABAAAAAAACAAAAAAACAAAAAAACAAAAAAADAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAFAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAHAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAJAAAAAAAAAAAAAAAKAAAAAAAAAAAAAAALAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAANAAAAAAABAAAAAAAOAAAAAAAAAAAAAAAPAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAARAAAAAAAAAAAAAAASAAAAAAAAAAAAAAATAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAAVAAAAAAACAAAAAAAWAAAAAAACAAAAAAAXAAAAAAACAAAAAAAYAAAAAAAAAAAAAAAZAAAAAAAAAAAAAAAaAAAA//////////8bAAAA//////////8cAAAA//////////8dAAAA//////////8AAAEAAAACAAAAAAABAAEAAAACAAAAAAACAAEAAAACAAAAAAADAAEAAAAAAAAAAAAEAAEAAAAAAAAAAAAFAAEAAAAAAAAAAAAGAAEAAAAAAAAAAAAHAAEAAAAAAAAAAAAIAAEAAAAAAAAAAAAJAAEAAAAAAAAAAAAKAAEAAAAAAAAAAAALAAEAAAAAAAAAAAAMAAEAAAAAAAAAAAANAAEAAAABAAAAAAAOAAEAAAAAAAAAAAAPAAEAAAAEAAAAAAAQAAEAAAAEAAAAAAARAAEAAAAAAAAAAAASAAEAAAAAAAAAAAATAAEAAAAAAAAAAAAUAAEAAAAAAAAAAAAVAAEAAAACAAAAAAAWAAEAAAACAAAAAAAXAAEAAAACAAAAAAAYAAEAAAAAAAAAAAAZAAEAAAAAAAAAAAAaAAEA//////////8bAAEA//////////8cAAEA//////////8dAAEA//////////8AAAIAAAACAAAAAAABAAIAAAACAAAAAAACAAIAAAACAAAAAAADAAIAAAAAAAAAAAAEAAIAAAAAAAAAAAAFAAIAAAAAAAAAAAAGAAIAAAAAAAAAAAAHAAIAAAAAAAAAAAAIAAIAAAAAAAAAAAAJAAIAAAAAAAAAAAAKAAIAAAAAAAAAAAALAAIAAAAAAAAAAAAMAAIAAAAAAAAAAAANAAIAAAABAAAAAAAOAAIAAAAAAAAAAAAPAAIAAAAEAAAAAAAQAAIAAAAEAAAAAAARAAIAAAAAAAAAAAASAAIAAAAAAAAAAAATAAIAAAAAAAAAAAAUAAIAAAAAAAAAAAAVAAIAAAACAAAAAAAWAAIAAAACAAAAAAAXAAIAAAACAAAAAAAYAAIAAAAAAAAAAAAZAAIAAAAAAAAAAAAaAAIA//////////8bAAIA//////////8cAAIA//////////8dAAIA//////////8AAAMAAAAAAAAAAAABAAMAAAAAAAAAAAACAAMAAAAAAAAAAAADAAMAAAAAAAAAAAAEAAMAAAAAAAAAAAAFAAMAAAAAAAAAAAAGAAMAAAAAAAAAAAAHAAMAAAAAAAAAAAAIAAMAAAAAAAAAAAAJAAMAAAADAAAAAAAKAAMAAAADAAAAAAALAAMAAAAAAAAAAAAMAAMAAAAAAAAAAAANAAMAAAABAAAAAAAOAAMAAAAAAAAAAAAPAAMAAAAAAAAAAAAQAAMAAAAAAAAAAAARAAMAAAAAAAAAAAASAAMAAAAAAAAAAAATAAMAAAAAAAAAAAAUAAMAAAAAAAAAAAAVAAMAAAAAAAAAAAAWAAMAAAAAAAAAAAAXAAMAAAAAAAAAAAAYAAMAAAAAAAAAAAAZAAMAAAAAAAAAAAAaAAMA//////////8bAAMA//////////8cAAMA//////////8dAAMA//////////8AAAQAAAAAAAAAAAABAAQAAAAAAAAAAAACAAQAAAAAAAAAAAADAAQAAAAAAAAAAAAEAAQAAAAAAAAAAAAFAAQAAAAAAAAAAAAGAAQAAAACAAAAAAAHAAQAAAAAAAAAAAAIAAQAAAAAAAAAAAAJAAQAAAADAAAAAAAKAAQAAAADAAAAAAALAAQAAAAAAAAAAAAMAAQAAAAAAAAAAAANAAQAAAABAAAAAAAOAAQAAAAAAAAAAAAPAAQAAAAAAAAAAAAQAAQAAAAAAAAAAAARAAQAAAAAAAAAAAASAAQAAAAAAAAAAAATAAQAAAAAAAAAAAAUAAQAAAAAAAAAAAAVAAQAAAAAAAAAAAAWAAQAAAAAAAAAAAAXAAQAAAAAAAAAAAAYAAQAAAAAAAAAAAAZAAQAAAAAAAAAAAAaAAQA//////////8bAAQA//////////8cAAQA//////////8dAAQA//////////8AAAUAAAAAAAAAAAABAAUAAAAAAAAAAAACAAUAAAAAAAAAAAADAAUAAAAAAAAAAAAEAAUAAAAAAAAAAAAFAAUAAAAAAAAAAAAGAAUAAAAAAAAAAAAHAAUAAAAAAAAAAAAIAAUAAAAAAAAAAAAJAAUAAAAAAAAAAAAKAAUAAAAAAAAAAAALAAUAAAAAAAAAAAAMAAUAAAAAAAAAAAANAAUAAAABAAAAAAAOAAUAAAAAAAAAAAAPAAUAAAAAAAAAAAAQAAUAAAAAAAAAAAARAAUAAAAAAAAAAAASAAUAAAADAAAAAAATAAUAAAADAAAAAAAUAAUAAAAAAAAAAAAVAAUAAAAAAAAAAAAWAAUAAAAAAAAAAAAXAAUAAAAAAAAAAAAYAAUAAAAAAAAAAAAZAAUAAAAAAAAAAAAaAAUA//////////8bAAUA//////////8cAAUA//////////8dAAUA//////////8AAAYAAAAAAAAAAAABAAYAAAAAAAAAAAACAAYAAAAAAAAAAAADAAYAAAAAAAAAAAAEAAYAAAAAAAAAAAAFAAYAAAAAAAAAAAAGAAYAAAAAAAAAAAAHAAYAAAAAAAAAAAAIAAYAAAAAAAAAAAAJAAYAAAAAAAAAAAAKAAYAAAAAAAAAAAALAAYAAAAAAAAAAAAMAAYAAAAAAAAAAAANAAYAAAABAAAAAAAOAAYAAAAAAAAAAAAPAAYAAAAAAAAAAAAQAAYAAAAAAAAAAAARAAYAAAAAAAAAAAASAAYAAAAAAAAAAAATAAYAAAAAAAAAAAAUAAYAAAAAAAAAAAAVAAYAAAAAAAAAAAAWAAYAAAAAAAAAAAAXAAYAAAAAAAAAAAAYAAYAAAAAAAAAAAAZAAYAAAAAAAAAAAAaAAYA//////////8bAAYA//////////8cAAYA//////////8dAAYA//////////8AAAcAAAABAAAAAAABAAcAAAABAAAAAAACAAcAAAABAAAAAAADAAcAAAABAAAAAAAEAAcAAAABAAAAAAAFAAcAAAABAAAAAAAGAAcAAAABAAAAAAAHAAcAAAABAAAAAAAIAAcAAAABAAAAAAAJAAcAAAABAAAAAAAKAAcAAAABAAAAAAALAAcAAAABAAAAAAAMAAcAAAABAAAAAAANAAcAAAABAAAAAAAOAAcAAAABAAAAAAAPAAcAAAABAAAAAAAQAAcAAAABAAAAAAARAAcAAAABAAAAAAASAAcAAAABAAAAAAATAAcAAAABAAAAAAAUAAcAAAABAAAAAAAVAAcAAAABAAAAAAAWAAcAAAABAAAAAAAXAAcAAAABAAAAAAAYAAcAAAABAAAAAAAZAAcAAAABAAAAAAAaAAcA//////////8bAAcA//////////8cAAcA//////////8dAAcA//////////8AAAgAAAAAAAAAAAABAAgAAAAAAAAAAAACAAgAAAAAAAAAAAADAAgAAAAAAAAAAAAEAAgAAAAAAAAAAAAFAAgAAAAAAAAAAAAGAAgAAAAAAAAAAAAHAAgAAAAAAAAAAAAIAAgAAAAAAAAAAAAJAAgAAAAAAAAAAAAKAAgAAAAAAAAAAAALAAgAAAAAAAAAAAAMAAgAAAAAAAAAAAANAAgAAAABAAAAAAAOAAgAAAAAAAAAAAAPAAgAAAAAAAAAAAAQAAgAAAAAAAAAAAARAAgAAAAAAAAAAAASAAgAAAAAAAAAAAATAAgAAAAAAAAAAAAUAAgAAAAAAAAAAAAVAAgAAAAAAAAAAAAWAAgAAAAAAAAAAAAXAAgAAAAAAAAAAAAYAAgAAAAAAAAAAAAZAAgAAAAAAAAAAAAaAAgA//////////8bAAgA//////////8cAAgA//////////8dAAgA//////////8AAAkAAAAAAAAAAAABAAkAAAAAAAAAAAACAAkAAAAAAAAAAAADAAkAAAAAAAAAAAAEAAkAAAAAAAAAAAAFAAkAAAAAAAAAAAAGAAkAAAAAAAAAAAAHAAkAAAAAAAAAAAAIAAkAAAAAAAAAAAAJAAkAAAAHAAAAAAAKAAkAAAAHAAAAAAALAAkAAAAHAAAAAAAMAAkAAAAAAAAAAAANAAkAAAABAAAAAAAOAAkAAAAAAAAAAAAPAAkAAAAAAAAAAAAQAAkAAAAAAAAAAAARAAkAAAAAAAAAAAASAAkAAAAAAAAAAAATAAkAAAAAAAAAAAAUAAkAAAAAAAAAAAAVAAkAAAAAAAAAAAAWAAkAAAAGAAAAAAAXAAkAAAAGAAAAAAAYAAkAAAAGAAAAAAAZAAkAAAAAAAAAAAAaAAkA//////////8bAAkA//////////8cAAkA//////////8dAAkA//////////8AAAoAAAAAAAAAAAABAAoAAAAAAAAAAAACAAoAAAAAAAAAAAADAAoAAAAAAAAAAAAEAAoAAAAAAAAAAAAFAAoAAAAAAAAAAAAGAAoAAAAAAAAAAAAHAAoAAAAAAAAAAAAIAAoAAAAAAAAAAAAJAAoAAAAAAAAAAAAKAAoAAAAAAAAAAAALAAoAAAAHAAAAAAAMAAoAAAAAAAAAAAANAAoAAAABAAAAAAAOAAoAAAAAAAAAAAAPAAoAAAAAAAAAAAAQAAoAAAADAAAAAAARAAoAAAADAAAAAAASAAoAAAAAAAAAAAATAAoAAAAAAAAAAAAUAAoAAAAAAAAAAAAVAAoAAAAAAAAAAAAWAAoAAAAGAAAAAAAXAAoAAAAGAAAAAAAYAAoAAAAGAAAAAAAZAAoAAAAAAAAAAAAaAAoA//////////8bAAoA//////////8cAAoA//////////8dAAoA//////////8AAAsAAAAAAAAAAAABAAsAAAAAAAAAAAACAAsAAAAAAAAAAAADAAsAAAAAAAAAAAAEAAsAAAAAAAAAAAAFAAsAAAACAAAAAAAGAAsAAAACAAAAAAAHAAsAAAACAAAAAAAIAAsAAAAAAAAAAAAJAAsAAAAAAAAAAAAKAAsAAAAAAAAAAAALAAsAAAAAAAAAAAAMAAsAAAAAAAAAAAANAAsAAAABAAAAAAAOAAsAAAAAAAAAAAAPAAsAAAAAAAAAAAAQAAsAAAADAAAAAAARAAsAAAADAAAAAAASAAsAAAAAAAAAAAATAAsAAAAAAAAAAAAUAAsAAAAAAAAAAAAVAAsAAAAAAAAAAAAWAAsAAAAAAAAAAAAXAAsAAAAAAAAAAAAYAAsAAAAAAAAAAAAZAAsAAAAAAAAAAAAaAAsA//////////8bAAsA//////////8cAAsA//////////8dAAsA//////////8AAAwAAAAAAAAAAAABAAwAAAAAAAAAAAACAAwAAAAEAAAAAAADAAwAAAAEAAAAAAAEAAwAAAAAAAAAAAAFAAwAAAACAAAAAAAGAAwAAAACAAAAAAAHAAwAAAACAAAAAAAIAAwAAAAAAAAAAAAJAAwAAAAAAAAAAAAKAAwAAAAAAAAAAAALAAwAAAAAAAAAAAAMAAwAAAAAAAAAAAANAAwAAAABAAAAAAAOAAwAAAAAAAAAAAAPAAwAAAAAAAAAAAAQAAwAAAAAAAAAAAARAAwAAAAAAAAAAAASAAwAAAAAAAAAAAATAAwAAAAAAAAAAAAUAAwAAAAAAAAAAAAVAAwAAAAAAAAAAAAWAAwAAAAAAAAAAAAXAAwAAAAAAAAAAAAYAAwAAAAFAAAAAAAZAAwAAAAAAAAAAAAaAAwA//////////8bAAwA//////////8cAAwA//////////8dAAwA//////////8AAA0AAAAAAAAAAAABAA0AAAAAAAAAAAACAA0AAAAEAAAAAAADAA0AAAAEAAAAAAAEAA0AAAAAAAAAAAAFAA0AAAACAAAAAAAGAA0AAAACAAAAAAAHAA0AAAACAAAAAAAIAA0AAAAAAAAAAAAJAA0AAAAAAAAAAAAKAA0AAAAAAAAAAAALAA0AAAAAAAAAAAAMAA0AAAAAAAAAAAANAA0AAAABAAAAAAAOAA0AAAAAAAAAAAAPAA0AAAAAAAAAAAAQAA0AAAAAAAAAAAARAA0AAAAAAAAAAAASAA0AAAAAAAAAAAATAA0AAAAAAAAAAAAUAA0AAAAAAAAAAAAVAA0AAAAAAAAAAAAWAA0AAAAAAAAAAAAXAA0AAAAAAAAAAAAYAA0AAAAAAAAAAAAZAA0AAAAAAAAAAAAaAA0A//////////8bAA0A//////////8cAA0A//////////8dAA0A//////////8AAA4AAAAAAAAAAAABAA4AAAAAAAAAAAACAA4AAAAAAAAAAAADAA4AAAAAAAAAAAAEAA4AAAAAAAAAAAAFAA4AAAAAAAAAAAAGAA4AAAAAAAAAAAAHAA4AAAAAAAAAAAAIAA4AAAAAAAAAAAAJAA4AAAAAAAAAAAAKAA4AAAAAAAAAAAALAA4AAAAAAAAAAAAMAA4AAAAAAAAAAAANAA4AAAABAAAAAAAOAA4AAAAAAAAAAAAPAA4AAAAAAAAAAAAQAA4AAAAAAAAAAAARAA4AAAAAAAAAAAASAA4AAAAAAAAAAAATAA4AAAAAAAAAAAAUAA4AAAAAAAAAAAAVAA4AAAAAAAAAAAAWAA4AAAAAAAAAAAAXAA4AAAAAAAAAAAAYAA4AAAAAAAAAAAAZAA4AAAAAAAAAAAAaAA4A//////////8bAA4A//////////8cAA4A//////////8dAA4A//////////8AAA8A//////////8BAA8A//////////8CAA8A//////////8DAA8A//////////8EAA8A//////////8FAA8A//////////8GAA8A//////////8HAA8A//////////8IAA8A//////////8JAA8A//////////8KAA8A//////////8LAA8A//////////8MAA8A//////////8NAA8A//////////8OAA8A//////////8PAA8A//////////8QAA8A//////////8RAA8A//////////8SAA8A//////////8TAA8A//////////8UAA8A//////////8VAA8A//////////8WAA8A//////////8XAA8A//////////8YAA8A//////////8ZAA8A//////////8aAA8A//////////8bAA8A//////////8cAA8A//////////8dAA8A//////////8AABAA//////////8BABAA//////////8CABAA//////////8DABAA//////////8EABAA//////////8FABAA//////////8GABAA//////////8HABAA//////////8IABAA//////////8JABAA//////////8KABAA//////////8LABAA//////////8MABAA//////////8NABAA//////////8OABAA//////////8PABAA//////////8QABAA//////////8RABAA//////////8SABAA//////////8TABAA//////////8UABAA//////////8VABAA//////////8WABAA//////////8XABAA//////////8YABAA//////////8ZABAA//////////8aABAA//////////8bABAA//////////8cABAA//////////8dABAA//////////8=")
+tile_set = ExtResource("12_1h14k")
+
+[node name="Decoration" type="TileMapLayer" parent="." unique_id=1000591841]
+tile_set = ExtResource("12_1h14k")
+
+[node name="Markers" type="Node2D" parent="." unique_id=1357275434]
+
+[node name="PlayerSlots" type="Node2D" parent="Markers" unique_id=1231496736]
+
+[node name="Slot1" type="Node2D" parent="Markers/PlayerSlots" unique_id=1037138366]
+position = Vector2(32, 112)
+script = ExtResource("13_n8iie")
+forced_unit = ExtResource("14_sgud2")
+
+[node name="Slot2" type="Node2D" parent="Markers/PlayerSlots" unique_id=1686578540]
+position = Vector2(32, 96)
+script = ExtResource("13_n8iie")
+slot = 1
+forced_unit = ExtResource("15_p24th")
+
+[node name="Slot3" type="Node2D" parent="Markers/PlayerSlots" unique_id=1557669484]
+position = Vector2(48, 128)
+script = ExtResource("13_n8iie")
+slot = 2
+forced_unit = ExtResource("16_1x7ff")
+
+[node name="Enemies" type="Node2D" parent="Markers" unique_id=1721333997]
+
+[node name="FirstBrigand" type="Node2D" parent="Markers/Enemies" unique_id=331091215]
+position = Vector2(128, 112)
+script = ExtResource("17_jks1n")
+class_data = ExtResource("18_uphgc")
+items = Array[ExtResource("5_jq0jp")]([ExtResource("19_cuqnd")])
+ai_profile = ExtResource("20_0melt")
+unit_id = &"first_brigand"
+
+[node name="SlowThug" type="Node2D" parent="Markers/Enemies" unique_id=973885053]
+position = Vector2(160, 80)
+script = ExtResource("17_jks1n")
+class_data = ExtResource("18_uphgc")
+items = Array[ExtResource("5_jq0jp")]([ExtResource("19_cuqnd")])
+ai_profile = ExtResource("20_0melt")
+stat_overrides = SubResource("Resource_n5xwp")
+unit_id = &"slow_thug"
+
+[node name="LanceRaider" type="Node2D" parent="Markers/Enemies" unique_id=273097255]
+position = Vector2(192, 176)
+script = ExtResource("17_jks1n")
+class_data = ExtResource("22_2d2ft")
+items = Array[ExtResource("5_jq0jp")]([ExtResource("23_p80rj")])
+ai_profile = ExtResource("20_0melt")
+unit_id = &"lance_raider"
+
+[node name="RuinLookout" type="Node2D" parent="Markers/Enemies" unique_id=546745954]
+position = Vector2(272, 96)
+script = ExtResource("17_jks1n")
+class_data = ExtResource("18_uphgc")
+level = 2
+items = Array[ExtResource("5_jq0jp")]([ExtResource("19_cuqnd")])
+ai_profile = ExtResource("20_0melt")
+unit_id = &"ruin_lookout"
+
+[node name="BanditChief" type="Node2D" parent="Markers/Enemies" unique_id=1337034268]
+position = Vector2(320, 112)
+script = ExtResource("17_jks1n")
+class_data = ExtResource("24_hya5i")
+level = 3
+items = Array[ExtResource("5_jq0jp")]([ExtResource("19_cuqnd"), ExtResource("25_pwi05")])
+drops = Array[ExtResource("5_jq0jp")]([ExtResource("26_2k32a")])
+is_boss = true
+ai_profile = SubResource("Resource_44u2e")
+unit_id = &"bandit_chief"
+
+[node name="Allies" type="Node2D" parent="Markers" unique_id=897038428]
+
+[node name="Reinforcements" type="Node2D" parent="Markers" unique_id=174578178]
+
+[node name="Objectives" type="Node2D" parent="Markers" unique_id=1621014462]
+
+[node name="Regions" type="Node2D" parent="Markers" unique_id=1494599689]
+
+[node name="FirstBloodTip" type="Node2D" parent="Markers/Regions" unique_id=477048982]
+position = Vector2(64, 80)
+script = ExtResource("28_2hk4k")
+size_cells = Vector2i(4, 5)
+event = SubResource("Resource_t8bfd")
+
+[node name="LanceWarning" type="Node2D" parent="Markers/Regions" unique_id=742726774]
+position = Vector2(128, 160)
+script = ExtResource("28_2hk4k")
+size_cells = Vector2i(6, 3)
+event = SubResource("Resource_pp6u7")
+
+[node name="EventTiles" type="Node2D" parent="Markers" unique_id=1519686128]

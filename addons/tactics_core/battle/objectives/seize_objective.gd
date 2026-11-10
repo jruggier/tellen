@@ -12,5 +12,5 @@ func is_complete(state: BattleState) -> bool:
 	return state.flags.get(FLAG_SEIZED, Vector2i(-9999, -9999)) == cell
 
 
-func describe() -> String:
+func default_description() -> String:
 	return tr("OBJECTIVE_SEIZE") % [cell.x, cell.y]

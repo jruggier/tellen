@@ -13,7 +13,7 @@ func _init() -> void:
 	marker_color = Color(0.4, 0.85, 1.0)
 
 
-func objective() -> Objective:
+func _make_objective() -> Objective:
 	var result := DefendTileObjective.new()
 	result.cell = get_cell()
 	result.turns = turns

@@ -8,7 +8,7 @@ func _init() -> void:
 	marker_color = Color(1.0, 0.85, 0.2)
 
 
-func objective() -> Objective:
+func _make_objective() -> Objective:
 	var result := SeizeObjective.new()
 	result.cell = get_cell()
 	return result

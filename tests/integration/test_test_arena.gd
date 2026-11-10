@@ -23,8 +23,8 @@ func test_arena_has_every_terrain_type() -> void:
 func test_arena_is_larger_than_the_screen() -> void:
 	var state: BattleState = _arena_state()
 	var cells_on_screen := Vector2(1920, 1080) / float(state.ruleset.cell_size())
-	assert_gt(state.grid.get_rect().size.x, cells_on_screen.x, "camera must scroll horizontally")
-	assert_gt(state.grid.get_rect().size.y, cells_on_screen.y, "camera must scroll vertically")
+	assert_gt(float(state.grid.get_rect().size.x), cells_on_screen.x, "camera must scroll horizontally")
+	assert_gt(float(state.grid.get_rect().size.y), cells_on_screen.y, "camera must scroll vertically")
 
 
 func test_arena_units_are_placed_legally() -> void:

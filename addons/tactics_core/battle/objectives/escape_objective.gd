@@ -20,7 +20,7 @@ func escaped_count(state: BattleState) -> int:
 	return total
 
 
-func describe() -> String:
+func default_description() -> String:
 	return tr("OBJECTIVE_ESCAPE") % count
 
 

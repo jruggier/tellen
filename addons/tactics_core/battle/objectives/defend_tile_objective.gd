@@ -17,7 +17,7 @@ func is_failed(state: BattleState) -> bool:
 	return occupant != null and not state.are_allied(occupant.faction_id, player_faction_id(state))
 
 
-func describe() -> String:
+func default_description() -> String:
 	return tr("OBJECTIVE_DEFEND") % [cell.x, cell.y, turns]
 
 

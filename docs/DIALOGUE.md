@@ -132,7 +132,7 @@ They show as warnings when a battle starts (and in the test run). A scene with a
 
 ## 9. Full example
 
-The spec example, which ships in `game/dialogue/samples.en.dlg`:
+The spec example, which ships in `game/dialogue/ch01_the_bridge_deal.en.dlg`:
 
 ```
 === ch01_intro ===

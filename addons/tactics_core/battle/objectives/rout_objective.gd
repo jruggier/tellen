@@ -14,7 +14,7 @@ func is_complete(state: BattleState) -> bool:
 	return true
 
 
-func describe() -> String:
+func default_description() -> String:
 	return tr("OBJECTIVE_ROUT")
 
 

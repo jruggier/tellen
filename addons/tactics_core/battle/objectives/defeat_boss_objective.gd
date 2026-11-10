@@ -17,5 +17,5 @@ func is_complete(state: BattleState) -> bool:
 	return found
 
 
-func describe() -> String:
+func default_description() -> String:
 	return tr("OBJECTIVE_DEFEAT_BOSS")

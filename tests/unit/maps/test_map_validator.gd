@@ -23,7 +23,8 @@ func _problems(map: BattleMap) -> PackedStringArray:
 
 
 func test_shipped_maps_are_valid() -> void:
-	for path: String in ["res://game/maps/_template/map_template.tscn", "res://game/maps/test_arena.tscn"]:
+	for path: String in ["res://game/maps/_template/map_template.tscn", "res://game/maps/test_arena.tscn",
+			"res://game/maps/ch00_ruined_crossroads.tscn", "res://game/maps/ch01_the_bridge_deal.tscn"]:
 		var problems: PackedStringArray = _problems(_load_map(path))
 		assert_eq(problems.size(), 0, "%s:\n%s" % [path, "\n".join(problems)])
 
