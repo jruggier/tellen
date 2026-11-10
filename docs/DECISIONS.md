@@ -10,24 +10,24 @@ From spec §18. Each is a ruleset flag or value, so changing one is a data edit,
 
 | # | Default | Ruleset field (added in M1/M5) | Confirmed? |
 | --- | --- | --- | --- |
-| 1 | Weight penalty applies to Speed (avoid, crit) **and** Skill (follow-up comparison) | `weight_affects_speed`, `weight_affects_skill_for_followups` | ☐ |
-| 2 | Effective weapons multiply might ×3 | `effective_might_multiplier` | ☐ |
-| 3 | Hit rolls use 1RN (shown = real) | `true_hit_mode = ONE_RN` | ☐ |
-| 4 | Growth mode RANDOM; FIXED and HYBRID available | `growth_mode` | ☐ |
-| 5 | Stagger blocks follow-ups for the current combat and the Staggered unit's next combat only; never blocks counters | `stagger_duration = NEXT_COMBAT` | ☐ |
-| 6 | Chain attacks ON, 10% max HP, can kill | `chain_attacks_enabled`, `chain_damage_pct`, `chain_can_kill` | ☐ |
-| 7 | Awakening = cooldown rule (3-turn duration, 3-turn cooldown, 3 uses per map, army-wide) | `awakening_rule` | ☐ |
-| 8 | Canto on Ground classes only; zone of control off | class abilities; `zone_of_control` | ☐ |
-| 9 | Single continuous level track (cap 40); class change gated by proficiency | `level_cap` | ☐ |
-| 10 | Defeated player units retreat; protagonist defeat = game over | `defeat_mode` | ☐ |
+| 1 | Weight penalty applies to Speed (avoid, crit) **and** Skill (follow-up comparison) | `weight_affects_speed`, `weight_affects_skill_for_followups` | ✅ 2026-11-10 |
+| 2 | Effective weapons multiply might ×3 | `effective_might_multiplier` | ✅ 2026-11-10 |
+| 3 | Hit rolls use 1RN (shown = real) | `true_hit_mode = ONE_RN` | ✅ 2026-11-10 |
+| 4 | Growth mode RANDOM; FIXED and HYBRID available | `growth_mode` | ✅ 2026-11-10 |
+| 5 | Stagger blocks follow-ups for the current combat and the Staggered unit's next combat only; never blocks counters | `stagger_duration = NEXT_COMBAT` | ✅ 2026-11-10 |
+| 6 | Chain attacks ON, 10% max HP, can kill | `chain_attacks_enabled`, `chain_damage_pct`, `chain_can_kill` | ✅ 2026-11-10 |
+| 7 | Awakening = cooldown rule (3-turn duration, 3-turn cooldown, 3 uses per map, army-wide) | `awakening_rule` | ✅ 2026-11-10 |
+| 8 | Canto on Ground classes only; zone of control off | class abilities; `zone_of_control` | ✅ 2026-11-10 |
+| 9 | Single continuous level track (cap 40); class change gated by proficiency | `level_cap` | ✅ 2026-11-10 |
+| 10 | Defeated player units retreat; protagonist defeat = game over | `defeat_mode` | ✅ 2026-11-10 |
 
 ### Added during M0
 
 | # | Default | Where | Confirmed? |
 | --- | --- | --- | --- |
-| 11 | Input bindings (table below) | Project Settings → Input Map | ☐ |
-| 12 | Added a `debug_console` input action (F4) for the §14 debug console; §1's action list didn't include one | Input Map | ☐ |
-| 13 | Mouse left = `confirm`, mouse right = `cancel` | Input Map | ☐ |
+| 11 | Input bindings (table below) | Project Settings → Input Map | ✅ 2026-11-10 |
+| 12 | Added a `debug_console` input action (F4) for the §14 debug console; §1's action list didn't include one | Input Map | ✅ 2026-11-10 |
+| 13 | Mouse left = `confirm`, mouse right = `cancel` | Input Map | ✅ 2026-11-10 |
 
 **Input bindings (M0)**
 
@@ -67,6 +67,13 @@ From spec §18. Each is a ruleset flag or value, so changing one is a data edit,
 
 ---
 
+### M0 Checkpoint (2026-11-10)
+
+- All §18 defaults and the M0 additions (input bindings, `debug_console` action, mouse confirm/cancel) confirmed by Jake.
+- UI font: **Inter** (SIL OFL). *(Jake)* Readability check: the whole game renders at 240×135, so text is drawn at that resolution too. Check Inter's legibility at small sizes in the Combat Lab (M1.5). If it's too soft or blocky, the options are: render UI text at full window resolution (switch stretch mode to `canvas_items`, which keeps sprites crisp but changes how pixel snapping works), or use larger text sizes.
+
+---
+
 ## Prior prototype audit (M0.4)
 
 **Source:** `GAME DESIGN/2026/Fire Emblem Prototype/Fire Emblem Prototype/`, a separate Godot 4.6 project (30 sessions, May 2026, ~12.8k lines). It is **not inside this repo**, so nothing will be deleted. The question is what to bring in. Nothing is copied yet except `tools/` (the spec says to keep the generators).
@@ -88,7 +95,7 @@ From spec §18. Each is a ruleset flag or value, so changing one is a data edit,
 | Sigils / Engage attacks (Astra Storm, Galeforce, ...) | `data/sigil_data.gd` | **Leave out the code.** The designs can seed `UnitData.awakening` signature attacks and the future `SigilData` stub (M5). |
 | Maps 01–06 layouts | `maps/`, `scripts/maps/` | **Leave out.** ch00/ch01 are new maps built with the M7 template. |
 
-**Questions for Jake**
-1. OK with the "rebuild, keep assets and tools" approach above?
-2. Should any of the old dialogue or characters (Ren, Garet, ...) carry over, or is the Ruined Crossroads cast (Tellen, Sable, Gid) a clean slate?
-3. Pixelify Sans as the UI font, or try others when the theme is built?
+**Jake's answers (2026-11-10)**
+1. Approved: rebuild the code; keep assets and tools as listed.
+2. Start fresh: no old characters or dialogue carry over (Tellen, Sable, Gid cast only).
+3. UI font is **Inter**, not Pixelify Sans (see M1 decisions).

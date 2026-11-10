@@ -47,6 +47,7 @@ enabled=PackedStringArray("res://addons/godot_mcp/plugin.cfg", "res://addons/gut
 [gui]
 
 theme/default_font_antialiasing=0
+theme/custom="res://game/ui/theme.tres"
 
 [input]
 
