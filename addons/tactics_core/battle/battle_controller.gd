@@ -38,6 +38,11 @@ func setup(map: BattleMap, ruleset: Ruleset, master_seed: int, difficulty: Strin
 		state.add_unit(unit)
 	ReinforcementRules.queue(state, map.reinforcements)
 	state.trigger_regions = map.trigger_regions.duplicate()
+	state.map_events = map.events.duplicate()
+	for event: MapEvent in state.map_events:
+		if event != null:
+			for problem: String in event.validate():
+				TacticsLog.warn("BattleController", problem)
 
 
 ## Starts turn 1 (first faction's phase). Returns its phase report.

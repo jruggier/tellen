@@ -28,6 +28,8 @@ const DEFAULT_BATTLE_SCENE: String = "res://game/scenes/battle_scene.tscn"
 @export var defeat_conditions: Array[DefeatCondition] = []
 ## Regions that fire events when units stop inside.
 @export var trigger_regions: Array[TriggerRegion] = []
+## Story and gameplay events (dialogue, talk, visits, quotes...).
+@export var events: Array[MapEvent] = []
 ## Path to the terrain layer.
 @export var terrain_layer_path: NodePath = ^"Terrain"
 

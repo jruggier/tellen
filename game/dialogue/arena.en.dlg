@@ -1,0 +1,65 @@
+# Test arena scenes (game/maps/test_arena.tscn).
+
+=== arena_intro ===
+@bg crossroads_field
+@music march_light
+@show TELLEN left smirk
+@show SABLE right neutral
+TELLEN (smirk): A crossroads, a river and a fort full of people who don't like us.
+SABLE: You say that like it's a good thing.
+TELLEN: It's a busy thing. Busy is profitable.
+@show GID center angry
+GID (angry): Less talking. More axes.
+@end
+
+=== arena_boss ===
+@show TELLEN left neutral
+@show DUELIST right angry
+TELLEN: You're the one running this fort?
+DUELIST (angry): I'm the one who'll be running you through.
+@end
+
+=== arena_talk_hexcaller ===
+@show TELLEN left smirk
+@show HEXCALLER right neutral
+TELLEN (smirk): Your friends left you on the wrong side of the river.
+HEXCALLER: ...And you're offering a better side?
+@choice
+- "Better pay, too." -> pay
+- "Better company." -> company
+
+@label pay
+@set map.hexcaller_paid = true
+HEXCALLER: Coin talks. I'm listening.
+@goto join
+
+@label company
+@show SABLE center happy
+SABLE (happy): He means me.
+
+@label join
+HEXCALLER: Fine. I'm with you.
+@end
+
+=== arena_village ===
+@bg village_square
+@show TELLEN center neutral
+ELDER: Travelers! Take this, and keep those brigands off our road.
+@item vulnerary
+TELLEN: Much obliged.
+@hide_item
+@end
+
+=== arena_reinforcements ===
+@sfx horn
+@show GID center surprised
+GID (surprised): More of them, from the east road!
+@end
+
+=== arena_victory ===
+@show TELLEN left happy
+@show SABLE right happy
+TELLEN (happy): And that's the crossroads cleared. Drinks are on the fort.
+SABLE: The fort is on fire.
+TELLEN: Then the drinks are warm.
+@end

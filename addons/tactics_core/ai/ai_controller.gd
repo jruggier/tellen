@@ -23,6 +23,8 @@ func run_phase(faction_id: StringName) -> void:
 		if order.is_empty():
 			return
 		await _run_unit(order[0])
+		if flow != null:
+			await flow.after_unit_action()
 		scene.update_turn_label()
 		if flow != null and flow.check_end():
 			return
@@ -71,6 +73,8 @@ func _attack(unit: UnitState, plan: AIPlanner.Plan) -> void:
 	var ruleset: Ruleset = state.ruleset
 	var unit_cell: Vector2i = unit.cell
 	var target_cell: Vector2i = target.cell
+	if flow != null:
+		await flow.play_battle_quotes(unit, target)
 	var attack := AttackCommand.new(unit.id, target.id, plan.slot)
 	if not scene.controller.execute(attack):
 		return

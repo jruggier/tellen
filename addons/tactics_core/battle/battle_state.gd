@@ -25,6 +25,10 @@ var version: int = 0
 var difficulty_id: StringName = &"normal"
 ## Map-local flags (events, objectives); keys are flag names.
 var flags: Dictionary = {}
+## Campaign-wide state (non-map flags; roster in M8). Shared, not copied.
+var campaign: CampaignState = CampaignState.new()
+## Map events (copied from the map).
+var map_events: Array[MapEvent] = []
 ## Regions that fire when units stop in them (copied from the map).
 var trigger_regions: Array[TriggerRegion] = []
 ## Reinforcement arrivals not yet spawned: {placement, turn, faction, telegraph}.
@@ -169,6 +173,8 @@ func copy() -> BattleState:
 	other.flags = flags.duplicate(true)
 	other.pending_arrivals = pending_arrivals.duplicate()
 	other.trigger_regions = trigger_regions
+	other.campaign = campaign
+	other.map_events = map_events
 	other._id_counters = _id_counters.duplicate()
 	for unit_id: StringName in _order:
 		var unit: UnitState = _units[unit_id].copy()

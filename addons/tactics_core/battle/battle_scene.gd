@@ -35,6 +35,8 @@ extends Node
 @export var ai_seconds_between_units: float = 0.25
 ## Difficulty id for generic enemy stats (see the enemy stat rules).
 @export var difficulty: StringName = &"normal"
+## Dialogue characters per second; 0 = instant.
+@export var dialogue_text_speed: float = 45.0
 
 ## Set by [BattleMap] when a map scene is run directly.
 var map_instance: BattleMap
@@ -63,6 +65,11 @@ var objective_panel: ObjectivePanel
 var result_panel: ResultPanel
 var flow: BattleFlow
 var ai: AIController
+var dialogue_player: DialoguePlayer
+## Every dialogue scene available to this battle.
+var dialogues: DialogueLibrary
+## Campaign state carried between maps (M8); a fresh one when unset.
+var campaign: CampaignState
 ## The map's objectives and defeat conditions (empty = defaults).
 var objectives: Array[Objective] = []
 var defeat_conditions: Array[DefeatCondition] = []
@@ -86,6 +93,12 @@ func _ready() -> void:
 	controller.name = "BattleController"
 	add_child(controller)
 	controller.setup(map_instance, ruleset, seed, difficulty)
+	if campaign == null:
+		campaign = CampaignState.new()
+	controller.state.campaign = campaign
+	dialogues = DialogueLibrary.load_project()
+	for problem: String in dialogues.errors:
+		TacticsLog.warn("Dialogue", problem)
 	objectives = map_instance.objectives.duplicate()
 	defeat_conditions = map_instance.defeat_conditions.duplicate()
 	_build_world(ruleset)
@@ -104,6 +117,10 @@ func _ready() -> void:
 	_on_cursor_moved(start)
 	TacticsLog.info("BattleScene", "Battle '%s' started: %d units, seed %d, %s" % [controller.state.map_id, controller.state.all_units().size(), seed, difficulty])
 	TacticsEvents.battle_started.emit(controller.state.map_id)
+	dialogue_player = DialoguePlayer.new()
+	dialogue_player.name = "DialoguePlayer"
+	dialogue_player.text_speed = dialogue_text_speed
+	add_child(dialogue_player)
 	ai = AIController.new()
 	ai.name = "AIController"
 	ai.scene = self
@@ -268,6 +285,14 @@ func add_unit_view(unit: UnitState) -> void:
 	unit_views[unit.id] = view
 
 
+## Re-creates [param unit]'s view (e.g. after it changes faction).
+func recolor_unit_view(unit: UnitState) -> void:
+	var view: UnitView = unit_views.get(unit.id)
+	var faction: FactionData = controller.state.get_faction(unit.faction_id)
+	if view != null:
+		view.setup(unit, faction.color if faction != null else Color.WHITE, controller.state.ruleset)
+
+
 ## Syncs every unit view with the battle state.
 func refresh_views() -> void:
 	for unit: UnitState in controller.state.all_units():
@@ -293,6 +318,8 @@ func _on_pause_option(option_id: StringName) -> void:
 
 func _on_battle_finished(victory: bool) -> void:
 	var state: BattleState = controller.state
+	if victory:
+		await flow.run_events(MapEvent.Trigger.MAP_END)
 	var lines: PackedStringArray = [tr("UI_RESULT_TURNS") % state.turn]
 	result_panel.show_result(victory, lines)
 

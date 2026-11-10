@@ -23,13 +23,75 @@ var _ending_phase: bool = false
 
 func _ready() -> void:
 	scene.input.end_turn_requested.connect(func() -> void: end_phase())
-	scene.input.action_finished.connect(_on_player_action_finished)
+	scene.input.action_finished.connect(func() -> void: _after_player_action())
+	scene.input.before_attack = play_battle_quotes
+	scene.input.present_event = present_outcome
 
 
-## Starts turn 1.
+## Starts turn 1 (map-start events, then the first phase).
 func start() -> void:
 	var report: TurnManager.PhaseReport = scene.controller.start()
+	scene.input.disable()
+	await run_events(MapEvent.Trigger.MAP_START)
 	await _begin_phase(report)
+
+
+## Fires every available event with [param trigger] and presents each one.
+## Returns true if any fired.
+func run_events(trigger: MapEvent.Trigger, context: Dictionary = {}) -> bool:
+	var state: BattleState = scene.controller.state
+	var fired: bool = false
+	for event: MapEvent in MapEventRules.matching(state, state.map_events, trigger, context):
+		var command := EventCommands.Trigger.new(event, context)
+		if scene.controller.execute(command):
+			fired = true
+			await present_outcome(command.outcome)
+	return fired
+
+
+## Shows what an event did: new units, items, recruits, objectives, dialogue.
+func present_outcome(outcome: MapEventRules.Outcome) -> void:
+	if outcome == null:
+		return
+	var state: BattleState = scene.controller.state
+	for unit_id: StringName in outcome.spawned:
+		scene.add_unit_view(state.get_unit(unit_id))
+	if outcome.recruited != &"":
+		scene.recolor_unit_view(state.get_unit(outcome.recruited))
+	scene.objectives.append_array(outcome.objectives_added)
+	scene.refresh_views()
+	await play_dialogue(outcome.dialogue_id)
+	for item: ItemData in outcome.items_given:
+		scene.toast.show_message(tr("UI_ITEM_OBTAINED") % item.get_display_name())
+	for item: ItemData in outcome.items_lost:
+		scene.toast.show_message(tr("UI_ITEM_LOST") % item.get_display_name())
+	scene.update_turn_label()
+
+
+## Plays dialogue scene [param scene_id] (no-op when empty or missing).
+func play_dialogue(scene_id: StringName) -> void:
+	if scene_id == &"":
+		return
+	var script: DialogueScript = scene.dialogues.get_script_by_id(scene_id)
+	if script == null:
+		TacticsLog.warn("BattleFlow", "Dialogue scene '%s' not found" % scene_id)
+		return
+	var state: BattleState = scene.controller.state
+	await scene.dialogue_player.play(script, state.flags, state.campaign.flags)
+
+
+## Battle quotes before a combat between [param attacker] and [param defender].
+func play_battle_quotes(attacker: UnitState, defender: UnitState) -> void:
+	await run_events(MapEvent.Trigger.BATTLE_QUOTE, {"unit": attacker, "other": defender})
+
+
+## Defeat and region events after any unit's action.
+func after_unit_action() -> void:
+	var state: BattleState = scene.controller.state
+	await run_events(MapEvent.Trigger.UNIT_DEFEATED)
+	for unit: UnitState in state.all_units():
+		if unit.is_alive():
+			await run_events(MapEvent.Trigger.REGION, {"unit": unit})
 
 
 ## Ends the current phase and runs the next one.
@@ -57,6 +119,9 @@ func _begin_phase(report: TurnManager.PhaseReport) -> void:
 	scene.overlay.show_warnings(ReinforcementRules.telegraphed_cells(state))
 	var faction: FactionData = state.current_faction()
 	await scene.banner.play(tr("UI_PHASE_BANNER") % faction.get_display_name(), faction.color)
+	await run_events(MapEvent.Trigger.TURN)
+	if not report.spawned.is_empty():
+		await run_events(MapEvent.Trigger.REINFORCEMENT)
 	if check_end():
 		return
 	phase_began.emit(faction.id)
@@ -77,6 +142,13 @@ func _run_ai_phase(faction: FactionData) -> void:
 				scene.controller.execute(WaitCommand.new(unit.id))
 		return
 	await ai.run_phase(faction.id)
+
+
+func _after_player_action() -> void:
+	scene.input.suspend()
+	await after_unit_action()
+	scene.input.resume()
+	_on_player_action_finished()
 
 
 func _on_player_action_finished() -> void:

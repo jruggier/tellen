@@ -209,12 +209,32 @@ _Post-M1 change: the game is native 1920×1080 with 64 px cells (16 px art at 4�
 
 **Decisions to confirm:** `DECISIONS.md` → #38–46.## M6 — Dialogue
 
-- [ ] **M6.1** Parser + tests, `DialogueScript`, `DialoguePlayer` UI (portraits, bg, music, sfx, item overlay, choices, flags, backlog, skip).
-- [ ] **M6.2** Map event triggers (§8.6), Talk command, battle quotes.
-- [ ] **M6.3** `docs/DIALOGUE.md` with full syntax and examples.
-- [ ] **Checkpoint**
+- [x] **M6.1** Parser + tests, `DialogueScript`, `DialoguePlayer` UI (portraits, bg, music, sfx, item overlay, choices, flags, backlog, skip). — `DialogueParser` (multi-scene files, line-numbered errors, label checks), `DialogueRunner` (pure stepping, stage, flags), `DialogueLibrary` (locale files), `DialoguePlayer` (typewriter, placeholders for missing art, backlog R, auto C, skip X, fast-forward Shift), `CampaignState` (campaign flags).
+- [x] **M6.2** Map event triggers (§8.6), Talk command, battle quotes. — `MapEvent` (9 triggers; dialogue, items, wake, flags, objectives, spawn, recruit), `MapEventRules`, `EventCommands` (Trigger/Talk/Visit), BattleFlow hooks (map start/end, turn, reinforcements, defeats, regions, quotes before attacks for both sides); Talk/Visit in the action menu. Arena: intro, boss quote, recruit the Hexcaller, village, reinforcement line, victory scene.
+- [x] **M6.3** `docs/DIALOGUE.md` with full syntax and examples. 296 tests.
+- [x] **Checkpoint**
 
-## M7 — Level authoring
+### M6 Checkpoint summary
+
+**Built**
+- **Dialogue scripts** (`.dlg`, screenplay style): lines with expressions, backgrounds, music, sounds, three portrait positions, one item overlay, choices, labels/goto, `@if` on flags, `@set`, waits. Map flags (`map.*`) vs campaign flags. Errors name the file and line.
+- **Dialogue player**: typewriter text, speaker names in character colors, highlighted speaker, placeholder art for anything missing (backgrounds, portraits, music), backlog, auto-advance, skip, fast-forward, mouse support.
+- **Map events**: pre-battle and post-battle scenes, turn and reinforcement scenes, region and defeat triggers, battle quotes (before player or enemy attacks), **Talk** (can recruit) and **Visit** (villages/chests: give items). Events can wake AI groups, set flags, add objectives and spawn units.
+- **Writer's guide**: `docs/DIALOGUE.md`.
+
+**How to try it** (`game/maps/test_arena.tscn`, F6)
+1. The intro scene plays first: Z/click to advance, R for the backlog, C for auto, hold Shift to fast-forward, X to skip.
+2. Move Tellen next to the Hexcaller (H, middle of the map) and choose **Talk**: pick an answer; it joins your army.
+3. Move a unit onto the small fort southwest of the start (3,12) and choose **Visit**: the elder gives a Vulnerary.
+4. Attack the Duelist boss in the fortress (or let it attack you): its quote plays first.
+5. Turn 3: a line plays when the reinforcements arrive. Win to see the victory scene before the results.
+6. Edit `game/dialogue/arena.en.dlg` (any text editor), save, press F6 again.
+
+**Known issues / not yet built**
+- No real portraits, backgrounds or music yet: placeholders show the ids you'll need to draw (e.g. `tellen_smirk.png`).
+- `.dlg` files must be added to the export include filter when exporting (M8 export presets).
+- Map validation of dialogue ids used by events comes with the map validator (M7).
+- The talk/recruit choice in the arena doesn't change anything except a map flag (sample content).## M7 — Level authoring
 
 - [ ] **M7.1** All `@tool` markers with gizmos and Inspector exports; `MapDefinition`.
 - [ ] **M7.2** Map template scene; "run current scene" test roster.

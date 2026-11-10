@@ -65,6 +65,8 @@ From spec §18. Each is a ruleset flag or value, so changing one is a data edit,
 | 44 | Changing class ends the unit's action and is available from the action menu whenever requirements are met (no seal items) | `ClassChangeCommand` | ☐ |
 | 45 | A unit with an empty class tree may change to any catalog class whose requirements it meets; `enemy_only` classes are never offered | `ClassChangeRules` | ☐ |
 | 46 | Class change keeps damage taken (current HP shifts with max HP) and swaps class base bonuses, Build bonus and Mov | `ClassChangeRules.apply` | ☐ |
+| 47 | Dialogue controls: confirm next, X skip to the next choice, R backlog, C auto, hold Shift fast-forward | `DialoguePlayer` | ☐ |
+| 48 | Dialogue text speed 45 characters/second (settings in M8) | `BattleScene.dialogue_text_speed` | ☐ |
 | 19 | 2RN: hit if the average of two 0–99 rolls is below the displayed hit. HYBRID: below 50 uses 1RN | `CrossroadsCombatRules.roll_hit` | ☐ |
 
 **Input bindings (M0)**
@@ -206,12 +208,25 @@ From spec §18. Each is a ruleset flag or value, so changing one is a data edit,
 - **Signature attacks are `AttackCommand`s with a hook** (`_customize_attacker`) that adds the signature's `params` (might, hit, crit, damage, no_counter). Any new kind of special attack can subclass the same way.
 - **Awakening stat bonuses go through `UnitState.effective_stats()`**; max HP always comes from base stats, so awakening never changes current/max HP bookkeeping.
 
+### M6 (2026-11-10)
+
+- **Dialogue is parsed at load from plain text** (`DialogueLibrary` reads every `<name>.<locale>.dlg`), not imported as Godot resources, so writers edit text files directly. Export presets must include `*.dlg` (M8).
+- **Parser extensions beyond §11.2:** `@if !flag -> label` (negated), `@music stop`, scene ids unique across files, and text values for `@set`. Narration without a speaker is an error (use a speaker such as `NARRATOR`).
+- **The runner is pure** (`DialogueRunner`), so dialogue logic, flags and branching are unit-tested without UI. `DialoguePlayer` only presents steps.
+- **Missing assets never block:** backgrounds, portraits and music fall back to labelled placeholders, with an info log naming the expected file path.
+- **Campaign flags live in `CampaignState`** (held by `BattleState.campaign`, passed in by `BattleScene.campaign`). M8 adds the roster and saving to the same resource.
+- **One `MapEvent` resource covers all §8.6 triggers.** M4's `TriggerRegion` stays as a lightweight "wake groups / set flags" region; `MapEvent` REGION triggers add dialogue and other actions. Event firings go through commands (`EventCommands.Trigger`, `Talk`, `Visit`) and are logged.
+- **Battle quotes play before the attack command executes** (for player and AI attacks), so the state is unchanged while characters talk.
+- **Talk and Visit end the unit's action.** Recruiting by Talk moves the listener to the talker's faction (it can't act until the next player phase).
+
 ## GDScript gotchas (read before writing code)
 
 - **Ternaries drop typed-array types.** `x if cond else [] as Array[Vector2i]` produces an untyped `Array` at runtime and fails when passed to a typed parameter. Use if/else and a typed local.
 - **Global enums can shadow your names.** Godot's global scope has an enum `Side` (and others); a class enum with the same name silently resolves to the global one. Hence `Strike.Role`.
 - **Lambdas typed with class-local enums** sometimes fail to resolve; prefer plain loops in tests.
 - **New `class_name` scripts need an import pass** before headless runs; `tools/run_tests.sh` does this.
+- **Don't name members after built-in Object properties** (`script`, `name`): `var script` on a RefCounted fails to parse ("Member redefined").
+- **Comparing Variants of different types errors** (`true != 0` is a runtime error); test types first (see `DialogueRunner.is_truthy`).
 - **`--check-only` cannot see autoloads**, so "Identifier not found: TacticsEvents/RulesetProvider/TacticsRng" from it is a false alarm; trust the test run.
 
 ---

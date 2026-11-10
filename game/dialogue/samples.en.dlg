@@ -1,0 +1,30 @@
+# Sample scenes. The first is the spec §11.2 example.
+
+=== ch01_intro ===
+@bg bridge_dusk
+@music tension_low
+@sfx gulls
+@show TELLEN left smirk
+@show SABLE right neutral
+
+TELLEN (smirk): Gentlemen. You look like men who appreciate a fair price.
+SABLE (annoyed): He says that to everyone.
+@item stolen_crate
+GID: That crate's ours.
+@hide_item
+
+@choice
+- "Name your price." -> pay
+- "Walk away." -> walk
+
+@label pay
+@set paid_toll = true
+TELLEN: Consider it an investment.
+@goto end
+
+@label walk
+@if paid_toll -> end
+TELLEN (neutral): Another time, then.
+
+@label end
+@end

@@ -25,13 +25,17 @@ signal end_turn_requested
 signal pause_option_chosen(option_id: StringName)
 
 enum State { IDLE, SELECTED, MOVING, ACTION_MENU, WEAPON_MENU, TARGETING, ITEM_MENU, ITEM_ACTIONS, TRADING, ANIMATING, LEVEL_UP, INSPECT, PAUSE_MENU, DISABLED, CANTO, CLASS_MENU }
-enum TargetMode { ATTACK, HEAL, TRADE, SIGNATURE }
+enum TargetMode { ATTACK, HEAL, TRADE, SIGNATURE, TALK }
 
 var state: State = State.DISABLED
 ## Extra pause-menu entries ({id, text}) supplied by the battle flow.
 var pause_options: Array[Dictionary] = []
 ## The map's objectives (for Seize / Escape actions).
 var objectives: Array[Objective] = []
+## Awaited before every player attack (battle quotes): (attacker, defender).
+var before_attack: Callable = Callable()
+## Presents a fired event's outcome (dialogue etc.): (MapEventRules.Outcome).
+var present_event: Callable = Callable()
 var controller: BattleController
 var cursor: GridCursor
 var overlay: RangeOverlay
@@ -205,7 +209,7 @@ func cancel() -> void:
 			_open_item_menu()
 		State.TARGETING:
 			_end_targeting()
-			if _target_mode != TargetMode.TRADE and _slot_choices.size() > 1:
+			if _target_mode != TargetMode.TRADE and _target_mode != TargetMode.TALK and _slot_choices.size() > 1:
 				_open_slot_menu()
 			else:
 				_open_action_menu()
@@ -232,6 +236,19 @@ func begin_player_phase() -> void:
 func disable() -> void:
 	_deselect()
 	_set_state(State.DISABLED)
+
+
+## Pauses input during the player's phase (event dialogue) without moving the cursor.
+func suspend() -> void:
+	if state == State.IDLE:
+		_set_state(State.DISABLED)
+
+
+## Undoes [method suspend] if it is still the human faction's phase.
+func resume() -> void:
+	var faction: FactionData = controller.state.current_faction()
+	if state == State.DISABLED and faction != null and faction.controller == FactionData.Controller.HUMAN:
+		_set_state(State.IDLE)
 
 
 ## Opens the pause menu (End Turn plus [member pause_options]).
@@ -356,6 +373,11 @@ func _open_action_menu() -> void:
 		options.append({"id": &"items", "text": tr("ACTION_ITEMS")})
 	if not CombatContext.adjacent_allies(battle, _selected, _selected.cell).is_empty():
 		options.append({"id": &"trade", "text": tr("ACTION_TRADE")})
+	if not EventCommands.Talk.partners(battle, _selected, battle.map_events).is_empty():
+		options.insert(0, {"id": &"talk", "text": tr("ACTION_TALK")})
+	var visit: MapEvent = EventCommands.Visit.event_for(battle, _selected, battle.map_events)
+	if visit != null:
+		options.insert(0, {"id": &"visit", "text": tr(visit.action_label) if not visit.action_label.is_empty() else tr("ACTION_VISIT")})
 	if SeizeCommand.new(_selected.id, objectives).can_execute(battle):
 		options.insert(0, {"id": &"seize", "text": tr("ACTION_SEIZE")})
 	if EscapeCommand.new(_selected.id, objectives).can_execute(battle):
@@ -409,6 +431,11 @@ func _on_action(action: StringName) -> void:
 			_open_item_menu()
 		&"class_change":
 			_open_class_menu()
+		&"talk":
+			_target_mode = TargetMode.TALK
+			_start_targeting(TargetMode.TALK)
+		&"visit":
+			_do_event_command(EventCommands.Visit.new(_selected.id, controller.state.map_events))
 		&"trade":
 			_target_mode = TargetMode.TRADE
 			_start_targeting(TargetMode.TRADE)
@@ -444,6 +471,8 @@ func _targets_for(mode: TargetMode, slot: int) -> Array[UnitState]:
 			return CombatContext.attack_targets(battle, _selected, _selected.cell, _selected.inventory[slot].weapon())
 		TargetMode.HEAL:
 			return CombatContext.heal_targets(battle, _selected, _selected.cell, _selected.inventory[slot].weapon())
+		TargetMode.TALK:
+			return EventCommands.Talk.partners(battle, _selected, battle.map_events)
 		_:
 			return CombatContext.adjacent_allies(battle, _selected, _selected.cell)
 
@@ -469,6 +498,9 @@ func _start_targeting(mode: TargetMode) -> void:
 	_target_index = 0
 	if mode == TargetMode.TRADE and _targets.size() == 1:
 		_open_trade(_targets[0])
+		return
+	if mode == TargetMode.TALK and _targets.size() == 1:
+		_do_event_command(EventCommands.Talk.new(_selected.id, _targets[0].id, controller.state.map_events))
 		return
 	var cells: Dictionary[Vector2i, bool] = {}
 	for target: UnitState in _targets:
@@ -538,6 +570,9 @@ func _confirm_target() -> void:
 		TargetMode.TRADE:
 			_end_targeting()
 			_open_trade(target)
+		TargetMode.TALK:
+			_end_targeting()
+			_do_event_command(EventCommands.Talk.new(_selected.id, target.id, controller.state.map_events))
 
 
 func _end_targeting() -> void:
@@ -553,12 +588,15 @@ func _do_attack(target: UnitState) -> void:
 	var ruleset: Ruleset = controller.state.ruleset
 	var attacker_cell: Vector2i = attacker.cell
 	var target_cell: Vector2i = target.cell
+	_end_targeting()
+	_set_state(State.ANIMATING)
+	if before_attack.is_valid():
+		await before_attack.call(attacker, target)
 	var command: AttackCommand = SignatureAttackCommand.new(attacker.id, target.id, _weapon_slot) if _target_mode == TargetMode.SIGNATURE \
 		else AttackCommand.new(attacker.id, target.id, _weapon_slot)
 	if not controller.execute(command):
+		_deselect()
 		return
-	_end_targeting()
-	_set_state(State.ANIMATING)
 	await presenter.play_combat(command.result, unit_views[attacker.id], unit_views[target.id], attacker_cell, target_cell,
 		attacker.max_hp(ruleset), target.max_hp(ruleset))
 	_refresh_views()
@@ -719,6 +757,20 @@ func _do_use_item() -> void:
 		toast.show_message("%s  %s +%d" % [_selected.get_display_name(), definition.get_abbreviation() if definition != null else String(stat_id), command.boosts.get_value(stat_id)])
 	await presenter.pause(0.6)
 	_finish_action(true)
+
+
+# Events (Talk / Visit) ----------------------------------------------------------------
+
+func _do_event_command(command: Command) -> void:
+	menu.close()
+	if not controller.execute(command):
+		_open_action_menu()
+		return
+	_set_state(State.ANIMATING)
+	var outcome: MapEventRules.Outcome = command.get(&"outcome") as MapEventRules.Outcome
+	if present_event.is_valid():
+		await present_event.call(outcome)
+	_finish_action()
 
 
 # Class change ----------------------------------------------------------------------

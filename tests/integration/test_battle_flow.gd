@@ -509,3 +509,111 @@ func test_awaken_then_signature_attack() -> void:
 	assert_true(tellen.signature_used)
 	assert_eq(scene.controller.action_log.entries().back()["type"], "signature_attack")
 	assert_eq(tellen.current_hp, tellen.max_hp(state.ruleset), "no counter")
+
+
+func _event(event_id: String, trigger: MapEvent.Trigger, dialogue: String) -> MapEvent:
+	var event := MapEvent.new()
+	event.id = StringName(event_id)
+	event.trigger = trigger
+	event.dialogue_id = StringName(dialogue)
+	return event
+
+
+func _scene_with_events(events: Array[MapEvent]) -> BattleScene:
+	var scene: BattleScene = (load("res://game/scenes/battle_scene.tscn") as PackedScene).instantiate() as BattleScene
+	var map: BattleMap = _make_map()
+	map.placements[2].cell = Vector2i(3, 2)
+	map.events = events
+	scene.map_instance = map
+	scene.battle_seed = 7
+	scene.move_seconds_per_cell = 0.0
+	scene.seconds_per_strike = 0.0
+	scene.phase_banner_seconds = 0.0
+	scene.ai_seconds_between_units = 0.0
+	scene.dialogue_text_speed = 0.0
+	add_child_autofree(scene)
+	return scene
+
+
+func _finish_dialogue(scene: BattleScene) -> void:
+	for i: int in 30:
+		if not scene.dialogue_player.playing:
+			return
+		if scene.dialogue_player._choices.visible:
+			scene.dialogue_player.choose_option(0)
+		else:
+			scene.dialogue_player.confirm()
+		await wait_process_frames(1)
+
+
+func test_map_start_dialogue_blocks_input_until_done() -> void:
+	var events: Array[MapEvent] = [_event("intro", MapEvent.Trigger.MAP_START, "arena_intro")]
+	var scene: BattleScene = _scene_with_events(events)
+	await wait_process_frames(1)
+	assert_true(scene.dialogue_player.playing, "intro plays first")
+	assert_eq(scene.input.state, PlayerInputController.State.DISABLED)
+	await _finish_dialogue(scene)
+	await wait_process_frames(2)
+	assert_false(scene.dialogue_player.playing)
+	assert_eq(scene.input.state, PlayerInputController.State.IDLE, "then the player phase begins")
+
+
+func test_battle_quote_before_attack() -> void:
+	var quote: MapEvent = _event("quote", MapEvent.Trigger.BATTLE_QUOTE, "arena_boss")
+	quote.unit_id = &"brigand_1"
+	var events: Array[MapEvent] = [quote]
+	var scene: BattleScene = _scene_with_events(events)
+	await wait_process_frames(1)
+	scene.input.confirm()
+	scene.cursor.set_cell(Vector2i(3, 1))
+	scene.input.confirm()
+	await wait_process_frames(2)
+	_choose(scene, &"attack")
+	scene.input.confirm()
+	await wait_process_frames(2)
+	assert_true(scene.dialogue_player.playing, "quote plays before the combat")
+	assert_eq(scene.controller.action_log.entries().back()["type"], "event", "attack not executed yet")
+	await _finish_dialogue(scene)
+	await wait_process_frames(3)
+	var types: Array[String] = []
+	for entry: Dictionary in scene.controller.action_log.entries():
+		types.append(str(entry["type"]))
+	assert_true(types.has("attack"), "combat after the quote")
+
+
+func test_victory_plays_map_end_scene_before_results() -> void:
+	var events: Array[MapEvent] = [_event("end", MapEvent.Trigger.MAP_END, "arena_victory")]
+	var scene: BattleScene = _scene_with_events(events)
+	await wait_process_frames(1)
+	var state: BattleState = scene.controller.state
+	DefeatRules.apply(state, state.get_unit(&"brigand_1"), null)
+	scene.flow.check_end()
+	await wait_process_frames(2)
+	assert_true(scene.dialogue_player.playing)
+	assert_false(scene.result_panel.visible)
+	await _finish_dialogue(scene)
+	await wait_process_frames(2)
+	assert_true(scene.result_panel.visible)
+
+
+func test_talk_flow_plays_dialogue_and_recruits() -> void:
+	var talk: MapEvent = _event("recruit", MapEvent.Trigger.TALK, "arena_talk_hexcaller")
+	talk.unit_id = &"tellen"
+	talk.other_unit_id = &"brigand_1"
+	talk.recruit = true
+	var events: Array[MapEvent] = [talk]
+	var scene: BattleScene = _scene_with_events(events)
+	await wait_process_frames(1)
+	var state: BattleState = scene.controller.state
+	state.move_unit(&"brigand_1", Vector2i(1, 1))
+	scene.input.confirm()
+	scene.input.confirm()
+	assert_true(scene.menu.option_ids().has(&"talk"))
+	_choose(scene, &"talk")
+	await wait_process_frames(1)
+	assert_true(scene.dialogue_player.playing, "talk dialogue plays")
+	await _finish_dialogue(scene)
+	await wait_process_frames(2)
+	assert_eq(state.get_unit(&"brigand_1").faction_id, &"player", "recruited")
+	assert_true(state.get_unit(&"tellen").has_acted)
+	assert_true(scene.flow.finished, "recruiting the only enemy completes Rout")
