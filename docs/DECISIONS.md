@@ -67,6 +67,7 @@ From spec §18. Each is a ruleset flag or value, so changing one is a data edit,
 | 46 | Class change keeps damage taken (current HP shifts with max HP) and swaps class base bonuses, Build bonus and Mov | `ClassChangeRules.apply` | ☐ |
 | 47 | Dialogue controls: confirm next, X skip to the next choice, R backlog, C auto, hold Shift fast-forward | `DialoguePlayer` | ☐ |
 | 48 | Dialogue text speed 45 characters/second (settings in M8) | `BattleScene.dialogue_text_speed` | ☐ |
+| 49 | Nintendo controllers use A (right) = confirm, B (bottom) = cancel, detected automatically; Xbox/PlayStation keep bottom = confirm. Override with project setting `tactics_core/input/nintendo_layout` (0 auto, 1 always, 2 never) | `ControllerLayout` | ✅ 2026-11-10 (Jake) |
 | 19 | 2RN: hit if the average of two 0–99 rolls is below the displayed hit. HYBRID: below 50 uses 1RN | `CrossroadsCombatRules.roll_hit` | ☐ |
 
 **Input bindings (M0)**

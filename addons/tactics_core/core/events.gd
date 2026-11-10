@@ -53,3 +53,14 @@ signal log_emitted(level: int, line: String)
 
 func _ready() -> void:
 	TacticsLog.configure_from_project_settings()
+	ControllerLayout.refresh()
+	Input.joy_connection_changed.connect(_on_joy_connection_changed)
+
+
+func _exit_tree() -> void:
+	if Input.joy_connection_changed.is_connected(_on_joy_connection_changed):
+		Input.joy_connection_changed.disconnect(_on_joy_connection_changed)
+
+
+func _on_joy_connection_changed(_device: int, _connected: bool) -> void:
+	ControllerLayout.refresh()
